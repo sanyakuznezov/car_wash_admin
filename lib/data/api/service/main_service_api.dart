@@ -24,7 +24,7 @@ class MainServiseApi{
           contentType: 'application/x-www-form-urlencoded',
         )
       ).catchError((error){
-        print('Error $error');
+        print('Error ${error.toString()}');
       });
       return ApiUserData.fromApi(response.data);
     }

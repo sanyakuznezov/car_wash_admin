@@ -3,6 +3,11 @@
 
 
 
+import 'dart:convert';
+import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
+import 'package:crypto/crypto.dart';
+import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -31,11 +36,14 @@ class PageAuth extends StatefulWidget{
     FocusNode ?textFocusNodePassword;
     bool _isEditingEmail = false;
     bool _isEditingPassword = false;
+    int _stateSingIn=0;
+    ButtonState stateOnlyText = ButtonState.idle;
+   late BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return SingleChildScrollView(
-      child: Container(
+      child: _stateSingIn==0?Container(
         padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(3,GlobalData.sizeScreen!), 0, 0),
         margin: EdgeInsets.all(SizeUtil.getSize(3, GlobalData.sizeScreen!)),
         child: Column(
@@ -138,8 +146,28 @@ class PageAuth extends StatefulWidget{
                     ButtonState.fail: Colors.red.shade300,
                     ButtonState.success: Colors.green.shade400,
                   },
-                  onPressed:(){
+                  onPressed:() async {
+                      setState(() {
+                         _stateSingIn=1;
+                      });
+                      if(_validateEmail(textControllerEmail!.text)==null&&_validatePassword(textControllerPassword!.text)==null){
+                        await RepositoryModule.userRepository().authorizationUser(email: textControllerEmail!.text, pass:generateMd5(textControllerPassword!.text))
+                            .then((result) {
+                              if(result.token.isNotEmpty){
+                                _blocVerifyUser.saveDataTocken(result.guid, result.token,result.personals_carwash_id,result.personals_id);
+                                Navigator.pop(context);
+                                  Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage()));
 
+                              }
+
+
+                        }).catchError((error) {
+                          setState(() {
+                            print('Error $error');
+                            _stateSingIn=0;
+                          });
+                        });
+                      }
                   },
                   state: ButtonState.idle,
                 )),
@@ -179,10 +207,19 @@ class PageAuth extends StatefulWidget{
             )
           ],
         ),
-      )
+      ):Container(
+        width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child:
+          Center(
+            child:
+            CircularProgressIndicator(
+              color: Colors.indigo,strokeWidth: 4,),))
 
     );
   }
+
+
 
   String? _validateEmail(String value) {
     value = value.trim();
@@ -212,6 +249,10 @@ class PageAuth extends StatefulWidget{
 
     return null;
   }
+
+    String generateMd5(String input) {
+      return md5.convert(utf8.encode(input)).toString();
+    }
 
     @override
   void initState() {

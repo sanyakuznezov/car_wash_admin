@@ -13,18 +13,19 @@
     bool phone_verified;
     String email;
     int lang_id;
+    List<dynamic> personals=[];
 
     ApiUserData.fromApi(Map<String,dynamic> map):
           guid=map['guid'],
           token=map['auth_token'],
-          firstname=map['firstname'],
-          lastname=map['lastname'],
-          patronymic=map['patronymic'],
-          avatar=map['avatar'],
-          phone=map['phone'],
-          phone_verified=map['phone_verified'],
-          email=map['email'],
-          lang_id=map['lang_id'];
-
+          firstname=map['profile']['firstname'],
+          lastname=map['profile']['lastname'],
+          patronymic=map['profile']['patronymic'],
+          avatar=map['profile']['avatar'],
+          phone=map['profile']['phone'],
+          phone_verified=map['profile']['phone_verified'],
+          email=map['profile']['email'],
+          lang_id=map['profile']['lang_id'],
+          personals=map['personals'];
 
   }

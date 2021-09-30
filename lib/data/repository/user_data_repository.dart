@@ -11,7 +11,7 @@ class UserDataRepository extends UserRepository{
 
 
   @override
-  Future<UserData> authorizationUser({required String email, required String pass}) {
+  Future<UserData> authorizationUser({required String email, required String pass})  async {
     // TODO: implement authorizationUser
     return _apiUtil.authorizationUser(email: email, pass: pass);
   }
