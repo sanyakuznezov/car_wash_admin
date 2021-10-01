@@ -12,6 +12,7 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../global_data.dart';
 
@@ -164,6 +165,7 @@ class PageAuth extends StatefulWidget{
                         }).catchError((error) {
                           setState(() {
                             print('Error $error');
+                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка авторизации...'),));
                             _stateSingIn=0;
                           });
                         });
@@ -179,10 +181,15 @@ class PageAuth extends StatefulWidget{
                     SizeUtil.getSize(3, GlobalData.sizeScreen!)),
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: Text(
-                    'Я забыл пароль',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
+                  child: GestureDetector(
+                    onTap: (){
+                      _launchURL('https://app.crmstep.ru/auth/reset');
+                    },
+                    child: Text(
+                      'Я забыл пароль',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 )),
@@ -197,11 +204,16 @@ class PageAuth extends StatefulWidget{
                       color: Colors.black,
                     )),
                 Padding(padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1, GlobalData.sizeScreen!), 0, 0, 0),
-                  child: Text('Создать аккаунт',
-                      style: TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.underline,
-                      )),)
+                  child: GestureDetector(
+                    onTap: (){
+                      _launchURL('https://app.crmstep.ru/auth/register');
+                    },
+                    child: Text('Создать аккаунт',
+                        style: TextStyle(
+                          color: Colors.black,
+                          decoration: TextDecoration.underline,
+                        )),
+                  ),)
 
               ],
             )
@@ -244,11 +256,16 @@ class PageAuth extends StatefulWidget{
         return 'Заполните поле';
       } else if (value.length<6) {
         return 'Введите не менее пяти символов';
+      } else if (value.length>48) {
+        return 'Введите не более 48 символов';
       }
     }
 
     return null;
   }
+
+    void _launchURL(String _url) async =>
+        await canLaunch(_url) ? await launch(_url) : throw 'Не удалось запустить $_url';
 
     String generateMd5(String input) {
       return md5.convert(utf8.encode(input)).toString();

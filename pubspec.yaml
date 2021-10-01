@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: ^2.0.4
   flutter_svg: ^0.22.0
   progress_state_button: ^1.0.3
+  url_launcher: ^6.0.10
 
 dev_dependencies:
   flutter_test:
