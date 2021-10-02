@@ -1,9 +1,8 @@
 
 
 
-  class ApiUserData{
-    String guid;
-    String token;
+  class ApiUserDataValid{
+    bool valid;
     String firstname;
     String lastname;
     String patronymic;
@@ -14,9 +13,8 @@
     int lang_id;
     List<dynamic> personals=[];
 
-    ApiUserData.fromApi(Map<String,dynamic> map):
-          guid=map['guid'],
-          token=map['auth_token'],
+    ApiUserDataValid.fromApi(Map<String,dynamic> map):
+           valid=map['valid'],
           firstname=map['profile']['firstname'],
           lastname=map['profile']['lastname'],
           patronymic=map['profile']['patronymic'],

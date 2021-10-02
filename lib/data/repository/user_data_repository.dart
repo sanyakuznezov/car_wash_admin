@@ -16,5 +16,10 @@ class UserDataRepository extends UserRepository{
     return _apiUtil.authorizationUser(email: email, pass: pass);
   }
 
+  @override
+  Future<UserData> validUser() async{
+   return _apiUtil.validUser();
+  }
+
 
 }

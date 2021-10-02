@@ -2,8 +2,9 @@
 
  class UserData{
 
-   String guid;
-   String token;
+   String? guid;
+   String? token;
+   bool? valid;
    String firstname;
    String lastname;
    String patronymic;
@@ -22,8 +23,9 @@
 
 
    UserData(
-      {required this.guid,
-      required this.token,
+      { this.valid,
+        this.guid,
+       this.token,
       required this.firstname,
       required this.lastname,
       required this.patronymic,

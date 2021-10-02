@@ -6,7 +6,10 @@ import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
+import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
+
+import '../../global_data.dart';
 
 class SplashScreen extends StatelessWidget{
 
@@ -21,11 +24,45 @@ class SplashScreen extends StatelessWidget{
         builder: (context,data){
          if(data.data==null){
            return Center(
-               child: CircularProgressIndicator(color: Colors.indigo,strokeWidth: 4,)
+               child: Image.asset(
+                 "assets/car_wash.gif",
+                 height: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                 width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+               ),
            );
         }else{
            if(data.data==true){
-             return MyHomePage();
+             return FutureBuilder<UserData>(
+               future: RepositoryModule.userRepository().validUser(),
+                 builder: (context,value){
+                 if (value.data==null) {
+                      return Center(
+                          child: Image.asset(
+                          "assets/car_wash.gif",
+                          height: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                   width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                   ));
+                 }else{
+                   if(value.data!.valid==true){
+                      return MyHomePage();
+                   }else{
+                     return FutureBuilder<bool>(
+                       future: _blocVerifyUser.clearDataUser(),
+                         builder:(context,data){
+                         if(data.data!=null){
+                             return PageAuth();
+                         }else{
+                          return Center(
+                               child: Image.asset(
+                                 "assets/car_wash.gif",
+                                 height: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                               ));
+                         }
+                     });
+                   }
+                 }
+             });
            }else{
              return PageAuth();
            }

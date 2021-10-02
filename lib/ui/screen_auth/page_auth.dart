@@ -3,13 +3,17 @@
 
 
 
+import 'dart:async';
 import 'dart:convert';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
+import 'package:car_wash_admin/utils/state_network.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:crypto/crypto.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,6 +44,10 @@ class PageAuth extends StatefulWidget{
     int _stateSingIn=0;
     ButtonState stateOnlyText = ButtonState.idle;
    late BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
+
+
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -148,28 +156,38 @@ class PageAuth extends StatefulWidget{
                     ButtonState.success: Colors.green.shade400,
                   },
                   onPressed:() async {
-                      setState(() {
-                         _stateSingIn=1;
-                      });
+                    if(await StateNetwork.initConnectivity()==2){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text('Отсутствует подключение к сети...'),));
+                    }else{
                       if(_validateEmail(textControllerEmail!.text)==null&&_validatePassword(textControllerPassword!.text)==null){
+                        setState(() {
+                          _stateSingIn=1;
+                        });
                         await RepositoryModule.userRepository().authorizationUser(email: textControllerEmail!.text, pass:generateMd5(textControllerPassword!.text))
                             .then((result) {
-                              if(result.token.isNotEmpty){
-                                _blocVerifyUser.saveDataTocken(result.guid, result.token,result.personals_carwash_id,result.personals_id);
-                                Navigator.pop(context);
-                                  Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage()));
+                          if(result.token!.isNotEmpty){
+                            _blocVerifyUser.saveDataTocken(result.guid!, result.token!,result.personals_carwash_id,result.personals_id);
+                            Navigator.pop(context);
+                            Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage()));
 
-                              }
+                          }
 
 
                         }).catchError((error) {
                           setState(() {
                             print('Error $error');
-                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка авторизации...'),));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text('Неверный логин или пароль'),));
                             _stateSingIn=0;
                           });
                         });
                       }
+                    }
+
+
                   },
                   state: ButtonState.idle,
                 )),
@@ -219,23 +237,19 @@ class PageAuth extends StatefulWidget{
             )
           ],
         ),
-      ):Container(
-        width: MediaQuery.of(context).size.width,
+      ):Container(width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child:
-          Center(
-            child:
-            CircularProgressIndicator(
-              color: Colors.indigo,strokeWidth: 4,),))
-
-    );
+          child: Center(
+                  child: Image.asset(
+                    "assets/car_wash.gif",
+                    height: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                    width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                  ),
+                )));
   }
-
-
 
   String? _validateEmail(String value) {
     value = value.trim();
-
     if (textControllerEmail!.text != null) {
       if (value.isEmpty) {
         return 'Заполните поле';
@@ -279,5 +293,16 @@ class PageAuth extends StatefulWidget{
       textControllerPassword = TextEditingController();
       textControllerPassword!.text = '';
       textFocusNodePassword = FocusNode();
+
+
+
   }
+
+    @override
+  void dispose() {
+
+  }
+
+
+
 }

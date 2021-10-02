@@ -6,4 +6,5 @@
 abstract class UserRepository{
 
     Future<UserData>authorizationUser({required String email,required String pass});
+    Future<UserData>validUser();
   }

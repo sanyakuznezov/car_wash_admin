@@ -32,6 +32,21 @@ class BlocVerifyUser{
 
    }
 
+   Future<bool> clearDataUser() async{
+     SharedPreferences prefs=await SharedPreferences.getInstance();
+     return prefs.clear();
+   }
+
+
+
+
+
+
+   Future<Map> checkDataValidUser() async {
+     SharedPreferences prefs=await SharedPreferences.getInstance();
+     return {'guid':prefs.getString('guid'),'token':prefs.getString('token')};
+   }
+
 
 
 

@@ -41,6 +41,8 @@ dependencies:
   flutter_svg: ^0.22.0
   progress_state_button: ^1.0.3
   url_launcher: ^6.0.10
+  connectivity: ^3.0.6
+
 
 dev_dependencies:
   flutter_test:
