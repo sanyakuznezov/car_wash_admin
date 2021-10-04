@@ -10,7 +10,8 @@ import '../../global_data.dart';
 import 'multiplication_table.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key}) : super(key: key);
+  bool valid;
+  MyHomePage({Key? key,required this.valid}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -21,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String dropdownValue = '1 час';
   String dateValue= getDate();
   double? top;
+
 
 
   @override

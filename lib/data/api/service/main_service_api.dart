@@ -35,8 +35,8 @@ class MainServiseApi{
     Future<ApiUserDataValid> validUser() async{
       BlocVerifyUser blocVerifyUser=BlocVerifyUser();
       Map data=await blocVerifyUser.checkDataValidUser();
-      final value = {'guid': data['guid'] , 'token': data['token']};
-      final response = await _dio.post(
+       final value = {'guid': data['guid'] , 'token': data['token']};
+       final response = await _dio.post(
           'auth/check-token',
           data: value,
           options: Options(

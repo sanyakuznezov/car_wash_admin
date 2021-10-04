@@ -1,7 +1,10 @@
 
+import 'package:floor/floor.dart';
 
+@entity
  class UserData{
-
+  @primaryKey
+  final int? id;
    String? guid;
    String? token;
    bool? valid;
@@ -23,7 +26,8 @@
 
 
    UserData(
-      { this.valid,
+      { this.id,
+        this.valid,
         this.guid,
        this.token,
       required this.firstname,

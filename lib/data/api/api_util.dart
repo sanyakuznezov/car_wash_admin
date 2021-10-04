@@ -17,7 +17,7 @@ class ApiUtil{
 
     }
 
-    Future<UserData> validUser() async{
+    Future<bool> validUser() async{
       final result= await _mainServiseApi.validUser();
       return UserDataMapper.fromValidApi(result);
 

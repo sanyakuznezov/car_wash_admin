@@ -6,6 +6,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
+import 'package:car_wash_admin/ui/global_widgets/dialogs.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
 import 'package:car_wash_admin/utils/state_network.dart';
 import 'package:connectivity/connectivity.dart';
@@ -21,16 +22,19 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../global_data.dart';
 
 class PageAuth extends StatefulWidget{
+
+  bool? valid;
+
   @override
   StatePageAuth createState() {
     // TODO: implement createState
    return StatePageAuth();
   }
 
+  PageAuth({this.valid});
 
 
-
-  }
+}
 
 
   class StatePageAuth extends State<PageAuth>{
@@ -167,10 +171,10 @@ class PageAuth extends StatefulWidget{
                         });
                         await RepositoryModule.userRepository().authorizationUser(email: textControllerEmail!.text, pass:generateMd5(textControllerPassword!.text))
                             .then((result) {
-                          if(result.token!.isNotEmpty){
+                          if(result!.token!.isNotEmpty){
                             _blocVerifyUser.saveDataTocken(result.guid!, result.token!,result.personals_carwash_id,result.personals_id);
                             Navigator.pop(context);
-                            Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage()));
+                            Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage(valid: true)));
 
                           }
 
@@ -293,6 +297,7 @@ class PageAuth extends StatefulWidget{
       textControllerPassword = TextEditingController();
       textControllerPassword!.text = '';
       textFocusNodePassword = FocusNode();
+
 
 
 

@@ -32,9 +32,9 @@ class BlocVerifyUser{
 
    }
 
-   Future<bool> clearDataUser() async{
+   Future<bool> singOutUser() async{
      SharedPreferences prefs=await SharedPreferences.getInstance();
-     return prefs.clear();
+     return prefs.setBool('is_auth',false);
    }
 
 
