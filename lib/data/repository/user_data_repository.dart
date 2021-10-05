@@ -23,9 +23,16 @@ class UserDataRepository extends UserRepository{
   }
 
   @override
-  Future<bool> validUser() async{
-   return _apiUtil.validUser();
+  Future<Map> validUser() async{
+     bool valid= await _apiUtil.validUser();
+     final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
+     final userDao = database.userataDao;
+     final data=await userDao.getDataUser();
+   return {'valid':valid,'data_user':data};
   }
+
+
+
 
 
 }

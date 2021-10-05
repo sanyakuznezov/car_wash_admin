@@ -1,6 +1,9 @@
 
 
+import 'package:car_wash_admin/domain/model/user_data.dart';
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
+import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +14,8 @@ import 'multiplication_table.dart';
 
 class MyHomePage extends StatefulWidget {
   bool valid;
-  MyHomePage({Key? key,required this.valid}) : super(key: key);
+  UserData userData;
+  MyHomePage({Key? key,required this.valid,required this.userData}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -62,9 +66,17 @@ class _MyHomePageState extends State<MyHomePage> {
                               Expanded(
                                 child: Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Icon(
-                                    Icons.menu,
-                                    color: Colors.white,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(
+                                        context,
+                                        SlideTransitionRight(PageProfile(widget.userData)),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                                 flex: 1,
@@ -281,4 +293,6 @@ int state(String step){
 
   return i;
 }
+
+
 

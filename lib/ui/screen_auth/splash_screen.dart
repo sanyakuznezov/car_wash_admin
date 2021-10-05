@@ -27,7 +27,7 @@ class SplashScreen extends StatelessWidget{
             return Container();
           }else{
             if(data.data==true){
-              return FutureBuilder<bool>(
+              return FutureBuilder<Map>(
                   future: RepositoryModule.userRepository().validUser(),
                   builder: (context,value){
                     if (value.data==null) {
@@ -38,7 +38,7 @@ class SplashScreen extends StatelessWidget{
                             width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
                           ));
                     }else{
-                      return MyHomePage(valid: value.data!);
+                      return MyHomePage(valid: value.data!['valid'],userData: value.data!['data_user'],);
                     }
                   });
             }else{

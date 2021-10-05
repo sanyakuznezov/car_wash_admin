@@ -174,7 +174,7 @@ class PageAuth extends StatefulWidget{
                           if(result!.token!.isNotEmpty){
                             _blocVerifyUser.saveDataTocken(result.guid!, result.token!,result.personals_carwash_id,result.personals_id);
                             Navigator.pop(context);
-                            Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage(valid: true)));
+                            Navigator.push(context,  MaterialPageRoute(builder: (context) => MyHomePage(valid: true,userData: result)));
 
                           }
 
