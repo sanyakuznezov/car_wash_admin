@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 
+import '../../app_colors.dart';
 import '../../global_data.dart';
 
 
@@ -20,7 +21,7 @@ class MultiplicationTableCell extends StatelessWidget {
     return Container(
       width: 150,
       height: SizeUtil.getSize(6.22,GlobalData.sizeScreen!),
-      color: Colors.grey[200],
+      color: AppColors.colorBackgrondProfile,
       alignment: Alignment.center,
       child:
           Container(

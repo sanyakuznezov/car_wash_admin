@@ -3,6 +3,11 @@
  import 'package:badges/badges.dart';
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/ui/screen_profile/page_languadge.dart';
+import 'package:car_wash_admin/ui/screen_profile/page_name_edit.dart';
+import 'package:car_wash_admin/ui/screen_profile/page_notifi.dart';
+import 'package:car_wash_admin/ui/screen_profile/page_number_edit.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +39,7 @@ class _PageProfileState extends State<PageProfile> {
        body: Column(
          children: [
        AppBar(
-         elevation: 1.0,
+         elevation: 0,
          actions: [
            Expanded(
              child: Padding(
@@ -153,17 +158,22 @@ class _PageProfileState extends State<PageProfile> {
                                       Expanded(
                                         child: Align(
                                           alignment: Alignment.centerRight,
-                                          child: Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: AppColors.colorIndigo,
+                                          child: GestureDetector(
+                                            onTap: (){
+                                               Navigator.push(context, SlideTransitionLift(PageNameEdit(widget._userData)));
+                                            },
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: AppColors.colorIndigo,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Container(height: 2,
-                                color: AppColors.colorBackgrondProfile),
+                                Container(height: 1,
+                                color: AppColors.colorLine),
                                 Padding(
                                   padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                   child: Row(
@@ -187,19 +197,166 @@ class _PageProfileState extends State<PageProfile> {
                                       ),
                                       Align(
                                         alignment: Alignment.centerRight,
-                                        child: Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: AppColors.colorIndigo,
+                                        child: GestureDetector(
+                                          onTap: (){
+                                            Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                                          },
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: AppColors.colorIndigo,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Container(height: 2,
-                                    color: AppColors.colorBackgrondProfile),
+                                Container(height: 1,
+                                    color: AppColors.colorLine),
+
+                                Padding(
+                                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                                  child: Row(
+                                    children: [
+                                      Text('Whatsapp',
+                                          style: TextStyle(
+                                              color: AppColors.textColorItem,
+                                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                          )),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: AppColors.colorIndigo,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(height: 1,
+                                    color: AppColors.colorLine),
+                                Padding(
+                                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                                  child: Row(
+                                    children: [
+                                      Text('Telegram',
+                                          style: TextStyle(
+                                              color: AppColors.textColorItem,
+                                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                          )),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: AppColors.colorIndigo,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(height: 1,
+                                    color: AppColors.colorLine),
+
                               ],
                             ),
-                          )
+                          ),
+                          Align(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(4.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                              child: Text('Уведомления',
+                                  style: TextStyle(
+                                      color: AppColors.textColorTitle,
+                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                  )),
+                            ),
+                            alignment: Alignment.centerLeft,
+                          ),
+
+                          Container(
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                Container(height: 1,
+                                    color: AppColors.colorLine),
+                            Padding(
+                            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                          child: Row(
+                            children: [
+                              Text('Уведомления',
+                                  style: TextStyle(
+                                      color: AppColors.textColorItem,
+                                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                  )),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(context, SlideTransitionLift(PageNotifi()));
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: AppColors.colorIndigo,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                            )],
+                            ),
+                          ),
+
+                          Align(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(4.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                              child: Text('Язык',
+                                  style: TextStyle(
+                                      color: AppColors.textColorTitle,
+                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                  )),
+                            ),
+                            alignment: Alignment.centerLeft,
+                          ),
+
+                          Container(
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                Container(height: 1,
+                                    color: AppColors.colorLine),
+                                Padding(
+                                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                                  child: Row(
+                                    children: [
+                                      Text('Язык',
+                                          style: TextStyle(
+                                              color: AppColors.textColorItem,
+                                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                          )),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            onTap: (){
+                                              Navigator.push(context, SlideTransitionLift(PageLanguadge()));
+                                            },
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: AppColors.colorIndigo,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )],
+                            ),
+                          ),
+
                         ],
                       ),
                     )

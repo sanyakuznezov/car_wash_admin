@@ -1,5 +1,6 @@
 
 
+import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
@@ -47,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: AppColors.colorBackgrondProfile,
         body: Column(
           children: [
             Expanded(
