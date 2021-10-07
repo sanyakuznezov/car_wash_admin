@@ -1,6 +1,8 @@
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_botton_sheet.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
@@ -63,7 +65,14 @@ class StateDragTargetTable extends State<DragTargetTable> {
               height: widget.bodyHeaght,
               child: Stack(
                 children: [
-                  GestureDetector(onTap: () {
+                  GestureDetector(
+
+                    onDoubleTap: (){
+                      if(!GlobalData.edit_mode){
+                        Navigator.push(context, SlideTransitionSize(PageAddOrder()));
+                      }
+                    },
+                      onTap: () {
                       if (GlobalData.edit_mode) {
                         if(GlobalData.accept){
                           if(GlobalData.isCollision!){

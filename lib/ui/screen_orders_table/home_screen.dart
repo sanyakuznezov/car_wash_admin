@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child:
               Container(
                   padding: EdgeInsets.fromLTRB(10,SizeUtil.getSize(6,GlobalData.sizeScreen!), 10, 10),
-                  color: Colors.indigo,
+                  color: AppColors.colorIndigo,
                   child:
                   Expanded(
                       child:
