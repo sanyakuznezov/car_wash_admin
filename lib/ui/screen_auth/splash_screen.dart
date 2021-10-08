@@ -9,6 +9,7 @@ import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../global_data.dart';
 
@@ -32,10 +33,9 @@ class SplashScreen extends StatelessWidget{
                   builder: (context,value){
                     if (value.data==null) {
                       return Center(
-                          child: Image.asset(
-                            "assets/car_wash.gif",
-                            height: SizeUtil.getSize(10, GlobalData.sizeScreen!),
-                            width: SizeUtil.getSize(10, GlobalData.sizeScreen!),
+                          child: SvgPicture.asset(
+                            "assets/banner.svg",
+                            height: SizeUtil.getSize(35, GlobalData.sizeScreen!),
                           ));
                     }else{
                       return MyHomePage(valid: value.data!['valid'],userData: value.data!['data_user'],);
