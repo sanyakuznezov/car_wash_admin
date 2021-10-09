@@ -11,6 +11,7 @@ import 'package:floor/floor.dart';
   @Query('SELECT * FROM UserData')
   Future<UserData?> getDataUser();
 
+
   @insert
   Future<void> insertDataUser(UserData userData);
 

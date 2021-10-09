@@ -21,11 +21,11 @@ class BlocVerifyUser{
    Future<bool> saveDataTocken(String guid,String token,int cwid,int pid) async{
      bool result=false;
      SharedPreferences prefs=await SharedPreferences.getInstance();
+     prefs.setInt('cwid', cwid);
+     prefs.setInt('pid', pid);
      prefs.setBool('is_auth',true);
      prefs.setString('guid', guid);
      prefs.setString('token', token);
-     prefs.setInt('cwid', cwid);
-     prefs.setInt('pid', pid);
      result=true;
      return result;
 
@@ -44,7 +44,7 @@ class BlocVerifyUser{
 
    Future<Map> checkDataValidUser() async {
      SharedPreferences prefs=await SharedPreferences.getInstance();
-     return {'guid':prefs.getString('guid'),'token':prefs.getString('token')};
+     return {'guid':prefs.getString('guid'),'token':prefs.getString('token'),'pid':prefs.getInt('pid')};
    }
 
 

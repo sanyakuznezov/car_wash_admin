@@ -1,9 +1,13 @@
 
 
- import 'package:badges/badges.dart';
+
+
+import 'package:badges/badges.dart';
 import 'package:car_wash_admin/app_colors.dart';
+import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_languadge.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_name_edit.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_notifi.dart';
@@ -12,6 +16,8 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../global_data.dart';
 
@@ -30,10 +36,18 @@ class _PageProfileState extends State<PageProfile> {
   bool _isError=false;
   double radius=SizeUtil.getSize(6.0,GlobalData.sizeScreen!);
   double radius2=SizeUtil.getSize(2.0,GlobalData.sizeScreen!);
+  XFile? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool _isLoadAva=false;
+  bool _imgPiker=false;
+  String? _avatar;
 
 
   @override
   Widget build(BuildContext context) {
+    if(!_imgPiker){
+      _avatar=GlobalData.URL_BASE_IMAGE+widget._userData!.avatar;
+    }
     return Scaffold(
        backgroundColor: AppColors.colorBackgrondProfile,
        body: Column(
@@ -82,33 +96,45 @@ class _PageProfileState extends State<PageProfile> {
                     Container(
                       margin: EdgeInsets.all(SizeUtil.getSize(5.0,GlobalData.sizeScreen!)),
                       child: Center(
-                        child: Badge(
-                          elevation: 1.0,
-                          badgeColor: AppColors.colorIndigo,
-                          badgeContent: Container(
-                            margin: EdgeInsets.all(SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                        child: GestureDetector(
+                          onTap: (){
+                            _showPicker(context);
+                          },
+                          child: Badge(
+                            elevation: 1.0,
+                            badgeColor: AppColors.colorIndigo,
+                            badgeContent: Container(
+                              margin: EdgeInsets.all(SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                              ),
+                            ),
+                            child: !_isLoadAva?CircleAvatar(
+                                backgroundImage: NetworkImage(_avatar!),
+                               onBackgroundImageError: (a,r){
+                                  setState(() {
+                                    this._isError = true;
+                                  });
+
+                               },
+                              backgroundColor: Colors.white,
+                                radius: radius,
+                              child: _isError?Icon(
+                                Icons.image_not_supported_rounded,
+                                color: AppColors.colorBackgrondProfile,
+                                size: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                              ):Container(),
+                               ):Container(
+                              width: SizeUtil.getSize(12.0,GlobalData.sizeScreen!),
+                                height: SizeUtil.getSize(12.0,GlobalData.sizeScreen!),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white),
+                              child: CircularProgressIndicator(strokeWidth: 4,color: AppColors.colorIndigo,),
                             ),
                           ),
-                          child: CircleAvatar(
-                              backgroundImage: NetworkImage(GlobalData.URL_BASE_IMAGE+widget._userData!.avatar),
-                             onBackgroundImageError: (a,r){
-                                setState(() {
-                                  this._isError = true;
-                                });
-
-                             },
-                            backgroundColor: Colors.white,
-                              radius: radius,
-                            child: _isError?Icon(
-                              Icons.image_not_supported_rounded,
-                              color: AppColors.colorBackgrondProfile,
-                              size: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
-                            ):Container(),
-                             ),
                         ),
                       ),
                     ),
@@ -373,5 +399,90 @@ class _PageProfileState extends State<PageProfile> {
   @override
   void initState() {
 
+  }
+
+  _imgFromCamera() async {
+     _image = await _picker.pickImage(
+        source: ImageSource.camera, imageQuality: 50
+    );
+     setState(() {
+       _isLoadAva=true;
+     });
+     final result=  await uploadAvatar(_image!);
+     setState(() {
+       _imgPiker=true;
+       _isLoadAva=false;
+       _avatar=GlobalData.URL_BASE_IMAGE+result.url;
+     });
+
+  }
+
+  _imgFromGallery() async {
+    _image = await  _picker.pickImage(source: ImageSource.gallery, imageQuality: 50
+    ).catchError((error){
+      print('Error $error');
+    });
+    setState(() {
+      _isLoadAva=true;
+    });
+    final result= await uploadAvatar(_image!);
+    setState(() {
+      _imgPiker=true;
+      _isLoadAva=false;
+      _avatar=GlobalData.URL_BASE_IMAGE+result.url;
+    });
+  }
+
+   Future<ResponseUploadAvatar> uploadAvatar(XFile image)async{
+    final result= await RepositoryModule.userRepository().uploadImageAvatar(file: image)
+        .catchError((error){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Ошибка загрузки...'),));
+      setState(() {
+        _imgPiker=true;
+        _isLoadAva=false;
+      });
+    });
+    return result;
+   }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Выбрать фото',
+                        style: TextStyle(
+                            color: AppColors.textColorDark,
+                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                        ),),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Сделать фото',
+                      style: TextStyle(
+                          color: AppColors.textColorDark,
+                          fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                      ),),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+    );
   }
 }

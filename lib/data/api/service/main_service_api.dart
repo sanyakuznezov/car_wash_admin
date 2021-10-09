@@ -3,10 +3,12 @@
 
   import 'dart:convert';
 
+import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MainServiseApi{
 
@@ -45,7 +47,29 @@ class MainServiseApi{
       ).catchError((error){
         print('Error ${error.toString()}');
       });
+
       return ApiUserDataValid.fromApi(response.data);
+    }
+
+    Future<ResponseUploadAvatarApi> uploadImageAvatar(XFile file) async{
+      BlocVerifyUser blocVerifyUser=BlocVerifyUser();
+      Map data=await blocVerifyUser.checkDataValidUser();
+      FormData formData = FormData.fromMap({
+        'pId':  data['pid'],
+        'token': data['token'],
+         'file':await MultipartFile.fromFile(file.path, filename:file.name)
+      });
+      final response = await _dio.post(
+          'personal/upload-image',
+          data: formData,
+          options: Options(
+            contentType: 'multipart/form-data',
+          )
+      ).catchError((error){
+        print('Error ${error.toString()}');
+      });
+
+      return ResponseUploadAvatarApi.fromApi(response.data);
     }
 
 

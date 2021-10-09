@@ -2,8 +2,10 @@
 
    import 'package:car_wash_admin/data/api/api_util.dart';
 import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
+import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/repository/user_repository.dart';
+   import 'package:image_picker/image_picker.dart';
 
 class UserDataRepository extends UserRepository{
 
@@ -28,8 +30,17 @@ class UserDataRepository extends UserRepository{
      final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
      final userDao = database.userataDao;
      final data=await userDao.getDataUser();
+
    return {'valid':valid,'data_user':data};
   }
+
+  @override
+  Future<ResponseUploadAvatar> uploadImageAvatar({required XFile file})async {
+    final result=await _apiUtil.uploadImageAvatar(file: file);
+     return result;
+  }
+
+
 
 
 

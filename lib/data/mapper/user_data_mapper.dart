@@ -1,8 +1,10 @@
 
 
 
- import 'package:car_wash_admin/data/api/model/user_data_api.dart';
+ import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
+import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
+import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 
 class UserDataMapper{
@@ -33,5 +35,10 @@ class UserDataMapper{
      return value.valid;
    }
 
+
+   static ResponseUploadAvatar fromResponseUploadAvatarApi(ResponseUploadAvatarApi responseUploadAvatarApi){
+
+     return ResponseUploadAvatar(result: responseUploadAvatarApi.result,url: responseUploadAvatarApi.url);
+   }
 
 }
