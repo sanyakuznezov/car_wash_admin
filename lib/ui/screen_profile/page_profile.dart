@@ -4,6 +4,7 @@
 
 import 'package:badges/badges.dart';
 import 'package:car_wash_admin/app_colors.dart';
+import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
@@ -23,12 +24,13 @@ import '../../global_data.dart';
 
 class PageProfile extends StatefulWidget{
 
-    UserData? _userData;
 
-    PageProfile(this._userData);
+  UserData? _userData;
+
 
   @override
   State<PageProfile> createState() => _PageProfileState();
+  PageProfile(this._userData);
 }
 
 class _PageProfileState extends State<PageProfile> {
@@ -41,6 +43,7 @@ class _PageProfileState extends State<PageProfile> {
   bool _isLoadAva=false;
   bool _imgPiker=false;
   String? _avatar;
+
 
 
   @override
@@ -401,6 +404,8 @@ class _PageProfileState extends State<PageProfile> {
 
   }
 
+
+
   _imgFromCamera() async {
      _image = await _picker.pickImage(
         source: ImageSource.camera, imageQuality: 50
@@ -444,7 +449,12 @@ class _PageProfileState extends State<PageProfile> {
         _isLoadAva=false;
       });
     });
-    return result;
+    final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
+    final userDao = database.userataDao;
+     await userDao.updateAvatar(result.url).catchError((error){
+       print('Error DB $error');
+     });
+     return result;
    }
 
   void _showPicker(context) {

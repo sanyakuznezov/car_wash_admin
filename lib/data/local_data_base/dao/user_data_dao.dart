@@ -11,6 +11,8 @@ import 'package:floor/floor.dart';
   @Query('SELECT * FROM UserData')
   Future<UserData?> getDataUser();
 
+  @Query('UPDATE UserData SET avatar=:ava')
+  Future<void> updateAvatar(String ava);
 
   @insert
   Future<void> insertDataUser(UserData userData);
