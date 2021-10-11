@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onTap: (){
                                       Navigator.push(
                                         context,
-                                        SlideTransitionRight(PageProfile(widget.userData)),
+                                        SlideTransitionRight(PageProfile()),
                                       );
                                     },
                                     child: Icon(

@@ -5,8 +5,10 @@ import 'package:car_wash_admin/ui/global_widgets/container_botton_sheet.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
+import 'package:car_wash_admin/utils/time_position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -66,12 +68,16 @@ class StateDragTargetTable extends State<DragTargetTable> {
               child: Stack(
                 children: [
                   GestureDetector(
+                    onDoubleTapDown:(y){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${TimePosition.getTime(y.localPosition.dy)}')));
 
-                    onDoubleTap: (){
-                      if(!GlobalData.edit_mode){
-                        Navigator.push(context, SlideTransitionSize(PageAddOrder()));
-                      }
                     },
+
+                      onDoubleTap: (){
+                        // if(!GlobalData.edit_mode){
+                        //   Navigator.push(context, SlideTransitionSize(PageAddOrder()));
+                        // }
+                      },
                       onTap: () {
                       if (GlobalData.edit_mode) {
                         if(GlobalData.accept){

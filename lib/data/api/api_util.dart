@@ -30,4 +30,13 @@ class ApiUtil{
           final result= await _mainServiseApi.uploadImageAvatar(file);
           return UserDataMapper.fromResponseUploadAvatarApi(result);
     }
+
+    Future<bool>uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email}) async{
+     await _mainServiseApi.uploadNameUser(firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
+      return true;
+    }
+    Future<bool>updateIdLang({required int id_lang})async{
+      await _mainServiseApi.updateIdLang(id_lang: id_lang);
+      return true;
+    }
 }

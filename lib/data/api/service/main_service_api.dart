@@ -72,5 +72,37 @@ class MainServiseApi{
       return ResponseUploadAvatarApi.fromApi(response.data);
     }
 
+    Future<bool> uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email}) async{
+      BlocVerifyUser blocVerifyUser=BlocVerifyUser();
+      Map data=await blocVerifyUser.checkDataValidUser();
+      final value = {'pId': data['pid'] , 'token': data['token'],'firstname':firstname,
+        'lastname':lastname,'patronymic':patronymic,'email':email};
+      await _dio.post(
+          'personal/edit-profile',
+          data: value,
+          options: Options(
+            contentType: 'application/x-www-form-urlencoded',
+          )
+      ).catchError((error){
+        print('Error ${error.toString()}');
+      });
+      return true;
+    }
+
+    Future<bool> updateIdLang({required int id_lang}) async{
+      BlocVerifyUser blocVerifyUser=BlocVerifyUser();
+      Map data=await blocVerifyUser.checkDataValidUser();
+      final value = {'pId': data['pid'] , 'token': data['token'],'lang':id_lang};
+      await _dio.post(
+          'personal/edit-profile',
+          data: value,
+          options: Options(
+            contentType: 'application/x-www-form-urlencoded',
+          )
+      ).catchError((error){
+        print('Error ${error.toString()}');
+      });
+      return true;
+    }
 
   }
