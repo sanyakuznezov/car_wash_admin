@@ -5,6 +5,7 @@ import 'package:car_wash_admin/data/api/service/main_service_api.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ApiUtil{
@@ -19,9 +20,9 @@ class ApiUtil{
 
     }
 
-    Future<bool> validUser() async{
-      final result= await _mainServiseApi.validUser();
-      return UserDataMapper.fromValidApi(result);
+    Future<bool> validUser({required BuildContext context}) async{
+      final result= await _mainServiseApi.validUser(context: context);
+      return UserDataMapper.fromValidApi(result!);
 
     }
 

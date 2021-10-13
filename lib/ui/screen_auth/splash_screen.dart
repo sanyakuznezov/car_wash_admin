@@ -29,7 +29,7 @@ class SplashScreen extends StatelessWidget{
           }else{
             if(data.data==true){
               return FutureBuilder<Map>(
-                  future: RepositoryModule.userRepository().validUser(),
+                  future: RepositoryModule.userRepository().validUser(context: context),
                   builder: (context,value){
                     if (value.data==null) {
                       return Center(

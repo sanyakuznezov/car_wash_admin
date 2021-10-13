@@ -193,17 +193,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                           onPressed: () {
                                             DatePicker.showDatePicker(context,
                                                 showTitleActions: true,
-                                                minTime: DateTime(2018, 3, 5),
+                                                minTime: DateTime.now(),
                                                 maxTime: DateTime(2025, 6, 7), onChanged: (date) {
-                                                  print('change $date');
                                                 }, onConfirm: (date) {
                                                   setState(() {
-                                                    dateValue=  dateFormat(date.weekday, date.month, date.day);
+                                                    GlobalData.date=date.toString().split(' ')[0];
+                                                    dateValue= dateFormat(date.weekday, date.month, date.day);
                                                   });
 
                                                 },
-                                                currentTime:
-                                                DateTime.now(), locale: LocaleType.ru);
+                                                currentTime: DateTime.now(), locale: LocaleType.ru);
                                           },
                                           child: Text(
                                             dateValue,

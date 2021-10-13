@@ -15,6 +15,7 @@
    static int? id;
    static bool? isCollision=false;
    static const String URL_BASE_IMAGE='https://app.crmstep.ru';
+   static String? date;
    static List<List> times=[time_1,time_2,time_3,time_4];
    static List<String> time_1 = [
      '00:00',

@@ -3,21 +3,29 @@
 
   import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../global_data.dart';
 
 class PageAddOrder extends StatefulWidget{
+
+
+  int? post;
+  String? date;
+  String? time;
+
+
   @override
   StatePageAddOrder createState() {
     // TODO: implement createState
     return StatePageAddOrder();
   }
 
-
-
+  PageAddOrder({required this.post,required this.date,required this.time});
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
@@ -70,7 +78,7 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-             ItemDate(),
+             ItemDate(date:widget.date,time: widget.time,post: widget.post),
             ItemCar(),
             ItemClient(),
             ItemListWork(),
@@ -712,7 +720,19 @@ class PageAddOrder extends StatefulWidget{
 
 
 
-   class ItemCar extends StatelessWidget{
+   class ItemCar extends StatefulWidget{
+
+  @override
+  State<ItemCar> createState() => _ItemCarState();
+}
+
+class _ItemCarState extends State<ItemCar> {
+     String typeCar = 'Седан';
+     TextEditingController? numCarController;
+     TextEditingController? regionCarController;
+     Color _colorCar=Color.fromRGBO(77,77,77, 1.0);
+     int? _index;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -760,13 +780,37 @@ class PageAddOrder extends StatefulWidget{
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('Легковой',
-                             textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
+                         child:Align(
+                           alignment: Alignment.centerRight,
+                           child: DropdownButton<String>(
+                             value: typeCar,
+                             icon: const Icon(Icons.arrow_drop_down,
+                               color: Colors.black,),
+                             iconSize: 24,
+                             elevation: 16,
+                             alignment: Alignment.centerRight,
+                             style: TextStyle(color: AppColors.textColorPhone,
                                  fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                             )),
+                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                             underline: Container(
+                               height: 2,
+                               color: Colors.transparent,
+                             ),
+                             onChanged: (String? newValue) {
+                               setState(() {
+                                 typeCar = newValue!;
+                               });
+                             },
+                             items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
+                                 .map<DropdownMenuItem<String>>((String value) {
+                               return DropdownMenuItem<String>(
+                                 value: value,
+                                 child: Text(value),
+                               );
+                             }).toList(),
+                           ),
+                         ),
+
                        ),
                      ),
                    ],
@@ -794,10 +838,11 @@ class PageAddOrder extends StatefulWidget{
                              mainAxisAlignment: MainAxisAlignment.end,
                              children: [
                                Container(
-                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
                                  child: TextField(
-
+                                   maxLength: 6,
+                                   controller: numCarController,
                                    textAlign: TextAlign.center,
                                    decoration: InputDecoration(
                                      contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
@@ -807,9 +852,11 @@ class PageAddOrder extends StatefulWidget{
                                  ),
                                ),
                                Container(
-                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
                                  child: TextField(
+                                   maxLength: 3,
+                                   controller: regionCarController,
                                    keyboardType: TextInputType.number,
                                    textAlign: TextAlign.center,
                                    decoration: InputDecoration(
@@ -927,20 +974,38 @@ class PageAddOrder extends StatefulWidget{
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('.....',
-                             textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                             )),
+                         child: Align(
+                           alignment: Alignment.centerRight,
+                           child: Container(
+                             width: SizeUtil.getSize(5,GlobalData.sizeScreen!),
+                             height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
+                             decoration: BoxDecoration(
+                                 border: _index==1?Border.all(
+                                   color: AppColors.colorsCar[0],
+                                   width: 0.5,
+                                 ):null,
+                               color: _colorCar,
+                               borderRadius: BorderRadius.all(Radius.circular(10))
+                             ),
+                           ),
+                         )
                        ),
                      ),
                      Align(
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
-                           //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                           showMaterialModalBottomSheet(
+                             backgroundColor: Colors.transparent,
+                               context: context,
+                               builder: (context) => BottomSheetColorContent(
+                                 onColorCar: (color,index){
+                                    setState(() {
+                                      print('Index $index');
+                                      _index=index;
+                                      _colorCar=color!;
+                                    });
+                               },));
                          },
                          child: Icon(
                            Icons.arrow_forward_ios,
@@ -960,12 +1025,26 @@ class PageAddOrder extends StatefulWidget{
    );
   }
 
-   }
+     @override
+  void initState() {
+        numCarController=TextEditingController();
+        regionCarController=TextEditingController();
+        numCarController!.text='A000AA';
+        regionCarController!.text='000';
+     }
+}
 
 
 
 
     class ItemDate extends StatelessWidget{
+
+      String? date;
+      String? time;
+      int? post;
+
+      ItemDate({required this.date,required this.post, required this.time});
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -1024,7 +1103,7 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('17.11.2020',
+                          child: Text('$date',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -1052,7 +1131,7 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('11:00-12:00',
+                          child: Text('$time',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -1082,7 +1161,7 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('1',
+                          child: Text('$post',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -1105,7 +1184,7 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
-    }
+}
 
     class Work extends StatelessWidget{
 
@@ -1164,3 +1243,74 @@ class PageAddOrder extends StatefulWidget{
 
 
 }
+
+  class BottomSheetColorContent extends StatefulWidget{
+
+   var onColorCar=(Color? color,int? index)=>color,index;
+
+  @override
+  StateBottomSheetColorContent createState() {
+    // TODO: implement createState
+    return StateBottomSheetColorContent();
+  }
+
+   BottomSheetColorContent({required this.onColorCar});
+}
+
+  class StateBottomSheetColorContent extends State<BottomSheetColorContent>{
+
+   int? _selected;
+
+  @override
+  Widget build(BuildContext context) {
+   return Container(
+     height: MediaQuery.of(context).size.height/4.0,
+     decoration: BoxDecoration(
+       color: Colors.white,
+       borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeUtil.getSize(4.0,GlobalData.sizeScreen!)),topRight: Radius.circular(SizeUtil.getSize(4.0,GlobalData.sizeScreen!))),
+     ),
+     child: GridView(
+         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+             maxCrossAxisExtent: 80,
+             childAspectRatio: 3 / 2,
+             crossAxisSpacing: 10,
+             mainAxisSpacing: 10
+         ),
+            children:
+         List.generate(10, (index){
+               return Container(
+                 alignment: Alignment.center,
+                   width: SizeUtil.getSize(10.0,GlobalData.sizeScreen!),
+                   height: SizeUtil.getSize(10.0,GlobalData.sizeScreen!),
+                   decoration: BoxDecoration(
+                       border: _selected==index?Border.all(
+                         color: AppColors.colorsCar[0],
+                         width: 2,
+                       ):null,
+                       shape: BoxShape.circle,
+                       color: Colors.transparent),
+               child: GestureDetector(
+                 onTap: (){
+                     setState(() {
+                       _selected=index;
+                       widget.onColorCar(AppColors.colorsCar[index],index);
+                       Navigator.pop(context);
+                     });
+                 },
+                 child: Container(
+                     width: SizeUtil.getSize(5.0,GlobalData.sizeScreen!),
+                     height: SizeUtil.getSize(5.0,GlobalData.sizeScreen!),
+                     decoration: BoxDecoration(
+                         border: index==1?Border.all(
+                           color: AppColors.colorsCar[0],
+                           width: 0.5,
+                         ):null,
+                         shape: BoxShape.circle,
+                         color: AppColors.colorsCar[index])),
+               ),);
+     })
+    ,
+   ));
+  }
+
+  }

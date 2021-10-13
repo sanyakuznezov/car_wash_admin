@@ -69,14 +69,14 @@ class StateDragTargetTable extends State<DragTargetTable> {
                 children: [
                   GestureDetector(
                     onDoubleTapDown:(y){
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${TimePosition.getTime(y.localPosition.dy)}')));
-
+                      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${TimePosition.getTime(y.localPosition.dy)}')));
+                      if(!GlobalData.edit_mode){
+                        Navigator.push(context, SlideTransitionSize(PageAddOrder(post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                      }
                     },
 
                       onDoubleTap: (){
-                        // if(!GlobalData.edit_mode){
-                        //   Navigator.push(context, SlideTransitionSize(PageAddOrder()));
-                        // }
+
                       },
                       onTap: () {
                       if (GlobalData.edit_mode) {
@@ -115,6 +115,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                              _statusCode=1;
                            }
                            showMaterialModalBottomSheet(
+                             backgroundColor: Colors.transparent,
                              context: context,
                              builder: (context) => ContainerBottomSheet(
                                statusCode: _statusCode!,

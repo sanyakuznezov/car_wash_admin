@@ -5,6 +5,7 @@ import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/repository/user_repository.dart';
+import 'package:flutter/widgets.dart';
    import 'package:image_picker/image_picker.dart';
 
 class UserDataRepository extends UserRepository{
@@ -25,8 +26,8 @@ class UserDataRepository extends UserRepository{
   }
 
   @override
-  Future<Map> validUser() async{
-     bool valid= await _apiUtil.validUser();
+  Future<Map> validUser({required BuildContext context}) async{
+     bool valid= await _apiUtil.validUser(context: context);
      final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
      final userDao = database.userataDao;
      final data=await userDao.getDataUser();

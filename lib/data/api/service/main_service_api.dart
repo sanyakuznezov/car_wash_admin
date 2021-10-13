@@ -1,13 +1,14 @@
 
 
 
-  import 'dart:convert';
-
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
+import 'package:car_wash_admin/utils/state_network.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MainServiseApi{
@@ -34,21 +35,28 @@ class MainServiseApi{
     }
 
 
-    Future<ApiUserDataValid> validUser() async{
-      BlocVerifyUser blocVerifyUser=BlocVerifyUser();
-      Map data=await blocVerifyUser.checkDataValidUser();
-       final value = {'guid': data['guid'] , 'token': data['token']};
-       final response = await _dio.post(
-          'auth/check-token',
-          data: value,
-          options: Options(
-            contentType: 'application/x-www-form-urlencoded',
-          )
-      ).catchError((error){
-        print('Error ${error.toString()}');
-      });
+    Future<ApiUserDataValid?> validUser({required BuildContext context}) async{
+      if(await StateNetwork.initConnectivity()==2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Отсутствует подключение к сети...'),));
+      }else{
+        BlocVerifyUser blocVerifyUser=BlocVerifyUser();
+        Map data=await blocVerifyUser.checkDataValidUser();
+        final value = {'guid': data['guid'] , 'token': data['token']};
+        final response = await _dio.post(
+            'auth/check-token',
+            data: value,
+            options: Options(
+              contentType: 'application/x-www-form-urlencoded',
+            )
+        ).catchError((error){
+          print('Error ${error.toString()}');
+        });
+        return ApiUserDataValid.fromApi(response.data);
+      }
 
-      return ApiUserDataValid.fromApi(response.data);
+      return null;
     }
 
     Future<ResponseUploadAvatarApi> uploadImageAvatar(XFile file) async{
