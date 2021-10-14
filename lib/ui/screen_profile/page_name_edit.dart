@@ -41,6 +41,9 @@ class PageNameEdit extends StatefulWidget{
   TextEditingController? firstnameController;
   final _input=StreamController<int>();
   final _output=StreamController<int>();
+  late FocusNode _focusNodename;
+  late FocusNode _focusNodelastname;
+  late FocusNode _focusNodefirstname;
 
 
   void _onStateLoad(int state){
@@ -50,15 +53,23 @@ class PageNameEdit extends StatefulWidget{
 
   @override
   void dispose() {
+    super.dispose();
     _input.close();
     _output.close();
+    _focusNodename.dispose();
+    _focusNodefirstname.dispose();
+    _focusNodelastname.dispose();
   }
 
   @override
   void initState() {
+    super.initState();
     nameController=TextEditingController();
     lastnameController=TextEditingController();
     firstnameController=TextEditingController();
+    _focusNodelastname=FocusNode();
+    _focusNodefirstname=FocusNode();
+    _focusNodename=FocusNode();
     _input.stream.listen(_onStateLoad);
   }
 
@@ -206,6 +217,7 @@ class PageNameEdit extends StatefulWidget{
                                           height: SizeUtil.getSize(
                                               3.0, GlobalData.sizeScreen!),
                                           child: TextField(
+                                            focusNode: _focusNodename,
                                             style: TextStyle(
                                                 color: AppColors.textColorPhone,
                                                 fontWeight: FontWeight.bold,
@@ -231,9 +243,15 @@ class PageNameEdit extends StatefulWidget{
                                         )),
                                   ),
                                 ),
-                                Icon(
-                                  Icons.edit,
-                                  color: AppColors.colorBackgrondProfile,
+                                GestureDetector(
+                                  onTap: (){
+                                    _focusNodename.requestFocus();
+                                  },
+                                  child:
+                                  Icon(
+                                    Icons.edit,
+                                    color: AppColors.colorBackgrondProfile,
+                                  ),
                                 ),
                               ],
                             ),
@@ -270,6 +288,7 @@ class PageNameEdit extends StatefulWidget{
                                                 fontSize: SizeUtil.getSize(1.8,
                                                     GlobalData.sizeScreen!)),
                                             controller: firstnameController,
+                                            focusNode: _focusNodefirstname,
                                             decoration: InputDecoration(
                                               contentPadding: EdgeInsets.all(
                                                   SizeUtil.getSize(1.5,
@@ -288,9 +307,14 @@ class PageNameEdit extends StatefulWidget{
                                         )),
                                   ),
                                 ),
-                                Icon(
-                                  Icons.edit,
-                                  color: AppColors.colorBackgrondProfile,
+                                GestureDetector(
+                                  onTap: (){
+                                    _focusNodefirstname.requestFocus();
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: AppColors.colorBackgrondProfile,
+                                  ),
                                 ),
                               ],
                             ),
@@ -327,6 +351,7 @@ class PageNameEdit extends StatefulWidget{
                                                 fontSize: SizeUtil.getSize(1.8,
                                                     GlobalData.sizeScreen!)),
                                             controller: lastnameController,
+                                            focusNode: _focusNodelastname,
                                             decoration: InputDecoration(
                                                 contentPadding: EdgeInsets.all(
                                                     SizeUtil.getSize(
@@ -346,9 +371,14 @@ class PageNameEdit extends StatefulWidget{
                                         )),
                                   ),
                                 ),
-                                Icon(
-                                  Icons.edit,
-                                  color: AppColors.colorBackgrondProfile,
+                                GestureDetector(
+                                  onTap: (){
+                                    _focusNodelastname.requestFocus();
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: AppColors.colorBackgrondProfile,
+                                  ),
                                 ),
                               ],
                             ),

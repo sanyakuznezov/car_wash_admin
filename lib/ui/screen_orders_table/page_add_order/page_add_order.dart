@@ -2,9 +2,12 @@
 
 
   import 'package:car_wash_admin/app_colors.dart';
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -542,7 +545,45 @@ class PageAddOrder extends StatefulWidget{
 
    }
 
-  class ItemClient extends StatelessWidget{
+  class ItemClient extends StatefulWidget{
+  @override
+  State<ItemClient> createState() => _ItemClientState();
+}
+
+class _ItemClientState extends State<ItemClient> {
+
+  TextEditingController? telController;
+  TextEditingController? nameController;
+  TextEditingController? surnameController;
+  TextEditingController? patronymicControler;
+  late FocusNode myFocusNodeTel;
+  late FocusNode myFocusNodeName;
+  late FocusNode myFocusNodeSurname;
+  late FocusNode myFocusNodePatronymic;
+  final _UsNumberTextInputFormatter _inputFormatter=_UsNumberTextInputFormatter();
+
+  @override
+  void initState() {
+    super.initState();
+    telController=TextEditingController();
+    nameController=TextEditingController();
+    surnameController=TextEditingController();
+    patronymicControler=TextEditingController();
+    myFocusNodeTel = FocusNode();
+    myFocusNodeName=FocusNode();
+    myFocusNodeSurname=FocusNode();
+    myFocusNodePatronymic=FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    myFocusNodeTel.dispose();
+    myFocusNodePatronymic.dispose();
+    myFocusNodeName.dispose();
+    myFocusNodeSurname.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -568,18 +609,6 @@ class PageAddOrder extends StatefulWidget{
                       ),),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Expanded(
-                    child: Text('Править',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                          color: AppColors.colorIndigo
-                      ),),
-                  ),
-                ),
 
               ],
             ),
@@ -592,26 +621,67 @@ class PageAddOrder extends StatefulWidget{
                 Padding(
                   padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Телефон',
                           style: TextStyle(
                               color: AppColors.textColorItem,
                               fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                           )),
-                      Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                          child: SvgPicture.asset('assets/frame.svg'))),
+
                       Expanded(
                         child: Padding(
-                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('+7(445)3495395',
-                              textAlign: TextAlign.end,
+                          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                          child: SizedBox(
+                            height:
+                                SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
+                            child: TextFormField(
+                              validator: (value){
+                                _validatePhoneNumber(value!);
+                              },
+                              onSaved: (value){
+
+                              },
+                                maxLength: 14,
+                              textAlign: TextAlign.start,
+                                focusNode: myFocusNodeTel,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  _inputFormatter
+                            ],
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.phone,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                                  fontSize: SizeUtil.getSize(1.8,
+                                      GlobalData.sizeScreen!)),
+                              controller: telController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                  hintText: '....',
+                                  prefixText: '+7 ',
+                                  contentPadding: EdgeInsets.all(
+                                      SizeUtil.getSize(
+                                          1.5,
+                                          GlobalData
+                                              .sizeScreen!)),
+                                  border: InputBorder.none),
+                              onChanged: (text) {
+
+                                }
+
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          myFocusNodeTel.requestFocus();
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: AppColors.colorBackgrondProfile,
                         ),
                       ),
                     ],
@@ -633,16 +703,43 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('....',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          child: SizedBox(
+                            height:
+                            SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
+                            child: TextField(
+                                textAlign: TextAlign.end,
+                                focusNode: myFocusNodeSurname,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,
+                                        GlobalData.sizeScreen!)),
+                                controller: surnameController,
+                                decoration: InputDecoration(
+                                    hintText: '....',
+                                    contentPadding: EdgeInsets.all(
+                                        SizeUtil.getSize(
+                                            1.5,
+                                            GlobalData
+                                                .sizeScreen!)),
+                                    border: InputBorder.none),
+                                onChanged: (text) {
+
+                                }
+
+                            ),
+                          )
                         ),
                       ),
-
+                      GestureDetector(
+                        onTap: (){
+                          myFocusNodeSurname.requestFocus();
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: AppColors.colorBackgrondProfile,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -663,16 +760,43 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('.....',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          child: SizedBox(
+                            height:
+                            SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
+                            child: TextField(
+                                textAlign: TextAlign.end,
+                                focusNode: myFocusNodeName,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,
+                                        GlobalData.sizeScreen!)),
+                                controller: nameController,
+                                decoration: InputDecoration(
+                                    hintText: '....',
+                                    contentPadding: EdgeInsets.all(
+                                        SizeUtil.getSize(
+                                            1.5,
+                                            GlobalData
+                                                .sizeScreen!)),
+                                    border: InputBorder.none),
+                                onChanged: (text) {
+
+                                }
+
+                            ),
+                          )
                         ),
                       ),
-
+                      GestureDetector(
+                        onTap: (){
+                          myFocusNodeName.requestFocus();
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: AppColors.colorBackgrondProfile,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -693,13 +817,41 @@ class PageAddOrder extends StatefulWidget{
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('.....',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          child:SizedBox(
+                            height:
+                            SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
+                            child: TextField(
+                                textAlign: TextAlign.end,
+                                focusNode: myFocusNodePatronymic,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,
+                                        GlobalData.sizeScreen!)),
+                                controller: patronymicControler,
+                                decoration: InputDecoration(
+                                    hintText: '....',
+                                    contentPadding: EdgeInsets.all(
+                                        SizeUtil.getSize(
+                                            1.5,
+                                            GlobalData
+                                                .sizeScreen!)),
+                                    border: InputBorder.none),
+                                onChanged: (text) {
+
+                                }
+
+                            ),
+                          )
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          myFocusNodePatronymic.requestFocus();
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: AppColors.colorBackgrondProfile,
                         ),
                       ),
 
@@ -713,9 +865,55 @@ class PageAddOrder extends StatefulWidget{
               ],
             ),
           );
+
+
   }
 
+  String? _validatePhoneNumber(String value) {
+    final phoneExp = RegExp(r'^\(\d\d\d\) \d\d\d\-\d\d\-\d\d$');
+    if (!phoneExp.hasMatch(value)) {
+      return 'Не верный фомат';
+    }
+    return null;
+  }
+}
 
+  class _UsNumberTextInputFormatter extends TextInputFormatter {
+    @override
+    TextEditingValue formatEditUpdate(
+        TextEditingValue oldValue,
+        TextEditingValue newValue,
+        ) {
+      final newTextLength = newValue.text.length;
+      final newText = StringBuffer();
+      var selectionIndex = newValue.selection.end;
+      var usedSubstringIndex = 0;
+      if (newTextLength >= 1) {
+        newText.write('(');
+        if (newValue.selection.end >= 1) selectionIndex++;
+      }
+      if (newTextLength >= 4) {
+        newText.write(newValue.text.substring(0, usedSubstringIndex = 3) + ') ');
+        if (newValue.selection.end >= 3) selectionIndex += 2;
+      }
+      // if (newTextLength >= 7) {
+      //   newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
+      //   if (newValue.selection.end >= 6) selectionIndex++;
+      // }
+
+      // if (newTextLength >= 11) {
+      //   newText.write(newValue.text.substring(6, usedSubstringIndex = 10) + ' ');
+      //   if (newValue.selection.end >= 10) selectionIndex++;
+      // }
+// Dump the rest.
+      if (newTextLength >= usedSubstringIndex) {
+        newText.write(newValue.text.substring(usedSubstringIndex));
+      }
+      return TextEditingValue(
+        text: newText.toString(),
+        selection: TextSelection.collapsed(offset: selectionIndex),
+      );
+    }
   }
 
 
@@ -727,7 +925,8 @@ class PageAddOrder extends StatefulWidget{
 }
 
 class _ItemCarState extends State<ItemCar> {
-     String typeCar = 'Седан';
+     String _typeCar = 'Седан';
+     String _brandCar='.....';
      TextEditingController? numCarController;
      TextEditingController? regionCarController;
      Color _colorCar=Color.fromRGBO(77,77,77, 1.0);
@@ -783,7 +982,7 @@ class _ItemCarState extends State<ItemCar> {
                          child:Align(
                            alignment: Alignment.centerRight,
                            child: DropdownButton<String>(
-                             value: typeCar,
+                             value: _typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
                              iconSize: 24,
@@ -798,7 +997,7 @@ class _ItemCarState extends State<ItemCar> {
                              ),
                              onChanged: (String? newValue) {
                                setState(() {
-                                 typeCar = newValue!;
+                                 _typeCar = newValue!;
                                });
                              },
                              items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
@@ -892,7 +1091,7 @@ class _ItemCarState extends State<ItemCar> {
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('.....',
+                         child: Text(_brandCar,
                              textAlign: TextAlign.end,
                              style: TextStyle(
                                  color: AppColors.textColorPhone,
@@ -905,7 +1104,7 @@ class _ItemCarState extends State<ItemCar> {
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
-                           //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                            Navigator.push(context, SlideTransitionLift(SearchBrand()));
                          },
                          child: Icon(
                            Icons.arrow_forward_ios,
@@ -946,7 +1145,7 @@ class _ItemCarState extends State<ItemCar> {
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
-                           //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                           Navigator.push(context, SlideTransitionLift(SearchBrand()));
                          },
                          child: Icon(
                            Icons.arrow_forward_ios,
@@ -1001,7 +1200,6 @@ class _ItemCarState extends State<ItemCar> {
                                builder: (context) => BottomSheetColorContent(
                                  onColorCar: (color,index){
                                     setState(() {
-                                      print('Index $index');
                                       _index=index;
                                       _colorCar=color!;
                                     });
