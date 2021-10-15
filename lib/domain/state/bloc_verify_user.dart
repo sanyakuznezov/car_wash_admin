@@ -44,7 +44,7 @@ class BlocVerifyUser{
 
    Future<Map> checkDataValidUser() async {
      SharedPreferences prefs=await SharedPreferences.getInstance();
-     return {'guid':prefs.getString('guid'),'token':prefs.getString('token'),'pid':prefs.getInt('pid')};
+     return {'guid':prefs.getString('guid'),'token':prefs.getString('token'),'pid':prefs.getInt('pid'),'cwid':prefs.getInt('cwid')};
    }
 
 

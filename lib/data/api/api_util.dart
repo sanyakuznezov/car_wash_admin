@@ -2,11 +2,15 @@
 
 
 import 'package:car_wash_admin/data/api/service/main_service_api.dart';
+import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
+import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'model/model_brand_car_api.dart';
 
 class ApiUtil{
 
@@ -39,5 +43,14 @@ class ApiUtil{
     Future<bool>updateIdLang({required int id_lang})async{
       await _mainServiseApi.updateIdLang(id_lang: id_lang);
       return true;
+    }
+
+    Future<List<ModelBrandCar>> getListBrandCar({required BuildContext context,required int id}) async{
+      List<ModelBrandCar> list=[];
+      final result=await _mainServiseApi.getListBrandCar(context: context,id: id);
+      result!.forEach((element) {
+        list.add(MapperListBrandCar.fromApi(element));
+      });
+      return list;
     }
 }

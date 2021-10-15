@@ -1,6 +1,7 @@
 
 
 
+import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
@@ -51,7 +52,9 @@ class MainServiseApi{
               contentType: 'application/x-www-form-urlencoded',
             )
         ).catchError((error){
-          print('Error ${error.toString()}');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Ошибка получения данных...'),));
         });
         return ApiUserDataValid.fromApi(response.data);
       }
@@ -113,6 +116,37 @@ class MainServiseApi{
       return true;
     }
 
-
+    Future<List<ModelBrandCarApi>?> getListBrandCar({required BuildContext context,required int id})async{
+      if(await StateNetwork.initConnectivity()==2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Отсутствует подключение к сети...'),));
+      }else {
+        var value;
+        String? query;
+        BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+        Map data = await blocVerifyUser.checkDataValidUser();
+        if(id==0){
+          value = {'cwid': data['cwid']};
+          query='common/car-brands';
+        }else{
+          value = {'cwid': data['cwid'],'carBrandId':id,'query':''};
+          query='/common/car-models';
+        }
+        await new Future.delayed(const Duration(milliseconds: 500));
+        final result = await _dio.get(
+           query,
+           queryParameters: value,
+        ).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Ошибка получения данных...'),));
+        });
+        return (result.data['items'] as List)
+            .map((x) => ModelBrandCarApi.fromApi(x))
+            .toList();
+      }
+      return null;
+    }
 
   }

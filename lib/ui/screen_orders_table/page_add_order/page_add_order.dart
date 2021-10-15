@@ -134,7 +134,7 @@ class PageAddOrder extends StatefulWidget{
                        children: [
                          Padding(
                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
-                           child: Text('Спасибо',
+                           child: Text('.....',
                              style: TextStyle(
                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                                  color: AppColors.textColorPhone
@@ -160,7 +160,7 @@ class PageAddOrder extends StatefulWidget{
                        children: [
                          Padding(
                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
-                           child: Text('Приходите еще',
+                           child: Text('.....',
                              style: TextStyle(
                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                                  color: AppColors.textColorPhone
@@ -220,7 +220,7 @@ class PageAddOrder extends StatefulWidget{
                   children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
-                  child: Text('Помойте хорошо',
+                  child: Text('.....',
                     style: TextStyle(
                         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                         color: AppColors.textColorPhone
@@ -245,7 +245,7 @@ class PageAddOrder extends StatefulWidget{
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
-                      child: Text('Очень важный клиент',
+                      child: Text('.....',
                         style: TextStyle(
                             fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                             color: AppColors.textColorPhone
@@ -642,7 +642,7 @@ class _ItemClientState extends State<ItemClient> {
                               onSaved: (value){
 
                               },
-                                maxLength: 14,
+                                maxLength: 13,
                               textAlign: TextAlign.start,
                                 focusNode: myFocusNodeTel,
                                 inputFormatters: <TextInputFormatter>[
@@ -927,10 +927,12 @@ class _ItemClientState extends State<ItemClient> {
 class _ItemCarState extends State<ItemCar> {
      String _typeCar = 'Седан';
      String _brandCar='.....';
+     String _modelCar='.....';
      TextEditingController? numCarController;
      TextEditingController? regionCarController;
      Color _colorCar=Color.fromRGBO(77,77,77, 1.0);
      int? _index;
+     int? _idBrand;
 
   @override
   Widget build(BuildContext context) {
@@ -1104,7 +1106,14 @@ class _ItemCarState extends State<ItemCar> {
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
-                            Navigator.push(context, SlideTransitionLift(SearchBrand()));
+                           _modelCar='.....';
+                            Navigator.push(context, SlideTransitionLift(SearchBrand.brand(id: 0,
+                              onSelected: (id,brand){
+                                 setState(() {
+                                   _idBrand=id;
+                                   _brandCar=brand;
+                                 });
+                            },)));
                          },
                          child: Icon(
                            Icons.arrow_forward_ios,
@@ -1132,7 +1141,7 @@ class _ItemCarState extends State<ItemCar> {
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('.....',
+                         child: Text(_modelCar,
                              textAlign: TextAlign.end,
                              style: TextStyle(
                                  color: AppColors.textColorPhone,
@@ -1145,7 +1154,16 @@ class _ItemCarState extends State<ItemCar> {
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
-                           Navigator.push(context, SlideTransitionLift(SearchBrand()));
+                           if(_brandCar!='.....'){
+                             Navigator.push(context, SlideTransitionLift(SearchBrand.model(id:_idBrand!,onSelected: (id,model){
+                               setState(() {
+                                 _modelCar=model;
+                               });
+                             })));
+                           }else{
+                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                               content: Text('Выбери марку'),));
+                           }
                          },
                          child: Icon(
                            Icons.arrow_forward_ios,

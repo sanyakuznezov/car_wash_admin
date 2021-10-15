@@ -1,7 +1,9 @@
 
 
    import 'package:car_wash_admin/data/api/api_util.dart';
+import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
+import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/repository/user_repository.dart';
@@ -66,6 +68,11 @@ class UserDataRepository extends UserRepository{
        print('Error DB $error');
      });
     return true;
+  }
+
+  @override
+  Future<List<ModelBrandCar>> getListBrandCar({required BuildContext context,required int id}) async{
+    return await _apiUtil.getListBrandCar(context: context,id: id);
   }
 
 
