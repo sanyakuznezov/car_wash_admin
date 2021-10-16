@@ -1,7 +1,10 @@
 
 
 
-  import 'package:car_wash_admin/app_colors.dart';
+  import 'dart:async';
+
+import 'package:car_wash_admin/app_colors.dart';
+import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
@@ -9,10 +12,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../global_data.dart';
+
+
+  final _inputPrice=StreamController<int>();
+  final _outputPrice=StreamController<int>();
 
 class PageAddOrder extends StatefulWidget{
 
@@ -20,6 +28,7 @@ class PageAddOrder extends StatefulWidget{
   int? post;
   String? date;
   String? time;
+
 
 
   @override
@@ -32,6 +41,10 @@ class PageAddOrder extends StatefulWidget{
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -96,7 +109,12 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
+  @override
+  void dispose() {
+    _inputPrice.close();
+    _outputPrice.close();
   }
+}
 
    class ItemReview extends StatelessWidget{
   @override
@@ -326,13 +344,18 @@ class PageAddOrder extends StatefulWidget{
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('3000 ₽',
-                             textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                             )),
+                         child: StreamBuilder<int>(
+                           stream: _outputPrice.stream,
+                           builder: (context, snapshot) {
+                             return snapshot.hasData?Text('${snapshot.data} ₽',
+                                 textAlign: TextAlign.end,
+                                 style: TextStyle(
+                                     color: AppColors.textColorPhone,
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                 )):Text('....');
+                           }
+                         ),
                        ),
                      ),
                    ],
@@ -449,7 +472,25 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
-   class ItemListWork extends StatelessWidget{
+   class ItemListWork extends StatefulWidget{
+
+
+
+  @override
+  State<ItemListWork> createState() => _ItemListWorkState();
+}
+
+  class _ItemListWorkState extends State<ItemListWork> {
+
+
+  List<ModelService> _listService=[
+    ModelService(id: 1, type: 'service', name: 'Химчистка салона', isDetailing: false, price: 300, time: 40),
+    ModelService(id: 2, type: 'service', name: 'Мойка двигателя с шампунем', isDetailing: false, price: 200, time: 20)];
+  bool _isEdit=false;
+
+
+
+
   @override
   Widget build(BuildContext context) {
    return Container(
@@ -478,13 +519,13 @@ class PageAddOrder extends StatefulWidget{
                Align(
                  alignment: Alignment.bottomCenter,
                  child: Expanded(
-                   child: Text('Править',
+                   child: !_isEdit?Text('Править',
                      textAlign: TextAlign.right,
                      style: TextStyle(
                          fontWeight: FontWeight.bold,
                          fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
                          color: AppColors.colorIndigo
-                     ),),
+                     ),):Container(),
                  ),
                ),
 
@@ -528,8 +569,8 @@ class PageAddOrder extends StatefulWidget{
                    color: AppColors.colorLine),
                 Column(
                   children:
-                    List.generate(5, (index){
-                      return index==1?Work('1'):Work('');
+                    List.generate(_listService.length, (index){
+                      return Work(modelService: _listService[index]);
                     })
 
                 )
@@ -543,7 +584,21 @@ class PageAddOrder extends StatefulWidget{
    );
   }
 
-   }
+  @override
+  void initState() {
+    super.initState();
+    _inputPrice.sink.add(getPrice(_listService));
+  }
+
+
+  getPrice(List<ModelService> list){
+    int price=0;
+    list.forEach((element) {
+        price+=element.price;
+    });
+    return price;
+  }
+}
 
   class ItemClient extends StatefulWidget{
   @override
@@ -1039,7 +1094,7 @@ class _ItemCarState extends State<ItemCar> {
                              mainAxisAlignment: MainAxisAlignment.end,
                              children: [
                                Container(
-                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
                                  child: TextField(
                                    maxLength: 6,
@@ -1053,7 +1108,7 @@ class _ItemCarState extends State<ItemCar> {
                                  ),
                                ),
                                Container(
-                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
                                  child: TextField(
                                    maxLength: 3,
@@ -1253,7 +1308,7 @@ class _ItemCarState extends State<ItemCar> {
 
 
 
-    class ItemDate extends StatelessWidget{
+    class ItemDate extends StatefulWidget{
 
       String? date;
       String? time;
@@ -1262,8 +1317,26 @@ class _ItemCarState extends State<ItemCar> {
       ItemDate({required this.date,required this.post, required this.time});
 
   @override
+  State<ItemDate> createState() => _ItemDateState();
+}
+
+class _ItemDateState extends State<ItemDate> {
+
+   String? _timeStart;
+   String? _timeEnd;
+   bool _isSelected=true;
+   List<String> _timeArray=GlobalData.time_4;
+
+
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+   if(_isSelected){
+     _timeStart=widget.time!.split('-')[0];
+     _timeEnd=widget.time!.split('-')[1];
+     _isSelected=false;
+   }
+
     return Container(
       margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
       child: Column(
@@ -1287,18 +1360,7 @@ class _ItemCarState extends State<ItemCar> {
                       ),),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Expanded(
-                    child: Text('Править',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                          color: AppColors.colorIndigo
-                      ),),
-                  ),
-                ),
+
               ],
             ),
           ),
@@ -1319,7 +1381,7 @@ class _ItemCarState extends State<ItemCar> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('$date',
+                          child: Text('${widget.date}',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -1346,14 +1408,70 @@ class _ItemCarState extends State<ItemCar> {
                           )),
                       Expanded(
                         child: Padding(
-                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('$time',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          padding:EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              DropdownButton<String>(
+                                value: _timeStart,
+                                icon: const Icon(Icons.arrow_drop_down,
+                                  color: Colors.black,),
+                                iconSize: 24,
+                                elevation: 16,
+                                alignment: Alignment.centerLeft,
+                                style: TextStyle(color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                                underline: Container(
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _timeStart = newValue!;
+                                  });
+                                },
+                                items:_timeArray
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                              Text('- ',
+                                style: TextStyle(color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
+                              DropdownButton<String>(
+                                value: _timeEnd,
+                                icon: const Icon(Icons.arrow_drop_down,
+                                  color: Colors.black,),
+                                iconSize: 24,
+                                elevation: 16,
+                                alignment: Alignment.centerLeft,
+                                style: TextStyle(color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                                underline: Container(
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _timeEnd = newValue!;
+                                  });
+                                },
+                                items: _timeArray
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              )
+                            ],
+                          ),
                         ),
                       ),
 
@@ -1377,7 +1495,7 @@ class _ItemCarState extends State<ItemCar> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('$post',
+                          child: Text('${widget.post}',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -1399,13 +1517,12 @@ class _ItemCarState extends State<ItemCar> {
 
 
   }
-
 }
 
     class Work extends StatelessWidget{
 
-   String details;
-   Work(this.details);
+   ModelService modelService;
+   Work({required this.modelService});
 
   @override
   Widget build(BuildContext context) {
@@ -1415,7 +1532,7 @@ class _ItemCarState extends State<ItemCar> {
          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
          child: Row(
            children: [
-             Text('Люкс',
+             Text(modelService.name,
                  style: TextStyle(
                      color: AppColors.textColorItem,
                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -1423,7 +1540,7 @@ class _ItemCarState extends State<ItemCar> {
              Expanded(
                child: Padding(
                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                 child: Text('3000 ₽',
+                 child: Text('${modelService.price} ₽',
                      textAlign: TextAlign.end,
                      style: TextStyle(
                          color: AppColors.textColorPhone,
@@ -1436,12 +1553,12 @@ class _ItemCarState extends State<ItemCar> {
            ],
          ),
        ),
-       details.isEmpty?Container(
+       !modelService.isDetailing?Container(
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
            color: AppColors.colorLine):Container(),
 
-       details.isNotEmpty?Container(
+       modelService.isDetailing?Container(
          color: AppColors.colorBackgrondProfile,
          child: Padding(
            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),

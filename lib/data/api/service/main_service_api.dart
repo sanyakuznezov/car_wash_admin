@@ -2,6 +2,7 @@
 
 
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
+import 'package:car_wash_admin/data/api/model/model_service_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
@@ -148,5 +149,36 @@ class MainServiseApi{
       }
       return null;
     }
+
+   Future<List<ModelServiceApi>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query})async{
+     if(await StateNetwork.initConnectivity()==2){
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+         backgroundColor: Colors.red,
+         content: Text('Отсутствует подключение к сети...'),));
+     }else {
+       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+       Map data = await blocVerifyUser.checkDataValidUser();
+       final value = {'cwid': data['cwid'],'pId': data['pid'],'carType':carType,'serviceType':serviceType,'isDetailing':isDetailing,'query':query};
+       await new Future.delayed(const Duration(milliseconds: 500));
+       final result=await _dio.post(
+           'services/list',
+           data: value,
+           options: Options(
+             contentType: 'application/x-www-form-urlencoded',
+           )
+       ).catchError((error){
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+           backgroundColor: Colors.red,
+           content: Text('Ошибка получения данных...'),));
+       });
+
+       return (result.data['items'] as List)
+           .map((x) => ModelServiceApi.fromApi(x))
+           .toList();
+     }
+
+    return null;
+   }
+
 
   }

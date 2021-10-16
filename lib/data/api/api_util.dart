@@ -2,9 +2,11 @@
 
 
 import 'package:car_wash_admin/data/api/service/main_service_api.dart';
+import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
+import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,4 +55,14 @@ class ApiUtil{
       });
       return list;
     }
+
+    Future<List<ModelService>> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query}) async{
+      List<ModelService> list=[];
+      final result=await _mainServiseApi.getService(context: context, carType: carType, serviceType: serviceType, isDetailing: isDetailing, query: query);
+      result!.forEach((element) {
+        list.add(MapperDataService.fromApi(element));
+      });
+      return list;
+    }
+
 }
