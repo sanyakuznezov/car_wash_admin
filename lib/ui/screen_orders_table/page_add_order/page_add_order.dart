@@ -6,6 +6,7 @@
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -353,7 +354,11 @@ class PageAddOrder extends StatefulWidget{
                                      color: AppColors.textColorPhone,
                                      fontWeight: FontWeight.bold,
                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )):Text('....');
+                                 )):Text('....',textAlign: TextAlign.end,
+                             style: TextStyle(
+                                 color: AppColors.textColorPhone,
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)));
                            }
                          ),
                        ),
@@ -484,8 +489,7 @@ class PageAddOrder extends StatefulWidget{
 
 
   List<ModelService> _listService=[
-    ModelService(id: 1, type: 'service', name: 'Химчистка салона', isDetailing: false, price: 300, time: 40),
-    ModelService(id: 2, type: 'service', name: 'Мойка двигателя с шампунем', isDetailing: false, price: 200, time: 20)];
+    ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   bool _isEdit=false;
 
 
@@ -551,7 +555,7 @@ class PageAddOrder extends StatefulWidget{
                          alignment: Alignment.centerRight,
                          child: GestureDetector(
                            onTap: (){
-                           //  Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                             Navigator.push(context, SlideTransitionLift(PageListServices()));
                            },
                            child: Icon(
                              Icons.arrow_forward_ios,
@@ -587,6 +591,7 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
+     //запрос н сервер
     _inputPrice.sink.add(getPrice(_listService));
   }
 
@@ -1540,7 +1545,9 @@ class _ItemDateState extends State<ItemDate> {
              Expanded(
                child: Padding(
                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                 child: Text('${modelService.price} ₽',
+                 child: modelService.price==0?Align(
+                     alignment: Alignment.centerRight,
+                     child: SvgPicture.asset('assets/frame.svg')):Text('${modelService.price} ₽',
                      textAlign: TextAlign.end,
                      style: TextStyle(
                          color: AppColors.textColorPhone,
