@@ -132,7 +132,7 @@ class MainServiseApi{
           query='common/car-brands';
         }else{
           value = {'cwid': data['cwid'],'carBrandId':id,'query':''};
-          query='/common/car-models';
+          query='common/car-models';
         }
         await new Future.delayed(const Duration(milliseconds: 500));
         final result = await _dio.get(
@@ -151,6 +151,7 @@ class MainServiseApi{
     }
 
    Future<List<ModelServiceApi>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query})async{
+      print('getService');
      if(await StateNetwork.initConnectivity()==2){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -158,7 +159,7 @@ class MainServiseApi{
      }else {
        BlocVerifyUser blocVerifyUser = BlocVerifyUser();
        Map data = await blocVerifyUser.checkDataValidUser();
-       final value = {'cwid': data['cwid'],'pId': data['pid'],'carType':carType,'serviceType':serviceType,'isDetailing':isDetailing,'query':query};
+       final value = {'cwId': data['cwid'],'pId': data['pid'],'carType':carType,'serviceType':serviceType,'isDetailing':isDetailing,'query':query};
        await new Future.delayed(const Duration(milliseconds: 500));
        final result=await _dio.post(
            'services/list',

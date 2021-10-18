@@ -22,6 +22,9 @@ import '../../../global_data.dart';
 
   final _inputPrice=StreamController<int>();
   final _outputPrice=StreamController<int>();
+  List<ModelService> _listService=[
+    ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
+  int _typeCarInt =1;
 
 class PageAddOrder extends StatefulWidget{
 
@@ -287,6 +290,8 @@ class PageAddOrder extends StatefulWidget{
 
 
   class ItemPrice extends StatelessWidget{
+
+
   @override
   Widget build(BuildContext context) {
    return Container(
@@ -354,7 +359,7 @@ class PageAddOrder extends StatefulWidget{
                                      color: AppColors.textColorPhone,
                                      fontWeight: FontWeight.bold,
                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )):Text('....',textAlign: TextAlign.end,
+                                 )):Text('0 ₽',textAlign: TextAlign.end,
                              style: TextStyle(
                                  color: AppColors.textColorPhone,
                                  fontWeight: FontWeight.bold,
@@ -488,8 +493,6 @@ class PageAddOrder extends StatefulWidget{
   class _ItemListWorkState extends State<ItemListWork> {
 
 
-  List<ModelService> _listService=[
-    ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   bool _isEdit=false;
 
 
@@ -555,7 +558,22 @@ class PageAddOrder extends StatefulWidget{
                          alignment: Alignment.centerRight,
                          child: GestureDetector(
                            onTap: (){
-                             Navigator.push(context, SlideTransitionLift(PageListServices()));
+                             Navigator.push(context, SlideTransitionLift(PageListServices(carType: _typeCarInt,
+                             onListServices: (list){
+                               setState(() {
+                                 list!.forEach((element) {
+                                   // if(_listService.contains(element)){
+                                   //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                   //     backgroundColor: Colors.black,
+                                   //     content: Text('Данная услуга уже выбрана'),));
+                                   // }else{
+                                   //   _listService.add(element);
+                                   // }
+                                   _listService.add(element);
+
+                                 });
+                               });
+                             },)));
                            },
                            child: Icon(
                              Icons.arrow_forward_ios,
@@ -591,18 +609,11 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-     //запрос н сервер
-    _inputPrice.sink.add(getPrice(_listService));
+     //запрос н сервер по цене
+    _inputPrice.sink.add(0);
   }
 
 
-  getPrice(List<ModelService> list){
-    int price=0;
-    list.forEach((element) {
-        price+=element.price;
-    });
-    return price;
-  }
 }
 
   class ItemClient extends StatefulWidget{
@@ -1060,6 +1071,17 @@ class _ItemCarState extends State<ItemCar> {
                              onChanged: (String? newValue) {
                                setState(() {
                                  _typeCar = newValue!;
+                                 if(_typeCar=='Седан'){
+                                   _typeCarInt=1;
+                                 }else if(_typeCar=='Кроссовер'){
+                                   _typeCarInt=2;
+                                 }else if(_typeCar=='Внедорожник'){
+                                   _typeCarInt=3;
+                                 }else if(_typeCar=='Микроавтобус'){
+                                   _typeCarInt=4;
+                                 }else if(_typeCar=='Иное'){
+                                   _typeCarInt=5;
+                                 }
                                });
                              },
                              items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']

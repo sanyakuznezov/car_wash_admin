@@ -198,7 +198,6 @@ class _PageProfileState extends State<PageProfile> {
                                                  alignment: Alignment.centerRight,
                                                  child: GestureDetector(
                                                    onTap: (){
-                                                     //Navigator.pop(context);
                                                      Navigator.push(context, SlideTransitionLift(PageNameEdit(
                                                        onNewName: (name){
                                                           setState(() {

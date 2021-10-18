@@ -35,7 +35,7 @@ class StateSearchBrand extends State<SearchBrand>{
   List<ModelBrandCar> _mainList=[];
   List<ModelBrandCar> _searchList=[];
   bool? _isSearching;
-  String _searchText = "";
+
 
 
   @override
@@ -68,12 +68,10 @@ class StateSearchBrand extends State<SearchBrand>{
                      if (_myController.text.isEmpty) {
                        setState(() {
                          _isSearching = false;
-                         _searchText = "";
                        });
                      } else {
                        setState(() {
                          _isSearching = true;
-                         _searchText = _myController.text;
                        });
                      }
                      search(value);
