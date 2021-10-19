@@ -4,7 +4,9 @@
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
+import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/repository/user_repository.dart';
@@ -79,6 +81,16 @@ class UserDataRepository extends UserRepository{
   @override
   Future<List<ModelService>> getService({required BuildContext context, required int carType, required int serviceType, required bool isDetailing, required String query}) async {
     return await _apiUtil.getService(context: context, carType: carType, serviceType: serviceType, isDetailing: isDetailing, query: query);
+  }
+
+  @override
+  Future<ModelCalculatePrice?> getPrice({required BuildContext context, required int carType, required List<int> servicesIds, required List<int> complexesIds})async {
+    return await _apiUtil.getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
+  }
+
+  @override
+  Future<List<ModelWorker>?> getWorkers({required BuildContext context}) async{
+    return await _apiUtil.getWorkers(context: context);
   }
 
 

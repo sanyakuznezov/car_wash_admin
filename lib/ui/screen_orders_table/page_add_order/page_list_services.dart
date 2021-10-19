@@ -14,13 +14,14 @@ import '../../../global_data.dart';
 class PageListServices extends StatefulWidget{
 
   int carType;
+  List<ModelService> listAlreadySelected;
   var onListServices=(List<ModelService>? list)=>list;
 
 
   @override
   State<PageListServices> createState() => _PageListServicesState();
 
-  PageListServices({required this.carType,required this.onListServices});
+  PageListServices({required this.carType,required this.onListServices,required this.listAlreadySelected});
 }
 
 class _PageListServicesState extends State<PageListServices> {
@@ -338,13 +339,11 @@ class _PageListServicesState extends State<PageListServices> {
               )):_searchList.length != 0||_searchController.text.isNotEmpty?
               Container(
                 color: Colors.white,
-                padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
-                    1.0, GlobalData.sizeScreen!), 0, 0),
                 margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_searchList.length, (index) {
-                    return ItemList(modelService:_searchList[index],
+                    return ItemList(modelService:_searchList[index],listAlreadySelected: widget.listAlreadySelected,
                         onSelect: (value,remove) {
                           if(!remove){
                             _selList.add(value!);
@@ -356,14 +355,12 @@ class _PageListServicesState extends State<PageListServices> {
                 ),
               ):Container(
                 color: Colors.white,
-                padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
-                    1.0, GlobalData.sizeScreen!), 0, 0),
                 margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_mainList.length, (index) {
 
-                    return ItemList(modelService:_mainList[index],
+                    return ItemList(modelService:_mainList[index],listAlreadySelected: widget.listAlreadySelected,
                         onSelect: (value,remove) {
                       if(!remove){
                         _selList.add(value!);
@@ -422,10 +419,11 @@ class _PageListServicesState extends State<PageListServices> {
 
    var onSelect=(ModelService? modelService,bool isRemove)=>modelService,index,isRemove;
    ModelService modelService;
+   List<ModelService> listAlreadySelected;
 
 
 
-   ItemList({required this.modelService,required this.onSelect});
+   ItemList({required this.modelService,required this.onSelect,required this.listAlreadySelected});
 
    @override
    State<ItemList> createState() => _ItemListState();
@@ -433,20 +431,30 @@ class _PageListServicesState extends State<PageListServices> {
 
  class _ItemListState extends State<ItemList> {
 
+   bool _isAlreadySelected=false;
    bool _isSelect=false;
+
    @override
    Widget build(BuildContext context) {
+     widget.listAlreadySelected.forEach((element) {
+         if(element.id==widget.modelService.id){
+           _isAlreadySelected=true;
+         }
+     });
      return GestureDetector(
        onTap: (){
-         setState(() {
-           if(_isSelect){
-             _isSelect=false;
-             widget.onSelect(widget.modelService,true);
-           }else{
-             _isSelect=true;
-             widget.onSelect(widget.modelService,false);
+         if(!_isAlreadySelected){
+             setState(() {
+               if(_isSelect){
+                 _isSelect=false;
+                 widget.onSelect(widget.modelService,true);
+               }else{
+                 _isSelect=true;
+                 widget.onSelect(widget.modelService,false);
+               }
+             });
            }
-         });
+
 
        },
        child: Container(
@@ -477,7 +485,7 @@ class _PageListServicesState extends State<PageListServices> {
                             color: AppColors.colorText22,
                             fontSize:
                                 SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
-                    _isSelect
+                    _isSelect||_isAlreadySelected
                         ? Container(
                       height: SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
                             width: SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
@@ -495,7 +503,10 @@ class _PageListServicesState extends State<PageListServices> {
                  GlobalData.sizeScreen!), SizeUtil.getSize(
                  1.0,
                  GlobalData.sizeScreen!), 0, 0),
-               child: Divider(),)
+               child: Container(
+                 height: 1,
+                 color: AppColors.colorLine,
+               ),)
            ],
          ),
        ),

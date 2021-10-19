@@ -4,8 +4,10 @@
   import 'dart:async';
 
 import 'package:car_wash_admin/app_colors.dart';
+import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
@@ -20,8 +22,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../global_data.dart';
 
 
-  final _inputPrice=StreamController<int>();
-  final _outputPrice=StreamController<int>();
+
+  final _outputPrice=StreamController<ModelCalculatePrice>();
   List<ModelService> _listService=[
     ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   int _typeCarInt =1;
@@ -32,8 +34,6 @@ class PageAddOrder extends StatefulWidget{
   int? post;
   String? date;
   String? time;
-
-
 
   @override
   StatePageAddOrder createState() {
@@ -113,10 +113,24 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    _getPrice(context: context, carType: 1, servicesIds: [], complexesIds: []);
+  }
+
   @override
   void dispose() {
-    _inputPrice.close();
     _outputPrice.close();
+  }
+
+
+  Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+    final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
+    _outputPrice.sink.add(result!);
+    print('Total price ${result.totalPrice}');
+    return result;
   }
 }
 
@@ -289,198 +303,259 @@ class PageAddOrder extends StatefulWidget{
 
 
 
-  class ItemPrice extends StatelessWidget{
+  class ItemPrice extends StatefulWidget{
 
 
+
+  @override
+  State<ItemPrice> createState() => _ItemPriceState();
+}
+
+class _ItemPriceState extends State<ItemPrice> {
   @override
   Widget build(BuildContext context) {
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
-     child: Column(
-       children: [
-         Container(
-           height: SizeUtil.getSize(5,GlobalData.sizeScreen!),
-           margin: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0),
-           child: Row(
-             children: [
-               SizedBox(
-                 child: SvgPicture.asset('assets/ic_price.svg'),
-                 height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
-               Expanded(
-                 child: Padding(
-                   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
-                   child: Text('Стоимость',
-                     style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                         color: AppColors.textColorTitle
-                     ),),
-                 ),
-               ),
-               Align(
-                 alignment: Alignment.bottomCenter,
-                 child: Expanded(
-                   child: Text('Править',
-                     textAlign: TextAlign.right,
-                     style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                         color: AppColors.colorIndigo
-                     ),),
-                 ),
-               ),
-
-             ],
-           ),
-         ),
-         Container(
-           margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
-           color: Colors.white,
-           child: Column(
-             children: [
-               Padding(
-                 padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                 child: Row(
-                   children: [
-                     Text('Всего',
+     child: StreamBuilder<ModelCalculatePrice>(
+       stream: _outputPrice.stream,
+       builder: (context, snapshot) {
+         return Column(
+           children: [
+             Container(
+               height: SizeUtil.getSize(5,GlobalData.sizeScreen!),
+               margin: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0),
+               child: Row(
+                 children: [
+                   SizedBox(
+                     child: SvgPicture.asset('assets/ic_price.svg'),
+                     height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
+                   Expanded(
+                     child: Padding(
+                       padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
+                       child: Text('Стоимость',
                          style: TextStyle(
-                             color: AppColors.textColorItem,
-                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                         )),
-                     Expanded(
-                       child: Padding(
-                         padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: StreamBuilder<int>(
-                           stream: _outputPrice.stream,
-                           builder: (context, snapshot) {
-                             return snapshot.hasData?Text('${snapshot.data} ₽',
+                             fontWeight: FontWeight.bold,
+                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                             color: AppColors.textColorTitle
+                         ),),
+                     ),
+                   ),
+                   // Align(
+                   //   alignment: Alignment.bottomCenter,
+                   //   child: Expanded(
+                   //     child: Text('Править',
+                   //       textAlign: TextAlign.right,
+                   //       style: TextStyle(
+                   //           fontWeight: FontWeight.bold,
+                   //           fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                   //           color: AppColors.colorIndigo
+                   //       ),),
+                   //   ),
+                   // ),
+
+                 ],
+               ),
+             ),
+             Container(
+               margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
+               color: Colors.white,
+               child: Column(
+                 children: [
+                   Padding(
+                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                     child: Row(
+                       children: [
+                         Text('Всего',
+                             style: TextStyle(
+                                 color: AppColors.textColorItem,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                             )),
+                         Expanded(
+                           child: Padding(
+                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                             child: snapshot.hasData?Text('${snapshot.data!.totalPrice} ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
                                      fontWeight: FontWeight.bold,
                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )):Text('0 ₽',textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)));
-                           }
+                                 )):Align(
+                               alignment: Alignment.centerRight,
+                               child: SizedBox(
+                                 height: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 child: CircularProgressIndicator(
+                                   color: AppColors.colorIndigo,
+                                   strokeWidth: SizeUtil.getSize(
+                                       0.3,
+                                       GlobalData.sizeScreen!),
+                                 ),
+                               ),
+                             )
+                           ),
                          ),
-                       ),
+                       ],
                      ),
-                   ],
-                 ),
-               ),
-               Container(
-                   height: 1,
-                   color: AppColors.colorLine),
-               Padding(
-                 padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                 child: Row(
-                   children: [
-                     Text('Скидка',
-                         style: TextStyle(
-                             color: AppColors.textColorItem,
-                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                         )),
-                     Expanded(
-                       child: Padding(
-                         padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('1000 ₽',
-                             textAlign: TextAlign.end,
+                   ),
+                   Container(
+                       height: 1,
+                       color: AppColors.colorLine),
+                   Padding(
+                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                     child: Row(
+                       children: [
+                         Text('Скидка',
                              style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                 color: AppColors.textColorItem,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                              )),
-                       ),
-                     ),
-
-                   ],
-                 ),
-               ),
-               Container(
-                   height: 1,
-                   color: AppColors.colorLine),
-
-               Padding(
-                 padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                 child: Row(
-                   children: [
-                     Text('Итого',
-                         style: TextStyle(
-                             color: Colors.black,
-                             fontWeight: FontWeight.bold,
-                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                         )),
-                     Expanded(
-                       child: Padding(
-                         padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('2000 ₽',
-                             textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                             )),
-                       ),
-                     ),
-
-                   ],
-                 ),
-               ),
-               Container(
-                   height: 1,
-                   color: AppColors.colorLine),
-
-               Padding(
-                 padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                 child: Row(
-                   children: [
-                     Text('Исполнитель',
-                         style: TextStyle(
-                             color: AppColors.textColorItem,
-                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                         )),
-                     Expanded(
-                       child: Padding(
-                         padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text('Сидоров А.С.',
-                             textAlign: TextAlign.end,
-                             style: TextStyle(
-                                 color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                             )),
-                       ),
-                     ),
-                     Align(
-                       alignment: Alignment.centerRight,
-                       child: GestureDetector(
-                         onTap: (){
-                           //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
-                         },
-                         child: Icon(
-                           Icons.arrow_forward_ios,
-                           color: AppColors.colorIndigo,
+                         Expanded(
+                           child: Padding(
+                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                             child: snapshot.hasData?Text('${snapshot.data!.sale} ₽',
+                                 textAlign: TextAlign.end,
+                                 style: TextStyle(
+                                     color: AppColors.textColorPhone,
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                 )):Align(
+                               alignment: Alignment.centerRight,
+                               child: SizedBox(
+                                 height: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 child: CircularProgressIndicator(
+                                   color: AppColors.colorIndigo,
+                                   strokeWidth: SizeUtil.getSize(
+                                       0.3,
+                                       GlobalData.sizeScreen!),
+                                 ),
+                               ),
+                             ),
+                           ),
                          ),
-                       ),
+
+                       ],
                      ),
+                   ),
+                   Container(
+                       height: 1,
+                       color: AppColors.colorLine),
 
-                   ],
-                 ),
+                   Padding(
+                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                     child: Row(
+                       children: [
+                         Text('Итого',
+                             style: TextStyle(
+                                 color: Colors.black,
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                             )),
+                         Expanded(
+                           child: Padding(
+                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                             child: snapshot.hasData?Text('${snapshot.data!.totalPrice-snapshot.data!.sale} ₽',
+                                 textAlign: TextAlign.end,
+                                 style: TextStyle(
+                                     color: AppColors.textColorPhone,
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                 )):Align(
+                               alignment: Alignment.centerRight,
+                               child: SizedBox(
+                                 height: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(
+                                     2.0,
+                                     GlobalData.sizeScreen!),
+                                 child: CircularProgressIndicator(
+                                   color: AppColors.colorIndigo,
+                                   strokeWidth: SizeUtil.getSize(
+                                       0.3,
+                                       GlobalData.sizeScreen!),
+                                 ),
+                               ),
+                             ),
+                           ),
+                         ),
+
+                       ],
+                     ),
+                   ),
+                   Container(
+                       height: 1,
+                       color: AppColors.colorLine),
+
+                   Padding(
+                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                     child: Row(
+                       children: [
+                         Text('Исполнитель',
+                             style: TextStyle(
+                                 color: AppColors.textColorItem,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                             )),
+                         Expanded(
+                           child: Padding(
+                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                             child: Text('Сидоров А.С.',
+                                 textAlign: TextAlign.end,
+                                 style: TextStyle(
+                                     color: AppColors.textColorPhone,
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                 )),
+                           ),
+                         ),
+                         Align(
+                           alignment: Alignment.centerRight,
+                           child: GestureDetector(
+                             onTap: (){
+                               //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
+                             },
+                             child: Icon(
+                               Icons.arrow_forward_ios,
+                               color: AppColors.colorIndigo,
+                             ),
+                           ),
+                         ),
+
+                       ],
+                     ),
+                   ),
+
+                 ],
                ),
-
-             ],
-           ),
-         ),
-       ],
+             ),
+           ],
+         );
+       }
      ),
    );
   }
 
 
+  @override
+  void dispose() {
+    super.dispose();
   }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+}
 
    class ItemListWork extends StatefulWidget{
 
@@ -494,9 +569,6 @@ class PageAddOrder extends StatefulWidget{
 
 
   bool _isEdit=false;
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -526,13 +598,25 @@ class PageAddOrder extends StatefulWidget{
                Align(
                  alignment: Alignment.bottomCenter,
                  child: Expanded(
-                   child: !_isEdit?Text('Править',
-                     textAlign: TextAlign.right,
-                     style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                         color: AppColors.colorIndigo
-                     ),):Container(),
+                   child: _listService.length>1?GestureDetector(
+                     child: Text(_isEdit?'Отмена':'Править',
+                       textAlign: TextAlign.right,
+                       style: TextStyle(
+                           fontWeight: FontWeight.bold,
+                           fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                           color: AppColors.colorIndigo
+                       ),),
+                     onTap: (){
+                       setState(() {
+                         if(!_isEdit){
+                           _isEdit=true;
+                         }else{
+                           _isEdit=false;
+                         }
+
+                       });
+                     },
+                   ):Container(),
                  ),
                ),
 
@@ -558,17 +642,10 @@ class PageAddOrder extends StatefulWidget{
                          alignment: Alignment.centerRight,
                          child: GestureDetector(
                            onTap: (){
-                             Navigator.push(context, SlideTransitionLift(PageListServices(carType: _typeCarInt,
+                             Navigator.push(context, SlideTransitionLift(PageListServices(carType: _typeCarInt,listAlreadySelected: _listService,
                              onListServices: (list){
                                setState(() {
                                  list!.forEach((element) {
-                                   // if(_listService.contains(element)){
-                                   //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                   //     backgroundColor: Colors.black,
-                                   //     content: Text('Данная услуга уже выбрана'),));
-                                   // }else{
-                                   //   _listService.add(element);
-                                   // }
                                    _listService.add(element);
 
                                  });
@@ -592,7 +669,15 @@ class PageAddOrder extends StatefulWidget{
                 Column(
                   children:
                     List.generate(_listService.length, (index){
-                      return Work(modelService: _listService[index]);
+                      return Work(modelService: _listService[index],isEdit:_isEdit,
+                      onRemove: (model){
+                           setState(() {
+                             _listService.remove(model);
+                             if(_listService.length==1){
+                               _isEdit=false;
+                             }
+                           });
+                      },);
                     })
 
                 )
@@ -609,8 +694,8 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-     //запрос н сервер по цене
-    _inputPrice.sink.add(0);
+
+
   }
 
 
@@ -1546,11 +1631,19 @@ class _ItemDateState extends State<ItemDate> {
   }
 }
 
-    class Work extends StatelessWidget{
+    class Work extends StatefulWidget{
 
    ModelService modelService;
-   Work({required this.modelService});
+   bool isEdit;
+   var onRemove=(ModelService? model)=>model;
+   Work({required this.modelService,required this.isEdit,required this.onRemove});
 
+
+  @override
+  State<Work> createState() => _WorkState();
+}
+
+class _WorkState extends State<Work> {
   @override
   Widget build(BuildContext context) {
    return  Column(
@@ -1559,7 +1652,7 @@ class _ItemDateState extends State<ItemDate> {
          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
          child: Row(
            children: [
-             Text(modelService.name,
+             Text(widget.modelService.name,
                  style: TextStyle(
                      color: AppColors.textColorItem,
                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -1567,27 +1660,49 @@ class _ItemDateState extends State<ItemDate> {
              Expanded(
                child: Padding(
                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                 child: modelService.price==0?Align(
+                 child: widget.modelService.price==0?Align(
                      alignment: Alignment.centerRight,
-                     child: SvgPicture.asset('assets/frame.svg')):Text('${modelService.price} ₽',
-                     textAlign: TextAlign.end,
-                     style: TextStyle(
-                         color: AppColors.textColorPhone,
-                         fontWeight: FontWeight.bold,
-                         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                     )),
+                     child: SvgPicture.asset('assets/frame.svg')):Row(
+                       mainAxisAlignment: MainAxisAlignment.end,
+                       children: [
+                         Text('${widget.modelService.price} ₽',
+                         textAlign: TextAlign.end,
+                         style: TextStyle(
+                             color: AppColors.textColorPhone,
+                             fontWeight: FontWeight.bold,
+                             fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                         )),
+                         widget.isEdit?Padding(
+                           padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
+                           child: GestureDetector(
+                             onTap: (){
+                               widget.onRemove(widget.modelService);
+                             },
+                             child: Container(
+                               width: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),
+                               height: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),
+                               child: Center(child: Icon(Icons.remove,color: Colors.white,size: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),)),
+                               decoration: BoxDecoration(
+                                 color: Colors.red,
+                                 shape: BoxShape.circle
+                               ),
+                             ),
+                           ),
+                         ):Container()
+                       ],
+                     ),
                ),
              ),
 
            ],
          ),
        ),
-       !modelService.isDetailing?Container(
+       !widget.modelService.isDetailing?Container(
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
            color: AppColors.colorLine):Container(),
 
-       modelService.isDetailing?Container(
+       widget.modelService.isDetailing?Container(
          color: AppColors.colorBackgrondProfile,
          child: Padding(
            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
@@ -1602,8 +1717,6 @@ class _ItemDateState extends State<ItemDate> {
    );
 
   }
-
-
 }
 
   class BottomSheetColorContent extends StatefulWidget{

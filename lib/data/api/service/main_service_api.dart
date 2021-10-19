@@ -2,7 +2,9 @@
 
 
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
+import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
 import 'package:car_wash_admin/data/api/model/model_service_api.dart';
+import 'package:car_wash_admin/data/api/model/model_worker_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
@@ -151,7 +153,6 @@ class MainServiseApi{
     }
 
    Future<List<ModelServiceApi>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query})async{
-      print('getService');
      if(await StateNetwork.initConnectivity()==2){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -180,6 +181,72 @@ class MainServiseApi{
 
     return null;
    }
+
+   Future<ModelCalculatePriceApi?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+     if(await StateNetwork.initConnectivity()==2){
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+         backgroundColor: Colors.red,
+         content: Text('Отсутствует подключение к сети...'),));
+     }else {
+       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+       Map data = await blocVerifyUser.checkDataValidUser();
+       final value = {
+         'cwId': data['cwid'],
+         'pId': data['pid'],
+         'carType': carType,
+         'servicesIds': servicesIds,
+         'complexesIds': complexesIds
+       };
+       final result=await _dio.post(
+           'orders/calculate-price',
+           data: value,
+           options: Options(
+             contentType: 'application/x-www-form-urlencoded',
+           )
+       ).catchError((error){
+         print('Error $error');
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+           backgroundColor: Colors.red,
+           content: Text('Ошибка получения данных о стоимости...'),));
+       });
+       return ModelCalculatePriceApi.fromApi(map:result.data);
+     }
+
+      return null;
+   }
+
+    Future<List<ModelWorkerApi>?> getWorkers({required BuildContext context}) async{
+      if(await StateNetwork.initConnectivity()==2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Отсутствует подключение к сети...'),));
+      }else {
+        BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+        Map data = await blocVerifyUser.checkDataValidUser();
+        final value = {
+          'cwId': data['cwid'],
+          'pId': data['pid'],
+          'token': data['token']
+        };
+        final result=await _dio.post(
+            'personal/list',
+            data: value,
+            options: Options(
+              contentType: 'application/x-www-form-urlencoded',
+            )
+        ).catchError((error){
+          print('Error $error');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Ошибка получения данных о сотрудниках...'),));
+        });
+        return (result.data['personal'] as List)
+            .map((x) => ModelWorkerApi.fromApi(map: x))
+            .toList();
+      }
+
+      return null;
+    }
 
 
   }

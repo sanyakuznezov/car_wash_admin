@@ -2,11 +2,15 @@
 
 
 import 'package:car_wash_admin/data/api/service/main_service_api.dart';
+import 'package:car_wash_admin/data/mapper/mapper_calculate_price.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
+import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
+import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,6 +65,22 @@ class ApiUtil{
       final result=await _mainServiseApi.getService(context: context, carType: carType, serviceType: serviceType, isDetailing: isDetailing, query: query);
       result!.forEach((element) {
         list.add(MapperDataService.fromApi(element));
+      });
+      return list;
+    }
+
+    Future<ModelCalculatePrice?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+      final result=await _mainServiseApi.getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
+      return MapperCalculatePrice.fromApi(modelCalculatePriceApi: result!);
+
+    }
+
+
+    Future<List<ModelWorker>?> getWorkers({required BuildContext context}) async{
+      List<ModelWorker> list=[];
+      final result= await _mainServiseApi.getWorkers(context: context);
+      result!.forEach((element) {
+        list.add(MapperDataWorker.fromApi(element));
       });
       return list;
     }
