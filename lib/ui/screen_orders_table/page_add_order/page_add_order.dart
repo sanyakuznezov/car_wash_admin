@@ -6,9 +6,11 @@
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,10 +25,21 @@ import '../../../global_data.dart';
 
 
 
-  final _outputPrice=StreamController<ModelCalculatePrice>();
+ final _outputPrice=StreamController<ModelCalculatePrice>();
+  final _inputPrice=StreamController<ModelCalculatePrice>();
+  List<int> _idServiceList=[];
+  List<int> _idComplexList=[];
+  List<ModelWorker> _listWorker=[];
   List<ModelService> _listService=[
     ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   int _typeCarInt =1;
+
+  Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+    final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
+    _inputPrice.sink.add(result!);
+    return result;
+  }
+
 
 class PageAddOrder extends StatefulWidget{
 
@@ -113,25 +126,26 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
+  void _onData(ModelCalculatePrice value){
+    _outputPrice.sink.add(value);
+  }
+
 
   @override
   void initState() {
     super.initState();
-    _getPrice(context: context, carType: 1, servicesIds: [], complexesIds: []);
+    _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList);
+    _inputPrice.stream.listen(_onData);
   }
 
   @override
   void dispose() {
     _outputPrice.close();
+    _inputPrice.close();
   }
 
 
-  Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
-    final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
-    _outputPrice.sink.add(result!);
-    print('Total price ${result.totalPrice}');
-    return result;
-  }
+
 }
 
    class ItemReview extends StatelessWidget{
@@ -312,6 +326,10 @@ class PageAddOrder extends StatefulWidget{
 }
 
 class _ItemPriceState extends State<ItemPrice> {
+
+    String? _selWorkerString;
+    ModelWorker? _modelWorker;
+
   @override
   Widget build(BuildContext context) {
    return Container(
@@ -497,39 +515,74 @@ class _ItemPriceState extends State<ItemPrice> {
 
                    Padding(
                      padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                     child: Row(
-                       children: [
-                         Text('Исполнитель',
-                             style: TextStyle(
-                                 color: AppColors.textColorItem,
-                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                             )),
-                         Expanded(
-                           child: Padding(
-                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: Text('Сидоров А.С.',
-                                 textAlign: TextAlign.end,
-                                 style: TextStyle(
-                                     color: AppColors.textColorPhone,
-                                     fontWeight: FontWeight.bold,
-                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )),
-                           ),
-                         ),
-                         Align(
-                           alignment: Alignment.centerRight,
-                           child: GestureDetector(
-                             onTap: (){
-                               //Navigator.push(context, SlideTransitionLift(PageNumberEdit(widget._userData)));
-                             },
-                             child: Icon(
-                               Icons.arrow_forward_ios,
-                               color: AppColors.colorIndigo,
-                             ),
-                           ),
-                         ),
+                     child: FutureBuilder<List<ModelWorker>?>(
+                       future: RepositoryModule.userRepository().getWorkers(context: context),
+                       builder: (context,value){
+                         if(value.hasData){
+                           _modelWorker=value.data![0];
+                           _selWorkerString='${value.data![0].lastname} ${value.data![0].firstname[0]}. ${value.data![0].patronymic[0]}.';
+                           return Row(
+                             children: [
+                               Text('Исполнитель',
+                                   style: TextStyle(
+                                       color: AppColors.textColorItem,
+                                       fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                   )),
+                               Expanded(
+                                 child: Padding(
+                                   padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                   child: Text(_selWorkerString!,
+                                       textAlign: TextAlign.end,
+                                       style: TextStyle(
+                                           color: AppColors.textColorPhone,
+                                           fontWeight: FontWeight.bold,
+                                           fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                       )),
+                                 ),
+                               ),
+                               Align(
+                                 alignment: Alignment.centerRight,
+                                 child: GestureDetector(
+                                   onTap: (){
+                                     Navigator.push(context, SlideTransitionLift(PageListWorkers(
+                                       onWorker:(data){
+                                         _modelWorker=data;
+                                         _selWorkerString='${data!.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
+                                     },
+                                       list: value.data,selWorker:_modelWorker!,)));
+                                   },
+                                   child: Icon(
+                                     Icons.arrow_forward_ios,
+                                     color: AppColors.colorIndigo,
+                                   ),
+                                 ),
+                               ),
 
-                       ],
+                             ],
+                           );
+                         }else{
+
+                           return Align(
+                             alignment: Alignment.centerRight,
+                             child: SizedBox(
+                               height: SizeUtil.getSize(
+                                   2.0,
+                                   GlobalData.sizeScreen!),
+                               width: SizeUtil.getSize(
+                                   2.0,
+                                   GlobalData.sizeScreen!),
+                               child: CircularProgressIndicator(
+                                 color: AppColors.colorIndigo,
+                                 strokeWidth: SizeUtil.getSize(
+                                     0.3,
+                                     GlobalData.sizeScreen!),
+                               ),
+                             ),
+                           );
+                         }
+
+         }
+
                      ),
                    ),
 
@@ -647,7 +700,12 @@ class _ItemPriceState extends State<ItemPrice> {
                                setState(() {
                                  list!.forEach((element) {
                                    _listService.add(element);
-
+                                   if(element.type=='complex'){
+                                       _idComplexList.add(element.id);
+                                   }else if(element.type=='service'){
+                                      _idServiceList.add(element.id);
+                                   }
+                                   _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
                                });
                              },)));
@@ -673,6 +731,12 @@ class _ItemPriceState extends State<ItemPrice> {
                       onRemove: (model){
                            setState(() {
                              _listService.remove(model);
+                             if(model!.type=='complex'){
+                               _idComplexList.remove(model.id);
+                             }else if(model.type=='service'){
+                               _idServiceList.remove(model.id);
+                             }
+                             _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                              if(_listService.length==1){
                                _isEdit=false;
                              }
@@ -1167,6 +1231,7 @@ class _ItemCarState extends State<ItemCar> {
                                  }else if(_typeCar=='Иное'){
                                    _typeCarInt=5;
                                  }
+                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                });
                              },
                              items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']

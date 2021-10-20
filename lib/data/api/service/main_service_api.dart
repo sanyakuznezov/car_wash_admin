@@ -183,6 +183,13 @@ class MainServiseApi{
    }
 
    Future<ModelCalculatePriceApi?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+
+      servicesIds.forEach((element) {
+        print('ID car ser $element');
+      });
+      complexesIds.forEach((element) {
+        print('ID car complex $element');
+      });
      if(await StateNetwork.initConnectivity()==2){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -204,11 +211,11 @@ class MainServiseApi{
              contentType: 'application/x-www-form-urlencoded',
            )
        ).catchError((error){
-         print('Error $error');
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
            backgroundColor: Colors.red,
            content: Text('Ошибка получения данных о стоимости...'),));
        });
+       print('Result ${result.data['totalPrice']}');
        return ModelCalculatePriceApi.fromApi(map:result.data);
      }
 
