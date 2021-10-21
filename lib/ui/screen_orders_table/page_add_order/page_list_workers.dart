@@ -170,13 +170,42 @@ class _PageListWorkersState extends State<PageListWorkers> {
                                  2.0, GlobalData.sizeScreen!),
                              color: Colors.black
                          ),),
-                       Text('${widget.modelWorker.phone}',
-                         textAlign: TextAlign.start,
-                         style:TextStyle(
-                             fontSize: SizeUtil.getSize(
-                                 1.7, GlobalData.sizeScreen!),
-                             color: AppColors.textColorHint
-                         ),),
+                       Padding(
+                         padding:EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+                             0.5, GlobalData.sizeScreen!),0,0),
+                         child: Row(
+                           children: [
+                             Icon(Icons.verified_user_outlined,color: Colors.green,size: SizeUtil.getSize(
+                                 2.0, GlobalData.sizeScreen!),),
+                             Text('${widget.modelWorker.post}',
+                               textAlign: TextAlign.start,
+                               style:TextStyle(
+                                   fontWeight: FontWeight.bold,
+                                   fontSize: SizeUtil.getSize(
+                                       1.7, GlobalData.sizeScreen!),
+                                   color: AppColors.textColorHint
+                               ),),
+                           ],
+                         ),
+                       ),
+
+                       Padding(
+                         padding:EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+                             0.5, GlobalData.sizeScreen!),0,0),
+                         child: Row(
+                           children: [
+                             Icon(Icons.phone,color: Colors.green,size: SizeUtil.getSize(
+                                 2.0, GlobalData.sizeScreen!),),
+                             Text('${widget.modelWorker.phone}',
+                               textAlign: TextAlign.start,
+                               style:TextStyle(
+                                   fontSize: SizeUtil.getSize(
+                                       1.7, GlobalData.sizeScreen!),
+                                   color: AppColors.textColorHint
+                               ),),
+                           ],
+                         ),
+                       ),
                      ],
                    ),
                  ),

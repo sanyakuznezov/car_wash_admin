@@ -25,7 +25,7 @@ import '../../../global_data.dart';
 
 
 
- final _outputPrice=StreamController<ModelCalculatePrice>();
+  final _outputPrice=StreamController<ModelCalculatePrice>();
   final _inputPrice=StreamController<ModelCalculatePrice>();
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
@@ -36,7 +36,7 @@ import '../../../global_data.dart';
 
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
-    _inputPrice.sink.add(result!);
+    _inputPrice!.sink.add(result!);
     return result;
   }
 
@@ -140,6 +140,7 @@ class PageAddOrder extends StatefulWidget{
 
   @override
   void dispose() {
+    print('dispose');
     _outputPrice.close();
     _inputPrice.close();
   }
@@ -329,6 +330,7 @@ class _ItemPriceState extends State<ItemPrice> {
 
     String? _selWorkerString;
     ModelWorker? _modelWorker;
+    int totalPrice=0;
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +339,19 @@ class _ItemPriceState extends State<ItemPrice> {
      child: StreamBuilder<ModelCalculatePrice>(
        stream: _outputPrice.stream,
        builder: (context, snapshot) {
+         if(snapshot.hasData){
+           if(snapshot.data!.list.length>0) {
+             print('List Price ${snapshot.data!.list.length}');
+             for (int i = 0; snapshot.data!.list.length > i; i++) {
+                      print('Price ${snapshot.data!.list[i].price} name ${snapshot.data!.list[i].name}');
+             }
+           }
+
+         }
+
+         if(snapshot.hasError){
+           print('hasError');
+         }
          return Column(
            children: [
              Container(
@@ -391,7 +406,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: snapshot.hasData?Text('${snapshot.data!.totalPrice} ₽',
+                             child: snapshot.hasData?Text('$totalPrice ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -480,7 +495,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: snapshot.hasData?Text('${snapshot.data!.totalPrice-snapshot.data!.sale} ₽',
+                             child: snapshot.hasData?Text('${totalPrice-snapshot.data!.sale} ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
