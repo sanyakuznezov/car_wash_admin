@@ -1,6 +1,8 @@
 
 
 
+import 'dart:convert';
+
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
 import 'package:car_wash_admin/data/api/model/model_service_api.dart';
@@ -30,6 +32,8 @@ class MainServiseApi{
         'auth/login',
         data: value,
         options: Options(
+          sendTimeout: 5000,
+          receiveTimeout: 3000,
           contentType: 'application/x-www-form-urlencoded',
         )
       ).catchError((error){
@@ -52,6 +56,8 @@ class MainServiseApi{
             'auth/check-token',
             data: value,
             options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 3000,
               contentType: 'application/x-www-form-urlencoded',
             )
         ).catchError((error){
@@ -77,6 +83,8 @@ class MainServiseApi{
           'personal/upload-image',
           data: formData,
           options: Options(
+            sendTimeout: 5000,
+            receiveTimeout: 3000,
             contentType: 'multipart/form-data',
           )
       ).catchError((error){
@@ -95,6 +103,8 @@ class MainServiseApi{
           'personal/edit-profile',
           data: value,
           options: Options(
+            sendTimeout: 5000,
+            receiveTimeout: 3000,
             contentType: 'application/x-www-form-urlencoded',
           )
       ).catchError((error){
@@ -111,6 +121,8 @@ class MainServiseApi{
           'personal/edit-profile',
           data: value,
           options: Options(
+            sendTimeout: 5000,
+            receiveTimeout: 3000,
             contentType: 'application/x-www-form-urlencoded',
           )
       ).catchError((error){
@@ -166,6 +178,8 @@ class MainServiseApi{
            'services/list',
            data: value,
            options: Options(
+             sendTimeout: 5000,
+             receiveTimeout: 3000,
              contentType: 'application/x-www-form-urlencoded',
            )
        ).catchError((error){
@@ -184,12 +198,6 @@ class MainServiseApi{
 
    Future<ModelCalculatePriceApi?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
 
-      servicesIds.forEach((element) {
-        print('ID car ser $element');
-      });
-      complexesIds.forEach((element) {
-        print('ID car complex $element');
-      });
      if(await StateNetwork.initConnectivity()==2){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -201,13 +209,15 @@ class MainServiseApi{
          'cwId': data['cwid'],
          'pId': data['pid'],
          'carType': carType,
-         'servicesIds': servicesIds,
+         'servicesIds':servicesIds,
          'complexesIds': complexesIds
        };
        final result=await _dio.post(
            'orders/calculate-price',
            data: value,
            options: Options(
+             sendTimeout: 5000,
+             receiveTimeout: 3000,
              contentType: 'application/x-www-form-urlencoded',
            )
        ).catchError((error){
@@ -239,6 +249,8 @@ class MainServiseApi{
             'personal/list',
             data: value,
             options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 3000,
               contentType: 'application/x-www-form-urlencoded',
             )
         ).catchError((error){

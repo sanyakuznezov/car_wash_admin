@@ -24,19 +24,19 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../global_data.dart';
 
 
-
-  final _outputPrice=StreamController<ModelCalculatePrice>();
-  final _inputPrice=StreamController<ModelCalculatePrice>();
+ late ValueNotifier<ModelCalculatePrice> _notifier;
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   List<ModelWorker> _listWorker=[];
-  List<ModelService> _listService=[
-    ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
+  List<ModelService> _listService=[ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   int _typeCarInt =1;
+  bool _isLoading=false;
 
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+    _isLoading=true;
     final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
-    _inputPrice!.sink.add(result!);
+    _notifier.value=result!;
+    _isLoading=false;
     return result;
   }
 
@@ -126,23 +126,24 @@ class PageAddOrder extends StatefulWidget{
 
   }
 
-  void _onData(ModelCalculatePrice value){
-    _outputPrice.sink.add(value);
-  }
 
 
   @override
   void initState() {
     super.initState();
-    _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList);
-    _inputPrice.stream.listen(_onData);
+    _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
+        .onError((error, stackTrace){
+      setState(() {
+        _isLoading=false;
+      });
+    });
+    _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
 
   @override
   void dispose() {
-    print('dispose');
-    _outputPrice.close();
-    _inputPrice.close();
+    super.dispose();
+    _notifier.dispose();
   }
 
 
@@ -330,28 +331,15 @@ class _ItemPriceState extends State<ItemPrice> {
 
     String? _selWorkerString;
     ModelWorker? _modelWorker;
-    int totalPrice=0;
+
 
   @override
   Widget build(BuildContext context) {
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
-     child: StreamBuilder<ModelCalculatePrice>(
-       stream: _outputPrice.stream,
-       builder: (context, snapshot) {
-         if(snapshot.hasData){
-           if(snapshot.data!.list.length>0) {
-             print('List Price ${snapshot.data!.list.length}');
-             for (int i = 0; snapshot.data!.list.length > i; i++) {
-                      print('Price ${snapshot.data!.list[i].price} name ${snapshot.data!.list[i].name}');
-             }
-           }
-
-         }
-
-         if(snapshot.hasError){
-           print('hasError');
-         }
+     child: ValueListenableBuilder<ModelCalculatePrice>(
+       valueListenable: _notifier,
+       builder: (context,snapshot,widget) {
          return Column(
            children: [
              Container(
@@ -373,18 +361,6 @@ class _ItemPriceState extends State<ItemPrice> {
                          ),),
                      ),
                    ),
-                   // Align(
-                   //   alignment: Alignment.bottomCenter,
-                   //   child: Expanded(
-                   //     child: Text('Править',
-                   //       textAlign: TextAlign.right,
-                   //       style: TextStyle(
-                   //           fontWeight: FontWeight.bold,
-                   //           fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                   //           color: AppColors.colorIndigo
-                   //       ),),
-                   //   ),
-                   // ),
 
                  ],
                ),
@@ -406,7 +382,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: snapshot.hasData?Text('$totalPrice ₽',
+                             child: !_isLoading?Text('${snapshot.totalPrice} ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -449,7 +425,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: snapshot.hasData?Text('${snapshot.data!.sale} ₽',
+                             child: !_isLoading?Text('${snapshot.sale} ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -495,7 +471,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: snapshot.hasData?Text('${totalPrice-snapshot.data!.sale} ₽',
+                             child: !_isLoading?Text('${snapshot.totalPrice-snapshot.sale} ₽',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -530,75 +506,85 @@ class _ItemPriceState extends State<ItemPrice> {
 
                    Padding(
                      padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                     child: FutureBuilder<List<ModelWorker>?>(
-                       future: RepositoryModule.userRepository().getWorkers(context: context),
-                       builder: (context,value){
-                         if(value.hasData){
-                           _modelWorker=value.data![0];
-                           _selWorkerString='${value.data![0].lastname} ${value.data![0].firstname[0]}. ${value.data![0].patronymic[0]}.';
-                           return Row(
-                             children: [
-                               Text('Исполнитель',
-                                   style: TextStyle(
-                                       color: AppColors.textColorItem,
-                                       fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                                   )),
-                               Expanded(
-                                 child: Padding(
-                                   padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                                   child: Text(_selWorkerString!,
-                                       textAlign: TextAlign.end,
-                                       style: TextStyle(
-                                           color: AppColors.textColorPhone,
-                                           fontWeight: FontWeight.bold,
-                                           fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                       )),
-                                 ),
-                               ),
-                               Align(
-                                 alignment: Alignment.centerRight,
-                                 child: GestureDetector(
-                                   onTap: (){
-                                     Navigator.push(context, SlideTransitionLift(PageListWorkers(
-                                       onWorker:(data){
-                                         _modelWorker=data;
-                                         _selWorkerString='${data!.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
-                                     },
-                                       list: value.data,selWorker:_modelWorker!,)));
-                                   },
-                                   child: Icon(
-                                     Icons.arrow_forward_ios,
-                                     color: AppColors.colorIndigo,
-                                   ),
-                                 ),
-                               ),
+                     child: Row(
+                       children: [
+                         Text('Исполнитель',
+                             style: TextStyle(
+                                 color: AppColors.textColorItem,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                             )),
+                         FutureBuilder<List<ModelWorker>?>(
+                           future: RepositoryModule.userRepository().getWorkers(context: context),
+                           builder: (context,value){
+                                  if (value.hasData) {
+                                    _modelWorker = value.data![0];
+                                    _selWorkerString = '${value.data![0].lastname} ${value.data![0].firstname[0]}. ${value.data![0].patronymic[0]}.';
+                                    return Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Padding(
+                                            padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                            child: Text(_selWorkerString!,
+                                                textAlign: TextAlign.end,
+                                                style: TextStyle(
+                                                    color: AppColors.textColorPhone,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                                )),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    SlideTransitionLift(
+                                                        PageListWorkers(
+                                                      onWorker: (data) {
+                                                        _modelWorker = data;
+                                                        _selWorkerString =
+                                                            '${data!.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
+                                                      },
+                                                      list: value.data,
+                                                      selWorker: _modelWorker!,
+                                                    )));
+                                              },
+                                              child: Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: AppColors.colorIndigo,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Expanded(
+                                      child: Padding(
+                                        padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0),
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: SizedBox(
+                                            height: SizeUtil.getSize(
+                                                2.0, GlobalData.sizeScreen!),
+                                            width: SizeUtil.getSize(
+                                                2.0, GlobalData.sizeScreen!),
+                                            child: CircularProgressIndicator(
+                                              color: AppColors.colorIndigo,
+                                              strokeWidth: SizeUtil.getSize(
+                                                  0.3, GlobalData.sizeScreen!),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                         ),
 
-                             ],
-                           );
-                         }else{
-
-                           return Align(
-                             alignment: Alignment.centerRight,
-                             child: SizedBox(
-                               height: SizeUtil.getSize(
-                                   2.0,
-                                   GlobalData.sizeScreen!),
-                               width: SizeUtil.getSize(
-                                   2.0,
-                                   GlobalData.sizeScreen!),
-                               child: CircularProgressIndicator(
-                                 color: AppColors.colorIndigo,
-                                 strokeWidth: SizeUtil.getSize(
-                                     0.3,
-                                     GlobalData.sizeScreen!),
-                               ),
-                             ),
-                           );
-                         }
-
-         }
-
-                     ),
+                       ],
+                     )
                    ),
 
                  ],
@@ -637,6 +623,8 @@ class _ItemPriceState extends State<ItemPrice> {
 
 
   bool _isEdit=false;
+  List<ModelServiceFromCalculate> _calculateList=[];
+  int i=-2;
 
   @override
   Widget build(BuildContext context) {
@@ -739,26 +727,42 @@ class _ItemPriceState extends State<ItemPrice> {
                    margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
                    height: 1,
                    color: AppColors.colorLine),
-                Column(
-                  children:
-                    List.generate(_listService.length, (index){
-                      return Work(modelService: _listService[index],isEdit:_isEdit,
-                      onRemove: (model){
-                           setState(() {
-                             _listService.remove(model);
-                             if(model!.type=='complex'){
-                               _idComplexList.remove(model.id);
-                             }else if(model.type=='service'){
-                               _idServiceList.remove(model.id);
-                             }
-                             _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
-                             if(_listService.length==1){
-                               _isEdit=false;
-                             }
-                           });
-                      },);
-                    })
+                ValueListenableBuilder<ModelCalculatePrice>(
+                  valueListenable: _notifier,
+                  builder: (context,data,widget){
+                    _calculateList.clear();
+                    _calculateList.add(ModelServiceFromCalculate(id: 0,type: 'test',name: 'Въезд-Выезд',price: 0,oldPrice: 0));
+                    if(data.saleName!='test'){
+                      data.list.forEach((element) {
+                        _calculateList.add(element);
+                      });
+                    }
+                    print('ValueListenableBuilder ${_calculateList.length}');
+                    return Column(
+                        children:
+                        List.generate(_calculateList.length, (index){
+                          return Work(
+                            isLoad: _isLoading,
+                            modelCalculatePrice:_calculateList[index],
+                            modelService: _listService[index],isEdit:_isEdit,
+                            onRemove: (model){
+                              setState(() {
+                                _listService.remove(model);
+                                if(model!.type=='complex'){
+                                  _idComplexList.remove(model.id);
+                                }else if(model.type=='service'){
+                                  _idServiceList.remove(model.id);
+                                }
+                                _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                if(_calculateList.length==1){
+                                  _isEdit=false;
+                                }
+                              });
+                            },);
+                        })
 
+                    );
+                  }
                 )
 
 
@@ -1715,8 +1719,10 @@ class _ItemDateState extends State<ItemDate> {
 
    ModelService modelService;
    bool isEdit;
+   bool isLoad=false;
+   ModelServiceFromCalculate modelCalculatePrice;
    var onRemove=(ModelService? model)=>model;
-   Work({required this.modelService,required this.isEdit,required this.onRemove});
+   Work({required this.isLoad,required this.modelCalculatePrice,required this.modelService,required this.isEdit,required this.onRemove});
 
 
   @override
@@ -1732,7 +1738,7 @@ class _WorkState extends State<Work> {
          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
          child: Row(
            children: [
-             Text(widget.modelService.name,
+             Text(widget.modelCalculatePrice.name,
                  style: TextStyle(
                      color: AppColors.textColorItem,
                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -1745,7 +1751,7 @@ class _WorkState extends State<Work> {
                      child: SvgPicture.asset('assets/frame.svg')):Row(
                        mainAxisAlignment: MainAxisAlignment.end,
                        children: [
-                         Text('${widget.modelService.price} ₽',
+                         Text(!widget.isLoad?'${widget.modelCalculatePrice.price} ₽':'.... ₽',
                          textAlign: TextAlign.end,
                          style: TextStyle(
                              color: AppColors.textColorPhone,
@@ -1869,3 +1875,4 @@ class _WorkState extends State<Work> {
   }
 
   }
+
