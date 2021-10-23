@@ -9,6 +9,7 @@ import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
@@ -34,6 +35,7 @@ import '../../../global_data.dart';
 
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
+    _notifier.value=ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []);
     final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
     _notifier.value=result!;
     _isLoading=false;
@@ -47,6 +49,8 @@ class PageAddOrder extends StatefulWidget{
   int? post;
   String? date;
   String? time;
+  int timeStartWash;
+  int timeEndWash;
 
   @override
   StatePageAddOrder createState() {
@@ -54,7 +58,7 @@ class PageAddOrder extends StatefulWidget{
     return StatePageAddOrder();
   }
 
-  PageAddOrder({required this.post,required this.date,required this.time});
+  PageAddOrder({required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time});
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
@@ -67,6 +71,13 @@ class PageAddOrder extends StatefulWidget{
 
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        child: const Icon(Icons.send),
+        backgroundColor: AppColors.colorFAB,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -111,7 +122,7 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-             ItemDate(date:widget.date,time: widget.time,post: widget.post),
+             ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
             ItemCar(),
             ItemClient(),
             ItemListWork(),
@@ -737,7 +748,6 @@ class _ItemPriceState extends State<ItemPrice> {
                         _calculateList.add(element);
                       });
                     }
-                    print('ValueListenableBuilder ${_calculateList.length}');
                     return Column(
                         children:
                         List.generate(_calculateList.length, (index){
@@ -1509,8 +1519,10 @@ class _ItemCarState extends State<ItemCar> {
       String? date;
       String? time;
       int? post;
+      int timeStartWash;
+      int timeEndWash;
 
-      ItemDate({required this.date,required this.post, required this.time});
+      ItemDate({required this.timeEndWash,required this.timeStartWash,required this.date,required this.post, required this.time});
 
   @override
   State<ItemDate> createState() => _ItemDateState();
@@ -1556,7 +1568,34 @@ class _ItemDateState extends State<ItemDate> {
                       ),),
                   ),
                 ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Expanded(
+                    child: GestureDetector(
+                      child: Text('Править',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                            color: AppColors.colorIndigo
+                        ),),
+                      onTap: (){
+                         showMaterialModalBottomSheet(
+                           backgroundColor: Colors.transparent,
+                             context: context, builder:
+                         (context)=>ContainerBottomSheetEditTime(
+                           onTimeSelect: (tStart,tEnd){
+                             setState(() {
+                               _timeStart=tStart;
+                               _timeEnd=tEnd;
+                             });
+                           },
+                           time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
 
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -1604,70 +1643,12 @@ class _ItemDateState extends State<ItemDate> {
                           )),
                       Expanded(
                         child: Padding(
-                          padding:EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              DropdownButton<String>(
-                                value: _timeStart,
-                                icon: const Icon(Icons.arrow_drop_down,
-                                  color: Colors.black,),
-                                iconSize: 24,
-                                elevation: 16,
-                                alignment: Alignment.centerLeft,
-                                style: TextStyle(color: AppColors.textColorPhone,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                                underline: Container(
-                                  height: 2,
-                                  color: Colors.transparent,
-                                ),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _timeStart = newValue!;
-                                  });
-                                },
-                                items:_timeArray
-                                    .map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                              Text('- ',
-                                style: TextStyle(color: AppColors.textColorPhone,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
-                              DropdownButton<String>(
-                                value: _timeEnd,
-                                icon: const Icon(Icons.arrow_drop_down,
-                                  color: Colors.black,),
-                                iconSize: 24,
-                                elevation: 16,
-                                alignment: Alignment.centerLeft,
-                                style: TextStyle(color: AppColors.textColorPhone,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                                underline: Container(
-                                  height: 2,
-                                  color: Colors.transparent,
-                                ),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _timeEnd = newValue!;
-                                  });
-                                },
-                                items: _timeArray
-                                    .map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              )
-                            ],
-                          ),
+                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                          child:  Text('$_timeStart-$_timeEnd',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(color: AppColors.textColorPhone,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
                         ),
                       ),
 

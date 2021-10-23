@@ -2,6 +2,7 @@
 
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
@@ -209,8 +210,8 @@ class MainServiseApi{
          'cwId': data['cwid'],
          'pId': data['pid'],
          'carType': carType,
-         'servicesIds':servicesIds,
-         'complexesIds': complexesIds
+         'servicesIds':servicesIds.join(','),
+         'complexesIds': complexesIds.join(',')
        };
        final result=await _dio.post(
            'orders/calculate-price',
@@ -219,6 +220,9 @@ class MainServiseApi{
              sendTimeout: 5000,
              receiveTimeout: 3000,
              contentType: 'application/x-www-form-urlencoded',
+             //   headers: {
+             //     HttpHeaders.contentTypeHeader: "application/json",
+             //   },
            )
        ).catchError((error){
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(

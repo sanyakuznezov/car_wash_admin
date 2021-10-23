@@ -37,11 +37,21 @@ class _PageListServicesState extends State<PageListServices> {
   bool _isDetailing=false;
   int _serviceType=2;
   bool _isLoading=true;
+  bool _isSelected=false;
    TextEditingController _searchController=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: _isSelected?FloatingActionButton(
+          onPressed: () {
+            // Add your onPressed code here!
+            Navigator.pop(context);
+            widget.onListServices(_selList);
+          },
+          child: const Icon(Icons.check_outlined,color:Colors.indigo),
+          backgroundColor: Colors.white,
+        ):null,
         backgroundColor: AppColors.colorBackgrondProfile,
         body: SingleChildScrollView(
           child: Column(
@@ -61,7 +71,7 @@ class _PageListServicesState extends State<PageListServices> {
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.pop(context);
-                                widget.onListServices(_selList);
+
                               },
                               child: Icon(
                                 Icons.arrow_back_ios,
@@ -350,6 +360,14 @@ class _PageListServicesState extends State<PageListServices> {
                           }else{
                             _selList.remove(value);
                           }
+                          setState(() {
+                            if(_selList.length>0){
+                              _isSelected=true;
+                            }else{
+                              _isSelected=false;
+                            }
+                            print('$_isSelected');
+                          });
                         });
                   }),
                 ),
@@ -367,6 +385,14 @@ class _PageListServicesState extends State<PageListServices> {
                       }else{
                         _selList.remove(value);
                       }
+                      setState(() {
+                        if(_selList.length>0){
+                          _isSelected=true;
+                        }else{
+                          _isSelected=false;
+                        }
+                        print('$_isSelected');
+                      });
                     });
                   }),
                 ),

@@ -187,6 +187,75 @@ class TimeParser{
     return result;
   }
 
+  //Фильтры времени для редакирования при создании заказа
 
+
+  static Future<List<String>> getListTimeHourStart() async{
+    bool now=DateTime.now().toString().split(' ')[0]==GlobalData.date;
+    int currentTime=DateTime.now().hour;
+    List<String> hours=[];
+    int i=-1;
+    await Future.forEach(GlobalData.time_1, (String item) async {
+      i++;
+      if(now){
+        if(currentTime<i){
+          hours.add(item.split(':')[0]);
+        }
+      }else{
+        hours.add(item.split(':')[0]);
+      }
+
+
+    });
+    return hours;
+
+  }
+  static Future<List<String>> getListTimeHourEnd(String selTimeEnd) async{
+    List<String> hours=[];
+    int i=-1;
+    int index=GlobalData.time_1.indexOf('$selTimeEnd:00');
+    await Future.forEach(GlobalData.time_1, (String item) async {
+      i++;
+      if(index<=i){
+        hours.add(item.split(':')[0]);
+      }
+    });
+    return hours;
+
+  }
+  static Future<List<String>> getListTimeMinuteStart() async{
+    int i=0;
+    List<String> hours=[];
+    await Future.forEach(GlobalData.time_4, (String item) async {
+      i++;
+      if(i>1){
+        hours.add(item.split(':')[1]);
+      }
+
+
+
+    });
+    return hours;
+
+  }
+  static Future<List<String>> getListTimeMinuteEnd() async{
+    List<String> min=[];
+    int i=0;
+    await Future.forEach(GlobalData.time_4, (String item) async {
+      i++;
+      if(i>1){
+        min.add(item.split(':')[1]);
+      }
+
+    });
+    return min;
+
+  }
+
+  static bool isTimeValidate(String timeTable){
+      int t=DateTime.now().hour*60+DateTime.now().minute;
+      int t1=int.parse(timeTable.split('-')[0].split(':')[0])*60+int.parse(timeTable.split('-')[0].split(':')[1]);
+      return t<t1;
+  }
 }
 

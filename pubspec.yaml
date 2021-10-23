@@ -45,7 +45,7 @@ dependencies:
   badges: ^2.0.1
   image_picker: ^0.8.4+2
   scoped_model: ^1.1.0
-
+  carousel_slider: ^4.0.0
 
 
 

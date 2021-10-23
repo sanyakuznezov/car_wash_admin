@@ -17,6 +17,7 @@ class AppColors{
    static Color textColorPhone=const Color.fromRGBO(79, 79, 79, 1.0);
    static Color colorLine=const Color.fromRGBO(228, 228, 228, 1.0);
    static Color color120=const Color.fromRGBO(249,249, 249, 1.0);
+   static Color colorFAB=const Color.fromRGBO(136,181, 244, 1.0);
    static Color colorText22=const Color.fromRGBO(112, 112, 112, 1.0);
    static List<Color> colorsCar=const [Color.fromRGBO(77,77,77, 1.0),Color.fromRGBO(255,255,255, 1.0),Color.fromRGBO(196,196,196, 1.0),
       Color.fromRGBO(249,17,17, 1.0),Color.fromRGBO(0,71,255, 1.0)

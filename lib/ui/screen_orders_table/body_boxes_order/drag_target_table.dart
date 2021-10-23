@@ -50,6 +50,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   final double c4=SizeUtil.getSize(31.5,GlobalData.sizeScreen!);
   int? _timeParse;
+  String? _date;
 
 
 
@@ -69,9 +70,26 @@ class StateDragTargetTable extends State<DragTargetTable> {
                 children: [
                   GestureDetector(
                     onDoubleTapDown:(y){
-                      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${TimePosition.getTime(y.localPosition.dy)}')));
+                      _date=DateTime.now().toString().split(' ')[0];
                       if(!GlobalData.edit_mode){
-                        Navigator.push(context, SlideTransitionSize(PageAddOrder(post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                        if(_date==GlobalData.date){
+                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy))){
+                            Navigator.push(context, SlideTransitionSize(
+                                PageAddOrder(
+                                  timeEndWash: 1440,
+                                  timeStartWash: 0,
+                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
+                          }
+                        }else{
+                          Navigator.push(context, SlideTransitionSize(
+                              PageAddOrder(
+                                timeEndWash: 1440,
+                                timeStartWash: 0,
+                                post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                        }
+
                       }
                     },
 

@@ -53,15 +53,15 @@ class _PageProfileState extends State<PageProfile> {
        body: FutureBuilder<UserData?>(
          future: getDataUserLocal(),
          builder: (context,data){
-           if(!_imgPiker){
-             _avatar=GlobalData.URL_BASE_IMAGE+data.data!.avatar;
-           }
-           if(!_isName){
-             _name='${data.data!.firstname} ${data.data!.patronymic} ${data.data!.lastname}';
-           }
            if(data.data==null){
              return Center(child: CircularProgressIndicator(color: AppColors.colorIndigo,strokeWidth: SizeUtil.getSize(0.5,GlobalData.sizeScreen!),));
            }else{
+             if(!_imgPiker){
+               _avatar=GlobalData.URL_BASE_IMAGE+data.data!.avatar;
+             }
+             if(!_isName){
+               _name='${data.data!.firstname} ${data.data!.patronymic} ${data.data!.lastname}';
+             }
             return Column(
                children: [
                  AppBar(
