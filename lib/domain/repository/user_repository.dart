@@ -18,6 +18,8 @@ abstract class UserRepository{
     Future<Map>validUser({required BuildContext context});
     Future<ResponseUploadAvatar>uploadImageAvatar({required XFile file});
     Future<bool> updateIdLang({required int id_lang});
+  Future<bool?> intersectionValidate({required BuildContext context,required Map<String,dynamic> map});
+    Future<bool?> addOrder({required Map<String,dynamic> map,required BuildContext context});
     Future<bool>uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email});
     Future<List<ModelBrandCar>> getListBrandCar({required BuildContext context,required int id});
     Future<List<ModelService>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});

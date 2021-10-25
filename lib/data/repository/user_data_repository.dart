@@ -93,6 +93,16 @@ class UserDataRepository extends UserRepository{
     return await _apiUtil.getWorkers(context: context);
   }
 
+  @override
+  Future<bool?> addOrder({required Map<String, dynamic> map, required BuildContext context}) async{
+   return await _apiUtil.addOrder(map: map, context: context);
+  }
+
+  @override
+  Future<bool?> intersectionValidate({required BuildContext context, required Map<String, dynamic> map}) async{
+   return await _apiUtil.intersectionValidate(context: context, map: map);
+  }
+
 
 
 

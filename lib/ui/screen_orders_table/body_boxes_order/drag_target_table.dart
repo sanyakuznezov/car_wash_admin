@@ -105,6 +105,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             _statusCode=0;
                           }
                           showMaterialModalBottomSheet(
+                            backgroundColor: Colors.white,
                             context: context,
                             builder: (context) => ContainerBottomSheet(
                               statusCode: _statusCode!,

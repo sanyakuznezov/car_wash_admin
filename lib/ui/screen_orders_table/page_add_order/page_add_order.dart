@@ -9,20 +9,34 @@ import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
+import 'package:car_wash_admin/ui/screen_auth/splash_screen.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../global_data.dart';
+
+
+
+ Map<String,dynamic> _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
+ 'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
+   'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
+   'ServicesList':[]};
+ String _surName='';
+ String _lastName='';
+ String _patronymicName='';
 
 
  late ValueNotifier<ModelCalculatePrice> _notifier;
@@ -51,6 +65,8 @@ class PageAddOrder extends StatefulWidget{
   String? time;
   int timeStartWash;
   int timeEndWash;
+  bool isClose=false;
+  bool isVisibleFAB=true;
 
   @override
   StatePageAddOrder createState() {
@@ -68,16 +84,26 @@ class PageAddOrder extends StatefulWidget{
 
   @override
   Widget build(BuildContext context) {
-
+    if(widget.isClose){
+      Navigator.of(context, rootNavigator: true).pop('dialog');
+    }
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.isVisibleFAB?FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          showMaterialModalBottomSheet(
+              backgroundColor: Colors.white,
+              context: context,
+              builder: (context) => ContainerAddOrder(
+                onAccept: (int? i) {
+                  _validateTime(map: _order, context: context);
+                  //_addOrder(map: _order, context: context);
+              },));
+
         },
         child: const Icon(Icons.send),
         backgroundColor: AppColors.colorFAB,
-      ),
+      ):null,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -111,10 +137,10 @@ class PageAddOrder extends StatefulWidget{
                         ),
 
                         Align(
-                          alignment: Alignment.centerRight,
-                          child: SizedBox(
-                            height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
-                              child: SvgPicture.asset('assets/flag_1.svg'))
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                                height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
+                                child: SvgPicture.asset('assets/flag_1.svg'))
                         )
                       ],
                     ),
@@ -122,7 +148,7 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-             ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
+            ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
             ItemCar(),
             ItemClient(),
             ItemListWork(),
@@ -142,6 +168,11 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
+    print('post ${widget.post} date ${widget.date} startTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[0])} endTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[1])}');
+    _order.update('post', (value) => widget.post);
+    _order.update('date', (value) => widget.date);
+    _order.update('startTime', (value) =>TimeParser.parseHourForTimeLine(widget.time!.split('-')[0]));
+    _order.update('endTime', (value) => TimeParser.parseHourForTimeLine(widget.time!.split('-')[1]));
     _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
         .onError((error, stackTrace){
       setState(() {
@@ -155,6 +186,131 @@ class PageAddOrder extends StatefulWidget{
   void dispose() {
     super.dispose();
     _notifier.dispose();
+  }
+
+  Future<void> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
+    showLoaderDialog(context);
+    final result= await RepositoryModule.userRepository().intersectionValidate(map: map, context: context)
+        .catchError((error){
+      print('ERROR widget time $error');
+      setState(() {
+        widget.isClose=true;
+      });
+    });
+
+      if(result!=null){
+         if(result){
+           _order.update('clientFullname', (value) =>'$_surName $_patronymicName $_lastName');
+           _order.update('ComplexesList', (value) => _idComplexList);
+           _order.update('ServicesList', (value) => _idServiceList);
+           _addOrder(map: map, context: context);
+         }else{
+           setState(() {
+             widget.isClose=true;
+           });
+           Fluttertoast.showToast(
+               msg: "Данное время уже занято...",
+               toastLength: Toast.LENGTH_SHORT,
+               gravity: ToastGravity.CENTER,
+               timeInSecForIosWeb: 1,
+               backgroundColor: Colors.red,
+               textColor: Colors.black,
+               fontSize: 16.0
+           );
+         }
+      }else{
+        print('RESuLT time NULL');
+        setState(() {
+          widget.isClose=true;
+        });
+        Fluttertoast.showToast(
+            msg: "Ошибка при проверке времени заказа...",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+      }
+
+
+  }
+
+
+  Future<void> _addOrder({required Map<String,dynamic> map,required BuildContext context}) async{
+    final result= await RepositoryModule.userRepository().addOrder(map: map, context: context)
+        .catchError((error){
+          print('ERROR widget order $error');
+
+    });
+    if(result!=null){
+      if(result){
+        setState(() {
+          widget.isClose=true;
+          widget.isVisibleFAB=false;
+        });
+        Fluttertoast.showToast(
+            msg: "Заказ успешно опубликован",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+
+      } else{
+        setState(() {
+          widget.isClose=true;
+        });
+        Fluttertoast.showToast(
+            msg: "Ошибка создания заказа....",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+      }
+    }else{
+      setState(() {
+        widget.isClose=true;
+      });
+      Fluttertoast.showToast(
+          msg: "Ошибка создания заказа....",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.black,
+          fontSize: 16.0
+      );
+      print('RESuLT order NULL');
+    }
+
+
+
+  }
+
+  showLoaderDialog(BuildContext context){
+    AlertDialog alert=AlertDialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      content: Image.asset(
+        "assets/car_wash.gif",
+        height: SizeUtil.getSize(8, GlobalData.sizeScreen!),
+        width: SizeUtil.getSize(8, GlobalData.sizeScreen!),
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context:context,
+      builder:(BuildContext context){
+        return alert;
+      },
+    );
   }
 
 
@@ -351,6 +507,11 @@ class _ItemPriceState extends State<ItemPrice> {
      child: ValueListenableBuilder<ModelCalculatePrice>(
        valueListenable: _notifier,
        builder: (context,snapshot,widget) {
+         if(snapshot!=null){
+           _order.update('totalPrice', (value) => snapshot.totalPrice);
+           _order.update('sale', (value) => snapshot.sale);
+           _order.update('workTime', (value) => snapshot.workTime);
+         }
          return Column(
            children: [
              Container(
@@ -917,7 +1078,9 @@ class _ItemClientState extends State<ItemClient> {
                                               .sizeScreen!)),
                                   border: InputBorder.none),
                               onChanged: (text) {
-
+                                   if(text.isNotEmpty){
+                                     _order.update('clientPhone', (value) => text);
+                                   }
                                 }
 
                             ),
@@ -973,7 +1136,9 @@ class _ItemClientState extends State<ItemClient> {
                                                 .sizeScreen!)),
                                     border: InputBorder.none),
                                 onChanged: (text) {
-
+                                      if(text.isNotEmpty){
+                                        _lastName=text;
+                                      }
                                 }
 
                             ),
@@ -1030,7 +1195,9 @@ class _ItemClientState extends State<ItemClient> {
                                                 .sizeScreen!)),
                                     border: InputBorder.none),
                                 onChanged: (text) {
-
+                                    if(text.isNotEmpty){
+                                      _surName=text;
+                                    }
                                 }
 
                             ),
@@ -1087,7 +1254,9 @@ class _ItemClientState extends State<ItemClient> {
                                                 .sizeScreen!)),
                                     border: InputBorder.none),
                                 onChanged: (text) {
-
+                                     if(text.isNotEmpty){
+                                       _patronymicName=text;
+                                     }
                                 }
 
                             ),
@@ -1260,6 +1429,7 @@ class _ItemCarState extends State<ItemCar> {
                                  }else if(_typeCar=='Иное'){
                                    _typeCarInt=5;
                                  }
+                                 _order.update('carType', (value) => _typeCarInt);
                                  _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                });
                              },
@@ -1306,6 +1476,11 @@ class _ItemCarState extends State<ItemCar> {
                                    maxLength: 6,
                                    controller: numCarController,
                                    textAlign: TextAlign.center,
+                                   onChanged: (text){
+                                     if(text.isNotEmpty){
+                                       _order.update('carNumber', (value) => text);
+                                     }
+                                   },
                                    decoration: InputDecoration(
                                      contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                      border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
@@ -1319,6 +1494,11 @@ class _ItemCarState extends State<ItemCar> {
                                  child: TextField(
                                    maxLength: 3,
                                    controller: regionCarController,
+                                   onChanged: (text){
+                                     if(text.isNotEmpty){
+                                       _order.update('carRegion', (value) => text);
+                                     }
+                                   },
                                    keyboardType: TextInputType.number,
                                    textAlign: TextAlign.center,
                                    decoration: InputDecoration(
@@ -1373,6 +1553,7 @@ class _ItemCarState extends State<ItemCar> {
                                  setState(() {
                                    _idBrand=id;
                                    _brandCar=brand;
+                                   _order.update('carBrandId', (value) => _idBrand);
                                  });
                             },)));
                          },
@@ -1416,9 +1597,11 @@ class _ItemCarState extends State<ItemCar> {
                        child: GestureDetector(
                          onTap: (){
                            if(_brandCar!='.....'){
-                             Navigator.push(context, SlideTransitionLift(SearchBrand.model(id:_idBrand!,onSelected: (id,model){
+                             Navigator.push(context, SlideTransitionLift(SearchBrand.model(
+                                 id:_idBrand!,onSelected: (id,model){
                                setState(() {
                                  _modelCar=model;
+                                 _order.update('carModelId', (value) => id);
                                });
                              })));
                            }else{
@@ -1474,13 +1657,35 @@ class _ItemCarState extends State<ItemCar> {
                        child: GestureDetector(
                          onTap: (){
                            showMaterialModalBottomSheet(
-                             backgroundColor: Colors.transparent,
+                             backgroundColor: Colors.white,
                                context: context,
                                builder: (context) => BottomSheetColorContent(
                                  onColorCar: (color,index){
                                     setState(() {
                                       _index=index;
                                       _colorCar=color!;
+                                      if(_index==0) {
+                                        _order.update('color', (value) => 'Черный');
+                                      }else if(_index==1){
+                                        _order.update('color', (value) => 'Белый');
+                                      }else if(_index==2){
+                                        _order.update('color', (value) => 'Серый');
+                                      }else if(_index==3){
+                                        _order.update('color', (value) => 'Красный');
+                                      }else if(_index==4){
+                                        _order.update('color', (value) => 'Синий');
+                                      }else if(_index==5){
+                                        _order.update('color', (value) => 'Желтый');
+                                      }else if(_index==6){
+                                        _order.update('color', (value) => 'Фиолетовый');
+                                      }else if(_index==7){
+                                        _order.update('color', (value) => 'Зеленый');
+                                      }else if(_index==8){
+                                        _order.update('color', (value) => 'Коричневый');
+                                      }else if(_index==9){
+                                        _order.update('color', (value) => 'Оранжевый');
+                                      }
+
                                     });
                                },));
                          },
@@ -1581,13 +1786,15 @@ class _ItemDateState extends State<ItemDate> {
                         ),),
                       onTap: (){
                          showMaterialModalBottomSheet(
-                           backgroundColor: Colors.transparent,
+                           backgroundColor: Colors.white,
                              context: context, builder:
                          (context)=>ContainerBottomSheetEditTime(
                            onTimeSelect: (tStart,tEnd){
                              setState(() {
                                _timeStart=tStart;
                                _timeEnd=tEnd;
+                               _order.update('startTime', (value) => TimeParser.parseHourForTimeLine(_timeStart!));
+                               _order.update('endTime', (value) =>  TimeParser.parseHourForTimeLine(_timeEnd!));
                              });
                            },
                            time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));

@@ -85,4 +85,12 @@ class ApiUtil{
       return list;
     }
 
+    Future<bool?> addOrder({required Map<String,dynamic> map,required BuildContext context})async{
+       return await _mainServiseApi.addOrder(map: map, context: context);
+
+    }
+    Future<bool?> intersectionValidate({required BuildContext context,required Map<String,dynamic> map})async{
+       return await _mainServiseApi.intersectionValidate(context: context, map: map);
+    }
+
 }

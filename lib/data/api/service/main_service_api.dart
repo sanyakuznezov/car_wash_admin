@@ -220,16 +220,12 @@ class MainServiseApi{
              sendTimeout: 5000,
              receiveTimeout: 3000,
              contentType: 'application/x-www-form-urlencoded',
-             //   headers: {
-             //     HttpHeaders.contentTypeHeader: "application/json",
-             //   },
            )
        ).catchError((error){
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
            backgroundColor: Colors.red,
            content: Text('Ошибка получения данных о стоимости...'),));
        });
-       print('Result ${result.data['totalPrice']}');
        return ModelCalculatePriceApi.fromApi(map:result.data);
      }
 
@@ -270,6 +266,125 @@ class MainServiseApi{
 
       return null;
     }
+
+
+    Future<bool?> addOrder({required Map<String,dynamic> map,required BuildContext context}) async{
+      if(await StateNetwork.initConnectivity()==2){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Colors.red,
+      content: Text('Отсутствует подключение к сети...'),));
+      }else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      final value = {
+      'cwId': data['cwid'],
+      'pId': data['pid'],
+        'token': data['token'],
+        'date':map['date'],
+        'post':map['post'],
+        'startTime':map['startTime'],
+        'endTime':map['endTime'],
+        'carType':map['carType'],
+        'carNumber':map['carNumber'],
+        'carRegion':map['carRegion'],
+        'color':map['color'],
+        'carBrandId':map['carBrandId'],
+        'carModelId':map['carModelId'],
+        'clientFullname':map['clientFullname'],
+        'clientPhone':map['clientPhone'],
+        'totalPrice':map['totalPrice'],
+        'sale':map['sale'],
+        'workTime':map['workTime'],
+        'status':map['status'],
+        'adminComment':map['adminComment'],
+        'clientComment':map['clientComment'],
+        'ComplexesList':map['ComplexesList'].join(','),
+        'ServicesList':map['ServicesList'].join(',')
+      };
+
+      try {
+        final result = await _dio
+                    .post('orders/create',
+                        data: value,
+                        options: Options(
+                          sendTimeout: 5000,
+                          receiveTimeout: 3000,
+                  contentType: 'application/x-www-form-urlencoded',
+                ));
+        return result.data['result'];
+      }on DioError catch (e) {
+        if(e.response!=null){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('${e.response!.data['errors']['startTime']==null?e.response!.data['errors']['post']:e.response!.data['errors']['startTime']}'),
+          ));
+          return false;
+        }
+      }
+
+    }
+
+    return null;
+  }
+
+
+
+  Future<bool?> intersectionValidate({required BuildContext context,required Map<String,dynamic> map})async{
+    if(await StateNetwork.initConnectivity()==2){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    }else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      final value = {
+        'cwId': data['cwid'],
+        'pId': data['pid'],
+        'orderId': null,
+        'date':map['date'],
+        'startTime':map['startTime'],
+        'endTime':map['endTime']
+      };
+      try {
+        final result=await _dio.post(
+                  'common/validate-order-time',
+                  data: value,
+                  options: Options(
+                    sendTimeout: 5000,
+                    receiveTimeout: 3000,
+                    contentType: 'application/x-www-form-urlencoded',
+                  ));
+        if(result.data['intersection']!=null){
+          if(!result.data['intersection']){
+            return true;
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Данное время уже занято...'),));
+            return false;
+          }
+        }
+
+      }on DioError catch (e) {
+        if(e.response!=null){
+          if(e.response!.statusCode==400){
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Время начала и окончания совпадает'),
+            ));
+          }
+          return false;
+        }
+      }
+
+    }
+
+    return null;
+  }
+
+
+
+
 
 
   }

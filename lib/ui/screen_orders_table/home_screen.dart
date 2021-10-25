@@ -193,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           onPressed: () {
                                             DatePicker.showDatePicker(context,
                                                 showTitleActions: true,
-                                                minTime: DateTime.now(),
+                                                minTime: DateTime(2021, 6, 7),
                                                 maxTime: DateTime(2025, 6, 7), onChanged: (date) {
                                                 }, onConfirm: (date) {
                                                   setState(() {
