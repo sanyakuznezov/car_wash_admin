@@ -43,7 +43,6 @@ import '../../../global_data.dart';
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   List<ModelWorker> _listWorker=[];
-  List<ModelService> _listService=[ModelService(id: 1, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0)];
   int _typeCarInt =1;
   bool _isLoading=false;
 
@@ -496,8 +495,8 @@ class PageAddOrder extends StatefulWidget{
 
 class _ItemPriceState extends State<ItemPrice> {
 
-    String? _selWorkerString;
-    ModelWorker? _modelWorker;
+    String? _selWorkerString='....';
+    ModelWorker? _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
 
 
   @override
@@ -689,8 +688,7 @@ class _ItemPriceState extends State<ItemPrice> {
                            future: RepositoryModule.userRepository().getWorkers(context: context),
                            builder: (context,value){
                                   if (value.hasData) {
-                                    _modelWorker = value.data![0];
-                                    _selWorkerString = '${value.data![0].lastname} ${value.data![0].firstname[0]}. ${value.data![0].patronymic[0]}.';
+
                                     return Expanded(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
@@ -714,9 +712,16 @@ class _ItemPriceState extends State<ItemPrice> {
                                                     SlideTransitionLift(
                                                         PageListWorkers(
                                                       onWorker: (data) {
-                                                        _modelWorker = data;
-                                                        _selWorkerString =
-                                                            '${data!.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
+                                                        setState(() {
+                                                          if(data==null){
+                                                            _selWorkerString='....';
+                                                            _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
+                                                          }else{
+                                                            _modelWorker = data;
+                                                            _selWorkerString ='${data.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
+                                                          }
+
+                                                        });
                                                       },
                                                       list: value.data,
                                                       selWorker: _modelWorker!,
@@ -796,10 +801,17 @@ class _ItemPriceState extends State<ItemPrice> {
 
   bool _isEdit=false;
   List<ModelServiceFromCalculate> _calculateList=[];
+  List<ModelService> _listService=[];
   int i=-2;
+  bool _loadData=true;
 
   @override
   Widget build(BuildContext context) {
+    if(_loadData){
+      _listService.add(ModelService(id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
+      _loadData=false;
+    }
+
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
      child: Column(
@@ -870,19 +882,20 @@ class _ItemPriceState extends State<ItemPrice> {
                          alignment: Alignment.centerRight,
                          child: GestureDetector(
                            onTap: (){
-                             Navigator.push(context, SlideTransitionLift(PageListServices(carType: _typeCarInt,listAlreadySelected: _listService,
+                             Navigator.push(context, SlideTransitionLift(PageListServices(
+                               carType: _typeCarInt,listAlreadySelected: _listService,
                              onListServices: (list){
-                               setState(() {
-                                 list!.forEach((element) {
-                                   _listService.add(element);
-                                   if(element.type=='complex'){
+                                 setState(() {
+                                   list!.forEach((element) {
+                                     if(element.type=='complex'){
                                        _idComplexList.add(element.id);
-                                   }else if(element.type=='service'){
-                                      _idServiceList.add(element.id);
-                                   }
+                                     }else if(element.type=='service'){
+                                       _idServiceList.add(element.id);
+                                     }
+                                 });
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
-                               });
+
                              },)));
                            },
                            child: Icon(
@@ -909,14 +922,16 @@ class _ItemPriceState extends State<ItemPrice> {
                         _calculateList.add(element);
                       });
                     }
+
                     return Column(
                         children:
                         List.generate(_calculateList.length, (index){
                           return Work(
+                            i: index,
                             isLoad: _isLoading,
                             modelCalculatePrice:_calculateList[index],
                             modelService: _listService[index],isEdit:_isEdit,
-                            onRemove: (model){
+                            onRemove: (model,i){
                               setState(() {
                                 _listService.remove(model);
                                 if(model!.type=='complex'){
@@ -924,9 +939,11 @@ class _ItemPriceState extends State<ItemPrice> {
                                 }else if(model.type=='service'){
                                   _idServiceList.remove(model.id);
                                 }
+
                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
-                                if(_calculateList.length==1){
+                                if(_calculateList.length==2){
                                   _isEdit=false;
+
                                 }
                               });
                             },);
@@ -1908,9 +1925,10 @@ class _ItemDateState extends State<ItemDate> {
    ModelService modelService;
    bool isEdit;
    bool isLoad=false;
+   int i;
    ModelServiceFromCalculate modelCalculatePrice;
-   var onRemove=(ModelService? model)=>model;
-   Work({required this.isLoad,required this.modelCalculatePrice,required this.modelService,required this.isEdit,required this.onRemove});
+   var onRemove=(ModelService? model,int index)=>model,index;
+   Work({required this.i,required this.isLoad,required this.modelCalculatePrice,required this.modelService,required this.isEdit,required this.onRemove});
 
 
   @override
@@ -1950,7 +1968,7 @@ class _WorkState extends State<Work> {
                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
                            child: GestureDetector(
                              onTap: (){
-                               widget.onRemove(widget.modelService);
+                               widget.onRemove(widget.modelService,widget.i);
                              },
                              child: Container(
                                width: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),

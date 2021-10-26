@@ -16,6 +16,7 @@ class PageListWorkers extends StatefulWidget{
    List<ModelWorker>? list;
    ModelWorker selWorker;
 
+
   @override
   State<PageListWorkers> createState() => _PageListWorkersState();
 
@@ -25,10 +26,24 @@ class PageListWorkers extends StatefulWidget{
 class _PageListWorkersState extends State<PageListWorkers> {
 
   ModelWorker? _selWorker;
+  bool _isSelected=false;
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      floatingActionButton: _isSelected?FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+          Navigator.pop(context);
+          if(_selWorker!=null){
+            widget.onWorker(_selWorker!);
+          }else{
+            widget.onWorker(null);
+          }
+        },
+        child: const Icon(Icons.check_outlined,color:Colors.indigo),
+        backgroundColor: Colors.white,
+      ):null,
       backgroundColor: AppColors.colorBackgrondProfile,
       body: Column(
         children: [
@@ -47,9 +62,6 @@ class _PageListWorkersState extends State<PageListWorkers> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
-                            if(_selWorker!=null){
-                              widget.onWorker(_selWorker!);
-                            }
 
                           },
                           child: Icon(
@@ -84,8 +96,19 @@ class _PageListWorkersState extends State<PageListWorkers> {
             child: Column(
               children: List.generate(widget.list!.length, (index){
                 return ItemList(modelWorker: widget.list![index],
-                    onSelect: (data){
-                  //
+                    onSelect: (data,selected){
+                      setState(() {
+                        if(selected){
+                          _isSelected=true;
+                          _selWorker=data;
+                        }else{
+                          _selWorker=null;
+                          _isSelected=true;
+                        }
+                      });
+
+
+
                 },
                     alreadySelected: widget.selWorker);
               }),
@@ -101,9 +124,10 @@ class _PageListWorkersState extends State<PageListWorkers> {
  class ItemList extends StatefulWidget{
 
 
-   var onSelect=(ModelWorker? modelWorker)=>modelWorker;
+   var onSelect=(ModelWorker? modelWorker,bool selected)=>modelWorker,selected;
    ModelWorker modelWorker;
    ModelWorker alreadySelected;
+   bool isSelect=false;
 
 
 
@@ -115,28 +139,35 @@ class _PageListWorkersState extends State<PageListWorkers> {
 
  class _ItemListState extends State<ItemList> {
 
+
    bool _isAlreadySelected=false;
    bool _isSelect=false;
 
    @override
    Widget build(BuildContext context) {
-     if(widget.alreadySelected.id==widget.modelWorker.id){
-         _isAlreadySelected=true;
+     if(!_isAlreadySelected){
+       _isAlreadySelected=true;
+       if(widget.alreadySelected.id==widget.modelWorker.id){
+         _isSelect=true;
        }
+     }
+
+
 
      return GestureDetector(
        onTap: (){
-         if(!_isAlreadySelected){
            setState(() {
+             print('SEECTED 1 ${_isSelect}');
              if(_isSelect){
-               _isSelect=false;
-               widget.onSelect(widget.modelWorker);
+             _isSelect=false;
+               widget.onSelect(widget.modelWorker,_isSelect);
              }else{
                _isSelect=true;
-               widget.onSelect(widget.modelWorker);
+               widget.onSelect(widget.modelWorker,_isSelect);
              }
+             print('SEECTED 2 ${_isSelect}');
            });
-         }
+
 
 
        },
@@ -210,8 +241,7 @@ class _PageListWorkersState extends State<PageListWorkers> {
                    ),
                  ),
                  Expanded(
-                     child: _isSelect||_isAlreadySelected
-                         ? Align(
+                     child: _isSelect? Align(
                            alignment: Alignment.centerRight,
                            child: Container(
                            height: SizeUtil.getSize(3.0, GlobalData.sizeScreen!),

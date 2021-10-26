@@ -16,6 +16,7 @@ class PageListServices extends StatefulWidget{
   int carType;
   List<ModelService> listAlreadySelected;
   var onListServices=(List<ModelService>? list)=>list;
+  bool loadList=false;
 
 
   @override
@@ -33,7 +34,9 @@ class _PageListServicesState extends State<PageListServices> {
   List<ModelService> _mainList=[];
   List<ModelService> _searchList=[];
   List<ModelService> _selList=[];
+  List<ModelService> _selListAlready=[];
   bool? _isSearching;
+  bool _searhVisible=false;
   bool _isDetailing=false;
   int _serviceType=2;
   bool _isLoading=true;
@@ -42,6 +45,11 @@ class _PageListServicesState extends State<PageListServices> {
 
   @override
   Widget build(BuildContext context) {
+    if(!widget.loadList){
+      _selListAlready=widget.listAlreadySelected;
+      widget.loadList=false;
+    }
+    print('List already ${_selListAlready.length}');
     return Scaffold(
         floatingActionButton: _isSelected?FloatingActionButton(
           onPressed: () {
@@ -93,7 +101,13 @@ class _PageListServicesState extends State<PageListServices> {
                           Align(alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap:(){
-
+                             setState(() {
+                               if(!_searhVisible){
+                                 _searhVisible=true;
+                               }else{
+                                 _searhVisible=false;
+                               }
+                             });
                               },
                               child: Icon(Icons.search,color: AppColors.colorIndigo),
                             ),
@@ -287,12 +301,53 @@ class _PageListServicesState extends State<PageListServices> {
                   ],
                 )):Container(
             color: Colors.white,
-            child: Stack(
-                children:[
-                  Padding(
-                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
-                        1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
-                        1.5, GlobalData.sizeScreen!), 0),
+            child: Column(
+              children: [
+                Stack(
+                    children:[
+                      Padding(
+                        padding:EdgeInsets.all(SizeUtil.getSize(
+                            1.5, GlobalData.sizeScreen!)),
+                        child:
+                        Text('${getType(widget.carType)}; ${getTypeSer(_selType)}; ${getTypeVid(_selVid)}',
+                        style: TextStyle(
+                            color: AppColors.textColorPhone,
+                            fontWeight: FontWeight.bold,
+                            fontSize: SizeUtil.getSize(1.8,
+                                GlobalData.sizeScreen!)),
+                        ),),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                _isSwithSearch=false;
+                              });
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(
+                                  1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                  1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                  2.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                  1.0, GlobalData.sizeScreen!)),
+                              child: Icon(Icons.add,color: AppColors.colorIndigo),
+                            )),)
+                    ]
+                ),
+                Padding(
+                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
+                      1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
+                      1.5, GlobalData.sizeScreen!), 0),
+                  child: _searhVisible?Container(
+                    margin: EdgeInsets.all(SizeUtil.getSize(
+                        1.3,
+                        GlobalData.sizeScreen!)),
+                    decoration: BoxDecoration(
+                        color: AppColors.colorBackgrondProfile,
+                        borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                            1.0,
+                            GlobalData.sizeScreen!))
+                    ),
                     child: TextField(
                       style: TextStyle(
                           color: AppColors.textColorPhone,
@@ -301,7 +356,7 @@ class _PageListServicesState extends State<PageListServices> {
                               GlobalData.sizeScreen!)),
                       controller: _searchController,
                       decoration: InputDecoration(
-                          hintText: 'Седан; Мойка; Комплекс',
+                          hintText: 'Поиск услуги',
                           hintStyle: TextStyle(
                               color: AppColors.textColorHint
                           ),
@@ -321,27 +376,11 @@ class _PageListServicesState extends State<PageListServices> {
                         search(text);
                       },
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            _isSwithSearch=false;
-                          });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(SizeUtil.getSize(
-                              1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                              1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                              2.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                              1.0, GlobalData.sizeScreen!)),
-                          child: Icon(Icons.add,color: AppColors.colorIndigo),
-                        )),)
-                ]
+                  ):Container(),
+                )
+              ],
             ),
-          ),
-              _isLoading?Center(child: Padding(
+          ), _isLoading?Center(child: Padding(
                 padding: EdgeInsets.all(SizeUtil.getSize(
                     3.0, GlobalData.sizeScreen!)),
                 child: CircularProgressIndicator(
@@ -353,12 +392,14 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_searchList.length, (index) {
-                    return ItemList(modelService:_searchList[index],listAlreadySelected: widget.listAlreadySelected,
-                        onSelect: (value,remove) {
+                    return ItemList(i:index,modelService:_searchList[index],listAlready: _selListAlready,
+                        onSelect: (value,remove,i) {
                           if(!remove){
-                            _selList.add(value!);
+                            _selListAlready.add(value!);
+                            _selList.add(value);
                           }else{
-                            _selList.remove(value);
+                            _selListAlready.removeAt(i+1);
+                            _selList.removeAt(i);
                           }
                           setState(() {
                             if(_selList.length>0){
@@ -377,21 +418,24 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_mainList.length, (index) {
-
-                    return ItemList(modelService:_mainList[index],listAlreadySelected: widget.listAlreadySelected,
-                        onSelect: (value,remove) {
+                    return ItemList(i:index,modelService:_mainList[index],listAlready: _selListAlready,
+                        onSelect: (value,remove,i) {
                       if(!remove){
-                        _selList.add(value!);
+                        _selListAlready.add(value!);
+                        _selList.add(value);
+                        print('add item index ${i} ${_selList[i].name}');
                       }else{
-                        _selList.remove(value);
+                        _selListAlready.removeAt(i+1);
+                        _selList.removeAt(i);
+                        print('remove item index $i ${value!.name}');
                       }
                       setState(() {
-                        if(_selList.length>0){
-                          _isSelected=true;
-                        }else{
-                          _isSelected=false;
-                        }
-                        print('$_isSelected');
+                        _isSelected=true;
+                        // if(_selList.length>0){
+                        //   _isSelected=true;
+                        // }else{
+                        //   _isSelected=false;
+                        // }
                       });
                     });
                   }),
@@ -403,6 +447,38 @@ class _PageListServicesState extends State<PageListServices> {
           ),
         ) );
   }
+  
+  getType(int id){
+  if(id==1){
+    return 'Седан';
+  }else if(id==2){
+    return 'Кроссовер';
+  }else if(id==3){
+    return 'Внедорожник';
+  }else if(id==3){
+    return 'Микроавтобус';
+  }else if(id==4){
+    return 'Иное';
+  }
+ 
+  }
+  getTypeSer(int type){
+    if(type==0){
+      return 'Мойка';
+    }else{
+      return 'Дитейлинг';
+    }
+  }
+
+  getTypeVid(int type){
+      if(type==0){
+        return 'Комплекс';
+      }else{
+        return 'Услуга';
+      }
+  }
+  
+  
   void search(String text) {
     _searchList.clear();
     if (_isSearching != null) {
@@ -443,13 +519,14 @@ class _PageListServicesState extends State<PageListServices> {
  class ItemList extends StatefulWidget{
 
 
-   var onSelect=(ModelService? modelService,bool isRemove)=>modelService,index,isRemove;
+   var onSelect=(ModelService? modelService,bool isRemove,int index)=>modelService,index,isRemove;
    ModelService modelService;
-   List<ModelService> listAlreadySelected;
+   List<ModelService> listAlready;
+   int i;
 
 
 
-   ItemList({required this.modelService,required this.onSelect,required this.listAlreadySelected});
+   ItemList({required this.i,required this.modelService,required this.onSelect,required this.listAlready});
 
    @override
    State<ItemList> createState() => _ItemListState();
@@ -462,27 +539,26 @@ class _PageListServicesState extends State<PageListServices> {
 
    @override
    Widget build(BuildContext context) {
-     widget.listAlreadySelected.forEach((element) {
+     if(!_isAlreadySelected){
+       _isAlreadySelected=true;
+       widget.listAlready.forEach((element) {
          if(element.id==widget.modelService.id){
-           _isAlreadySelected=true;
+           _isSelect=true;
          }
-     });
+       });
+     }
      return GestureDetector(
        onTap: (){
-         if(!_isAlreadySelected){
              setState(() {
                if(_isSelect){
                  _isSelect=false;
-                 widget.onSelect(widget.modelService,true);
+                 widget.onSelect(widget.modelService,true,widget.i);
                }else{
                  _isSelect=true;
-                 widget.onSelect(widget.modelService,false);
+                 widget.onSelect(widget.modelService,false,widget.i);
                }
              });
-           }
-
-
-       },
+             },
        child: Container(
          color: Colors.white,
          padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,
@@ -511,7 +587,7 @@ class _PageListServicesState extends State<PageListServices> {
                             color: AppColors.colorText22,
                             fontSize:
                                 SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
-                    _isSelect||_isAlreadySelected
+                    _isSelect
                         ? Container(
                       height: SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
                             width: SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
