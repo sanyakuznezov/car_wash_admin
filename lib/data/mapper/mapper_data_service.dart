@@ -9,9 +9,18 @@ class MapperDataService{
 
   static ModelService fromApi(ModelServiceApi modelServiceApi){
 
-    return ModelService(id: modelServiceApi.id, type: modelServiceApi.type, name: modelServiceApi.name, isDetailing: modelServiceApi.isDetailing, price: modelServiceApi.price, time: modelServiceApi.time);
+    return ModelService(listServices:fromApiList(modelServiceApi.listServices),id: modelServiceApi.id, type: modelServiceApi.type, name: modelServiceApi.name, isDetailing: modelServiceApi.isDetailing, price: modelServiceApi.price, time: modelServiceApi.time);
   }
 
 
+  static  List<ModelItem> fromApiList(List<dynamic> list){
+
+    return  (list as List)
+        .map((x) => ModelItem(id:x['id'],name:x['name']))
+        .toList();
+  }
 
  }
+
+
+

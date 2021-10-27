@@ -191,7 +191,6 @@ class PageAddOrder extends StatefulWidget{
     showLoaderDialog(context);
     final result= await RepositoryModule.userRepository().intersectionValidate(map: map, context: context)
         .catchError((error){
-      print('ERROR widget time $error');
       setState(() {
         widget.isClose=true;
       });
@@ -401,7 +400,30 @@ class PageAddOrder extends StatefulWidget{
    }
 
 
-  class ItemComment extends StatelessWidget{
+  class ItemComment extends StatefulWidget{
+
+  @override
+  State<ItemComment> createState() => _ItemCommentState();
+}
+
+class _ItemCommentState extends State<ItemComment> {
+    TextEditingController? commentController;
+
+    @override
+  void dispose() {
+   super.dispose();
+   myFocusNodeComment.dispose();
+  }
+
+  @override
+  void initState() {
+   super.initState();
+   myFocusNodeComment=FocusNode();
+   commentController=TextEditingController();
+  }
+
+  late FocusNode myFocusNodeComment;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -437,7 +459,7 @@ class PageAddOrder extends StatefulWidget{
                    crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
+                  padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(3.0,GlobalData.sizeScreen!), 0, 0),
                   child: Text('.....',
                     style: TextStyle(
                         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
@@ -445,7 +467,7 @@ class PageAddOrder extends StatefulWidget{
                     ),),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0, SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                  padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.2,GlobalData.sizeScreen!), 0, SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
                   child: Text('Комментарий клиента',
                     style: TextStyle(
                         fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
@@ -462,15 +484,59 @@ class PageAddOrder extends StatefulWidget{
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
-                      child: Text('.....',
-                        style: TextStyle(
-                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
-                            color: AppColors.textColorPhone
-                        ),),
+                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                                padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                child: SizedBox(
+                                  height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
+                                  child: TextField(
+                                      textAlign: TextAlign.start,
+                                      focusNode: myFocusNodeComment,
+                                      style: TextStyle(
+                                          color: AppColors.textColorPhone,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: SizeUtil.getSize(1.8,
+                                              GlobalData.sizeScreen!)),
+                                      controller: commentController,
+                                      keyboardType: TextInputType.multiline,
+                                      textInputAction: TextInputAction.newline,
+                                      maxLines: 10,
+                                      maxLengthEnforced: true,
+                                      decoration: InputDecoration(
+                                          hintText: '.....',
+                                          contentPadding: EdgeInsets.all(
+                                              SizeUtil.getSize(
+                                                  1.5,
+                                                  GlobalData
+                                                      .sizeScreen!)),
+                                          border: InputBorder.none),
+                                      onChanged: (text) {
+                                        if(text.isNotEmpty){
+                                          _order.update('adminComment', (value) => text);
+                                        }
+                                      }
+
+                                  ),
+                                )
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              myFocusNodeComment.requestFocus();
+                            },
+                            child: Icon(
+                              Icons.edit,
+                              color: AppColors.colorBackgrondProfile,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0, SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0, 0, SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
                       child: Text('Комментарий персонала',
                         style: TextStyle(
                             fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
@@ -480,8 +546,7 @@ class PageAddOrder extends StatefulWidget{
                   ]))
         ]));
   }
-
-  }
+}
 
 
 
@@ -808,7 +873,7 @@ class _ItemPriceState extends State<ItemPrice> {
   @override
   Widget build(BuildContext context) {
     if(_loadData){
-      _listService.add(ModelService(id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
+      _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
       _loadData=false;
     }
 
@@ -939,7 +1004,6 @@ class _ItemPriceState extends State<ItemPrice> {
                                 }else if(model.type=='service'){
                                   _idServiceList.remove(model.id);
                                 }
-
                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                 if(_calculateList.length==2){
                                   _isEdit=false;
@@ -1994,11 +2058,11 @@ class _WorkState extends State<Work> {
            height: 1,
            color: AppColors.colorLine):Container(),
 
-       widget.modelService.isDetailing?Container(
+       widget.modelService.type=='complex'?Container(
          color: AppColors.colorBackgrondProfile,
          child: Padding(
            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
-           child: Text('Мойка ковриков, чистка передних сидений, полировка панели, чистка задних сидений',
+           child: Text('${getTextDetails(widget.modelService.listServices)}',
              textAlign: TextAlign.center,
              style: TextStyle(
              color: AppColors.textColorDark_100
@@ -2009,6 +2073,15 @@ class _WorkState extends State<Work> {
    );
 
   }
+
+   String getTextDetails(List<ModelItem> list){
+    String tetx='';
+     list.forEach((element) {
+         tetx+='${element.name}; ';
+     });
+     return tetx;
+  }
+
 }
 
   class BottomSheetColorContent extends StatefulWidget{

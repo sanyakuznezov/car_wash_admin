@@ -69,6 +69,11 @@ import '../../global_data.dart';
     return result;
   }
 
+  String _h='';
+  String _m='';
+  String _h1='';
+  String _m1='';
+
 
 
 
@@ -89,22 +94,19 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
 
   class _ContainerBottomSheetEditTimeState extends State<ContainerBottomSheetEditTime>{
 
-   String h='';
-   String m='';
-   String h1='';
-   String m1='';
+
    String _timeStart='';
    String _timeEnd='';
    bool _isValidate=true;
-
+   bool _edit=false;
 
    @override
   void initState() {
    super.initState();
-   h=widget.time.split('-')[0].split(':')[0];
-   m=widget.time.split('-')[0].split(':')[1];
-   m1=widget.time.split('-')[1].split(':')[1];
-   h1=widget.time.split('-')[1].split(':')[0];
+   _h=widget.time.split('-')[0].split(':')[0];
+   _m=widget.time.split('-')[0].split(':')[1];
+   _m1=widget.time.split('-')[1].split(':')[1];
+   _h1=widget.time.split('-')[1].split(':')[0];
 
   }
 
@@ -148,27 +150,30 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
             children: [
               TimeStart(widget.time,widget.timeStart,onTimeHour: (hour){
                 setState(() {
-                  h=hour!;
+                  _h=hour!;
+                  _edit=true;
                   _isValidate=true;
                 });
               },
               onTimeMin: (min){
                 setState(() {
-                  m=min!;
+                  _m=min!;
                   _isValidate=true;
                 });
 
               },),
-              TimeEnd(widget.time,h,m,
+              TimeEnd(widget.time,_h,_m,
               onTimeMin: (min){
-                m1=min!;
-                _isValidate=true;
-              },
-              onTimeHour: (hour){
-                h1=hour!;
+                _m1=min!;
                 _isValidate=true;
 
-              },)
+              },
+              onTimeHour: (hour){
+                _h1=hour!;
+                _isValidate=true;
+
+              },
+                  edit:_edit)
             ],
           ),
           SizedBox(
@@ -195,8 +200,8 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
               Expanded(
                   child: GestureDetector(
                     onTap: (){
-                      _timeEnd='$h1:$m1';
-                      _timeStart='$h:$m';
+                      _timeEnd='$_h1:$_m1';
+                      _timeStart='$_h:$_m';
                       if(_timeEnd==_timeStart){
                         _isValidate=false;
                         Navigator.pop(context);
@@ -286,6 +291,7 @@ class _TimeStartState extends State<TimeStart> {
                     options: CarouselOptions(
                       onPageChanged: (i,j){
                         widget.onTimeHour(hour.data![i]);
+
                       },
                       initialPage: getTHS(widget.time, hour.data!),
                         scrollDirection: Axis.vertical,
@@ -377,15 +383,16 @@ class _TimeStartState extends State<TimeStart> {
    String selM;
    var onTimeHour=(String? timeH)=>timeH;
    var onTimeMin=(String? timeM)=>timeM;
+   bool edit;
   
   @override
   State<TimeEnd> createState() => _TimeEndState();
-  TimeEnd(this.time, this.selH,this.selM,{required this.onTimeMin,required this.onTimeHour});
+  TimeEnd(this.time, this.selH,this.selM,{required this.edit,required this.onTimeMin,required this.onTimeHour});
 }
 
 class _TimeEndState extends State<TimeEnd> {
 
-
+   int _i=0;
 
 
   @override
@@ -407,11 +414,23 @@ class _TimeEndState extends State<TimeEnd> {
               future: TimeParser.getListTimeHourEnd(widget.selH),
               builder: (context,hour){
                 if(hour.hasData){
-
+                  _i=0;
+                  if(widget.selH!='24'){
+                    _i=1;
+                  }
+                  try {
+                    print('Time ${hour.data![getTHE('00:00-${widget.selH}:${widget.selM}', hour.data!)+_i]}');
+                    if(widget.edit){
+                      widget.onTimeHour(hour.data![getTHE('00:00-${widget.selH}:${widget.selM}', hour.data!)+_i]);
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
                   return CarouselSlider(
                     options: CarouselOptions(
                       onPageChanged: (i,k){
                         widget.onTimeHour(hour.data![i]);
+                        _i=0;
                       },
                         scrollDirection: Axis.vertical,
                         initialPage: getTHE(widget.time, hour.data!),
@@ -456,6 +475,7 @@ class _TimeEndState extends State<TimeEnd> {
               future: TimeParser.getListTimeMinuteEnd(),
               builder: (context,minutes){
                 if(minutes.hasData){
+                  widget.onTimeMin(minutes.data![getTME(widget.time,minutes.data!)]);
                   return CarouselSlider(
                     options: CarouselOptions(
                         onPageChanged: (i,k){

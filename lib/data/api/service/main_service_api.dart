@@ -176,7 +176,7 @@ class MainServiseApi{
        final value = {'cwId': data['cwid'],'pId': data['pid'],'carType':carType,'serviceType':serviceType,'isDetailing':isDetailing,'query':query};
        await new Future.delayed(const Duration(milliseconds: 500));
        final result=await _dio.post(
-           'services/list',
+           'services/info-services',
            data: value,
            options: Options(
              sendTimeout: 5000,

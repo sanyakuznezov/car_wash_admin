@@ -392,14 +392,25 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_searchList.length, (index) {
-                    return ItemList(i:index,modelService:_searchList[index],listAlready: _selListAlready,
-                        onSelect: (value,remove,i) {
+                    return ItemList(modelService:_searchList[index],listAlready: _selListAlready,
+                        onSelect: (value,remove) {
                           if(!remove){
                             _selListAlready.add(value!);
                             _selList.add(value);
                           }else{
-                            _selListAlready.removeAt(i+1);
-                            _selList.removeAt(i);
+                            _selList.remove(value);
+                            for(int i=0;_selListAlready.length>i;i++){
+                              if(_selListAlready[i].id==value!.id){
+                                _selListAlready.removeAt(i);
+                                break;
+                              }
+                            }
+                            for(int i=0;_selList.length>i;i++){
+                              if(_selList[i].id==value!.id){
+                                _selList.removeAt(i);
+                                break;
+                              }
+                            }
                           }
                           setState(() {
                             if(_selList.length>0){
@@ -418,16 +429,26 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_mainList.length, (index) {
-                    return ItemList(i:index,modelService:_mainList[index],listAlready: _selListAlready,
-                        onSelect: (value,remove,i) {
+                    return ItemList(modelService:_mainList[index],listAlready: _selListAlready,
+                        onSelect: (value,remove) {
                       if(!remove){
-                        _selListAlready.add(value!);
+                       _selListAlready.add(value!);
                         _selList.add(value);
-                        print('add item index ${i} ${_selList[i].name}');
+                        print('onSelect callback add ${value.name}');
                       }else{
-                        _selListAlready.removeAt(i+1);
-                        _selList.removeAt(i);
-                        print('remove item index $i ${value!.name}');
+                        print('onSelect callback remowe  ${value!.name}');
+                        for(int i=0;_selListAlready.length>i;i++){
+                          if(_selListAlready[i].id==value.id){
+                             _selListAlready.removeAt(i);
+                            break;
+                          }
+                        }
+                        for(int i=0;_selList.length>i;i++){
+                          if(_selList[i].id==value.id){
+                            _selList.removeAt(i);
+                            break;
+                          }
+                        }
                       }
                       setState(() {
                         _isSelected=true;
@@ -455,9 +476,9 @@ class _PageListServicesState extends State<PageListServices> {
     return 'Кроссовер';
   }else if(id==3){
     return 'Внедорожник';
-  }else if(id==3){
-    return 'Микроавтобус';
   }else if(id==4){
+    return 'Микроавтобус';
+  }else if(id==5){
     return 'Иное';
   }
  
@@ -519,14 +540,14 @@ class _PageListServicesState extends State<PageListServices> {
  class ItemList extends StatefulWidget{
 
 
-   var onSelect=(ModelService? modelService,bool isRemove,int index)=>modelService,index,isRemove;
+   var onSelect=(ModelService? modelService,bool isRemove)=>modelService,isRemove;
    ModelService modelService;
    List<ModelService> listAlready;
-   int i;
 
 
 
-   ItemList({required this.i,required this.modelService,required this.onSelect,required this.listAlready});
+
+   ItemList({required this.modelService,required this.onSelect,required this.listAlready});
 
    @override
    State<ItemList> createState() => _ItemListState();
@@ -549,13 +570,16 @@ class _PageListServicesState extends State<PageListServices> {
      }
      return GestureDetector(
        onTap: (){
+         print('onTap');
              setState(() {
                if(_isSelect){
                  _isSelect=false;
-                 widget.onSelect(widget.modelService,true,widget.i);
+                 widget.onSelect(widget.modelService,true);
+                 print('onTap false');
                }else{
                  _isSelect=true;
-                 widget.onSelect(widget.modelService,false,widget.i);
+                 widget.onSelect(widget.modelService,false);
+                 print('onTap true');
                }
              });
              },
