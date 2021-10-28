@@ -618,7 +618,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.totalPrice} ₽',
+                             child: !_isLoading?Text('${snapshot.totalPrice} RUB',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -661,7 +661,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.sale} ₽',
+                             child: !_isLoading?Text('${snapshot.sale} RUB',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -707,7 +707,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.totalPrice-snapshot.sale} ₽',
+                             child: !_isLoading?Text('${snapshot.totalPrice-snapshot.sale} RUB',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
@@ -872,10 +872,7 @@ class _ItemPriceState extends State<ItemPrice> {
 
   @override
   Widget build(BuildContext context) {
-    if(_loadData){
-      _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
-      _loadData=false;
-    }
+
 
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
@@ -951,12 +948,18 @@ class _ItemPriceState extends State<ItemPrice> {
                                carType: _typeCarInt,listAlreadySelected: _listService,
                              onListServices: (list){
                                  setState(() {
+                                   _idComplexList.clear();
+                                   _idServiceList.clear();
+                                   _listService.clear();
+                                   _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
                                    list!.forEach((element) {
                                      if(element.type=='complex'){
                                        _idComplexList.add(element.id);
                                      }else if(element.type=='service'){
                                        _idServiceList.add(element.id);
                                      }
+                                     _listService.add(element);
+                                     print('Add list page ${_listService.length}');
                                  });
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
@@ -987,7 +990,6 @@ class _ItemPriceState extends State<ItemPrice> {
                         _calculateList.add(element);
                       });
                     }
-
                     return Column(
                         children:
                         List.generate(_calculateList.length, (index){
@@ -995,7 +997,8 @@ class _ItemPriceState extends State<ItemPrice> {
                             i: index,
                             isLoad: _isLoading,
                             modelCalculatePrice:_calculateList[index],
-                            modelService: _listService[index],isEdit:_isEdit,
+                            modelService: _listService.isNotEmpty?_listService[index]:ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0),
+                            isEdit:_isEdit,
                             onRemove: (model,i){
                               setState(() {
                                 _listService.remove(model);
@@ -1124,8 +1127,7 @@ class _ItemClientState extends State<ItemClient> {
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                           child: SizedBox(
-                            height:
-                                SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
+                            height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
                             child: TextFormField(
                               validator: (value){
                                 _validatePhoneNumber(value!);
@@ -1551,12 +1553,15 @@ class _ItemCarState extends State<ItemCar> {
                              mainAxisAlignment: MainAxisAlignment.end,
                              children: [
                                Container(
-                                 height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
                                  child: TextField(
                                    maxLength: 6,
                                    controller: numCarController,
                                    textAlign: TextAlign.center,
+                                   style: TextStyle(
+                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                   ),
                                    onChanged: (text){
                                      if(text.isNotEmpty){
                                        _order.update('carNumber', (value) => text);
@@ -1570,10 +1575,14 @@ class _ItemCarState extends State<ItemCar> {
                                  ),
                                ),
                                Container(
-                                 height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
                                  child: TextField(
                                    maxLength: 3,
+                                   textAlign: TextAlign.center,
+                                   style: TextStyle(
+                                       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                   ),
                                    controller: regionCarController,
                                    onChanged: (text){
                                      if(text.isNotEmpty){
@@ -1581,7 +1590,6 @@ class _ItemCarState extends State<ItemCar> {
                                      }
                                    },
                                    keyboardType: TextInputType.number,
-                                   textAlign: TextAlign.center,
                                    decoration: InputDecoration(
                                      contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                        border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
@@ -2021,7 +2029,7 @@ class _WorkState extends State<Work> {
                      child: SvgPicture.asset('assets/frame.svg')):Row(
                        mainAxisAlignment: MainAxisAlignment.end,
                        children: [
-                         Text(!widget.isLoad?'${widget.modelCalculatePrice.price} ₽':'.... ₽',
+                         Text(!widget.isLoad?'${widget.modelCalculatePrice.price} RUB':'.... RUB',
                          textAlign: TextAlign.end,
                          style: TextStyle(
                              color: AppColors.textColorPhone,

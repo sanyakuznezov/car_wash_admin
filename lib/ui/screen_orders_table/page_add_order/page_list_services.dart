@@ -48,8 +48,15 @@ class _PageListServicesState extends State<PageListServices> {
     if(!widget.loadList){
       _selListAlready=widget.listAlreadySelected;
       widget.loadList=false;
+      _selList.clear();
+      _selListAlready.forEach((element) {
+        if(element.id!=0){
+          _selList.add(element);
+        }
+
+      });
+      print('Input list ${_selList.length}');
     }
-    print('List already ${_selListAlready.length}');
     return Scaffold(
         floatingActionButton: _isSelected?FloatingActionButton(
           onPressed: () {
@@ -197,12 +204,12 @@ class _PageListServicesState extends State<PageListServices> {
                               },
                               child: Container(
                                 margin: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
+                                    0.5, GlobalData.sizeScreen!)),
                                 padding: EdgeInsets.all(SizeUtil.getSize(
                                     1.5, GlobalData.sizeScreen!)),
                                 alignment: Alignment.center,
                                 width: SizeUtil.getSize(
-                                    15.0, GlobalData.sizeScreen!),
+                                    15.5, GlobalData.sizeScreen!),
                                 decoration: BoxDecoration(
                                     color: _selType==1?AppColors.colorIndigo:Colors.white,
                                     border: _selType==0?Border.all(width: 1,color: AppColors.textColorPhone):null,
@@ -397,6 +404,7 @@ class _PageListServicesState extends State<PageListServices> {
                           if(!remove){
                             _selListAlready.add(value!);
                             _selList.add(value);
+                            print('Add list ${_selList.length}');
                           }else{
                             _selList.remove(value);
                             for(int i=0;_selListAlready.length>i;i++){
@@ -413,12 +421,12 @@ class _PageListServicesState extends State<PageListServices> {
                             }
                           }
                           setState(() {
-                            if(_selList.length>0){
-                              _isSelected=true;
-                            }else{
-                              _isSelected=false;
-                            }
-                            print('$_isSelected');
+                            _isSelected=true;
+                            // if(_selList.length>0){
+                            //   _isSelected=true;
+                            // }else{
+                            //   _isSelected=false;
+                            // }
                           });
                         });
                   }),
@@ -434,17 +442,16 @@ class _PageListServicesState extends State<PageListServices> {
                       if(!remove){
                        _selListAlready.add(value!);
                         _selList.add(value);
-                        print('onSelect callback add ${value.name}');
+                       print('Add list ${_selList.length}');
                       }else{
-                        print('onSelect callback remowe  ${value!.name}');
                         for(int i=0;_selListAlready.length>i;i++){
-                          if(_selListAlready[i].id==value.id){
+                          if(_selListAlready[i].id==value!.id){
                              _selListAlready.removeAt(i);
                             break;
                           }
                         }
                         for(int i=0;_selList.length>i;i++){
-                          if(_selList[i].id==value.id){
+                          if(_selList[i].id==value!.id){
                             _selList.removeAt(i);
                             break;
                           }
@@ -570,16 +577,13 @@ class _PageListServicesState extends State<PageListServices> {
      }
      return GestureDetector(
        onTap: (){
-         print('onTap');
              setState(() {
                if(_isSelect){
                  _isSelect=false;
                  widget.onSelect(widget.modelService,true);
-                 print('onTap false');
                }else{
                  _isSelect=true;
                  widget.onSelect(widget.modelService,false);
-                 print('onTap true');
                }
              });
              },
@@ -606,7 +610,7 @@ class _PageListServicesState extends State<PageListServices> {
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('${widget.modelService.price} ₽',
+                    Text('${widget.modelService.price} RUB',
                         style: TextStyle(
                             color: AppColors.colorText22,
                             fontSize:
