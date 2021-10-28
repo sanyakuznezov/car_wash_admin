@@ -2,6 +2,7 @@
 
 
   import 'dart:async';
+import 'dart:developer';
 
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
@@ -959,7 +960,8 @@ class _ItemPriceState extends State<ItemPrice> {
                                        _idServiceList.add(element.id);
                                      }
                                      _listService.add(element);
-                                     print('Add list page ${_listService.length}');
+
+
                                  });
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
@@ -994,18 +996,34 @@ class _ItemPriceState extends State<ItemPrice> {
                         children:
                         List.generate(_calculateList.length, (index){
                           return Work(
+                            listServices: _listService,
                             i: index,
                             isLoad: _isLoading,
                             modelCalculatePrice:_calculateList[index],
                             modelService: _listService.isNotEmpty?_listService[index]:ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0),
                             isEdit:_isEdit,
-                            onRemove: (model,i){
+                            onRemove: (model){
                               setState(() {
-                                _listService.remove(model);
+                                for(int i=0;_listService.length>i;i++){
+                                  if(_listService[i].id==model!.id){
+                                    _listService.removeAt(i);
+                                    break;
+                                  }
+                                }
                                 if(model!.type=='complex'){
-                                  _idComplexList.remove(model.id);
+                                  for(int i=0;_idComplexList.length>i;i++){
+                                    if(_idComplexList[i]==model.id){
+                                      _idComplexList.removeAt(i);
+                                      break;
+                                    }
+                                  }
                                 }else if(model.type=='service'){
-                                  _idServiceList.remove(model.id);
+                                  for(int i=0;_idServiceList.length>i;i++){
+                                    if(_idServiceList[i]==model.id){
+                                      _idServiceList.removeAt(i);
+                                      break;
+                                    }
+                                  }
                                 }
                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                 if(_calculateList.length==2){
@@ -1995,12 +2013,13 @@ class _ItemDateState extends State<ItemDate> {
     class Work extends StatefulWidget{
 
    ModelService modelService;
+   List<ModelService> listServices;
    bool isEdit;
    bool isLoad=false;
    int i;
    ModelServiceFromCalculate modelCalculatePrice;
-   var onRemove=(ModelService? model,int index)=>model,index;
-   Work({required this.i,required this.isLoad,required this.modelCalculatePrice,required this.modelService,required this.isEdit,required this.onRemove});
+   var onRemove=(ModelService? model)=>model;
+   Work({required this.listServices,required this.i,required this.isLoad,required this.modelCalculatePrice,required this.modelService,required this.isEdit,required this.onRemove});
 
 
   @override
@@ -2024,7 +2043,7 @@ class _WorkState extends State<Work> {
              Expanded(
                child: Padding(
                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                 child: widget.modelService.price==0?Align(
+                 child: widget.modelCalculatePrice.price==0?Align(
                      alignment: Alignment.centerRight,
                      child: SvgPicture.asset('assets/frame.svg')):Row(
                        mainAxisAlignment: MainAxisAlignment.end,
@@ -2040,7 +2059,7 @@ class _WorkState extends State<Work> {
                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
                            child: GestureDetector(
                              onTap: (){
-                               widget.onRemove(widget.modelService,widget.i);
+                               widget.onRemove(widget.modelService);
                              },
                              child: Container(
                                width: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),
@@ -2061,16 +2080,17 @@ class _WorkState extends State<Work> {
            ],
          ),
        ),
-       !widget.modelService.isDetailing?Container(
+       widget.modelCalculatePrice.type!='complex'?Container(
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
            color: AppColors.colorLine):Container(),
 
-       widget.modelService.type=='complex'?Container(
+       widget.modelCalculatePrice.type=='complex'?Container(
+         width: MediaQuery.of(context).size.width,
          color: AppColors.colorBackgrondProfile,
          child: Padding(
            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
-           child: Text('${getTextDetails(widget.modelService.listServices)}',
+           child: Text('${getTextDetails(widget.listServices,widget.modelCalculatePrice.id)}',
              textAlign: TextAlign.center,
              style: TextStyle(
              color: AppColors.textColorDark_100
@@ -2082,11 +2102,18 @@ class _WorkState extends State<Work> {
 
   }
 
-   String getTextDetails(List<ModelItem> list){
+   String getTextDetails(List<ModelService> list,int id){
     String tetx='';
-     list.forEach((element) {
-         tetx+='${element.name}; ';
+    list.forEach((element) {
+         if(element.id==id){
+           element.listServices.forEach((el) {
+             tetx+='${el.name}; ';
+           });
+
+
+         }
      });
+
      return tetx;
   }
 

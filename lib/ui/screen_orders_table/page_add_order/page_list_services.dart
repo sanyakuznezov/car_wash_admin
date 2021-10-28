@@ -55,7 +55,7 @@ class _PageListServicesState extends State<PageListServices> {
         }
 
       });
-      print('Input list ${_selList.length}');
+
     }
     return Scaffold(
         floatingActionButton: _isSelected?FloatingActionButton(
