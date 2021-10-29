@@ -129,6 +129,19 @@ class TimeParser{
     return hour * 60 + minute;
   }
 
+  static parseTimeForApi(String time) {
+    int index=0;
+    String hour = time.split(':')[0];
+    int minute = int.parse(time.split(':')[1]);
+    GlobalData.timeSelect.forEach((element) {
+        if(element['time']==hour){
+          index=element['index'];
+        }
+    });
+    return index* 60 + minute;
+  }
+
+
   static parseHourEndCollision(double y,double timeStep,int bodyHeaght){
     var r=y/timeStep;
     var result=r+bodyHeaght/timeStep;
@@ -140,6 +153,20 @@ class TimeParser{
     int minute = int.parse(timeSplit.split(':')[1]);
     return hour * 60 + minute;
   }
+
+  static parseHouForWidget(String time){
+    String t='';
+    String hour = time.split(':')[0];
+    String minute = time.split(':')[1];
+    if(hour=='24'){
+      t='00:$minute';
+    }else{
+      t='$hour:$minute';
+    }
+    return t;
+  }
+
+
 
   static parseTimeStartFeedBack(double y,int timeStep){
     var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
@@ -195,14 +222,14 @@ class TimeParser{
     int currentTime=DateTime.now().hour;
     List<String> hours=[];
     int i=-1;
-    await Future.forEach(GlobalData.time_1, (String item) async {
+    await Future.forEach(GlobalData.timeSelect, (Map item) async {
       i++;
       if(now){
         if(currentTime<i){
-          hours.add(item.split(':')[0]);
+          hours.add(item['time']);
         }
       }else{
-        hours.add(item.split(':')[0]);
+        hours.add(item['time']);
       }
 
 
@@ -210,15 +237,11 @@ class TimeParser{
     return hours;
 
   }
-  static Future<List<String>> getListTimeHourEnd(String selTimeEnd) async{
+  static Future<List<String>> getListTimeHourEnd() async{
     List<String> hours=[];
     int i=-1;
-    int index=GlobalData.time_1.indexOf('$selTimeEnd:00');
-    await Future.forEach(GlobalData.time_1, (String item) async {
-      i++;
-      if(index<=i){
-        hours.add(item.split(':')[0]);
-      }
+    await Future.forEach(GlobalData.timeSelect, (Map item) async {
+        hours.add(item['time']);
     });
     return hours;
 

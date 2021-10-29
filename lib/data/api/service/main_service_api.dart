@@ -16,6 +16,7 @@ import 'package:car_wash_admin/utils/state_network.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MainServiseApi{
@@ -314,16 +315,27 @@ class MainServiseApi{
         return result.data['result'];
       }on DioError catch (e) {
         if(e.type==DioErrorType.receiveTimeout||e.type==DioErrorType.sendTimeout){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('Сервер не отвечает, повторите попытку'),
-          ));
+          Fluttertoast.showToast(
+              msg: "Сервер не отвечает, повторите попытку",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.black,
+              fontSize: 16.0
+          );
+
         }
         if(e.response!=null){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('${e.response!.data['errors']['startTime']==null?e.response!.data['errors']['post']:e.response!.data['errors']['startTime']}'),
-          ));
+          Fluttertoast.showToast(
+              msg: "${e.response!.data['errors']['startTime']==null?e.response!.data['errors']['post']:e.response!.data['errors']['startTime']}",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.black,
+              fontSize: 16.0
+          );
 
         }
         return false;
@@ -367,47 +379,78 @@ class MainServiseApi{
           if(!result.data['intersection']){
             return true;
           }else{
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Данное время уже занято...'),));
+            Fluttertoast.showToast(
+                msg: "Данное время уже занято...",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
             return false;
           }
         }
 
       }on DioError catch (e) {
         if(e.type==DioErrorType.receiveTimeout||e.type==DioErrorType.sendTimeout){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('Сервер не отвечает, повторите попытку'),
-          ));
+          Fluttertoast.showToast(
+              msg: "Сервер не отвечает, повторите попытку",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.black,
+              fontSize: 16.0
+          );
           return false;
         }
         if(e.response!=null){
           if(e.response!.statusCode==400){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Время начала и окончания совпадает'),
-            ));
+            Fluttertoast.showToast(
+                msg: "Время начала и окончания совпадает",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
           }
           if(e.response!.statusCode==403){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Нет доступа'),
-            ));
+            Fluttertoast.showToast(
+                msg: "Нет доступа",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
           }
 
           if(e.response!.statusCode==404){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Заказ не найден'),
-            ));
+            Fluttertoast.showToast(
+                msg: "Заказ не найден",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
           }
 
           if(e.response!.statusCode==500){
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('Ошибка сервера'),
-            ));
+            Fluttertoast.showToast(
+                msg: "Ошибка сервера",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
           }
 
           return false;

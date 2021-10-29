@@ -126,7 +126,55 @@ class _PageListServicesState extends State<PageListServices> {
                   )
                 ],
               ),
-          !_isSwithSearch?Container(
+              Container(
+                color: Colors.white,
+                child: Padding(
+                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
+                      1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
+                      1.5, GlobalData.sizeScreen!), 0),
+                  child: _searhVisible?Container(
+                    margin: EdgeInsets.all(SizeUtil.getSize(
+                        1.3,
+                        GlobalData.sizeScreen!)),
+                    decoration: BoxDecoration(
+                        color: AppColors.colorBackgrondProfile,
+                        borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                            1.0,
+                            GlobalData.sizeScreen!))
+                    ),
+                    child: TextField(
+                      style: TextStyle(
+                          color: AppColors.textColorPhone,
+                          fontWeight: FontWeight.bold,
+                          fontSize: SizeUtil.getSize(1.8,
+                              GlobalData.sizeScreen!)),
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                          hintText: 'Поиск услуги',
+                          hintStyle: TextStyle(
+                              color: AppColors.textColorHint
+                          ),
+                          contentPadding: EdgeInsets.all(SizeUtil.getSize(
+                              1.5, GlobalData.sizeScreen!)),
+                          border: InputBorder.none),
+                      onChanged: (text) {
+                        if (_searchController.text.isEmpty) {
+                          setState(() {
+                            _isSearching = false;
+                          });
+                        } else {
+                          setState(() {
+                            _isSearching = true;
+                          });
+                        }
+                        search(text);
+                      },
+                    ),
+                  ):Container(),
+                ),
+              ),
+
+              !_isSwithSearch?Container(
                 padding: EdgeInsets.all(SizeUtil.getSize(
                     2.8, GlobalData.sizeScreen!)),
                 color: AppColors.color120,
@@ -341,50 +389,6 @@ class _PageListServicesState extends State<PageListServices> {
                             )),)
                     ]
                 ),
-                Padding(
-                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
-                      1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
-                      1.5, GlobalData.sizeScreen!), 0),
-                  child: _searhVisible?Container(
-                    margin: EdgeInsets.all(SizeUtil.getSize(
-                        1.3,
-                        GlobalData.sizeScreen!)),
-                    decoration: BoxDecoration(
-                        color: AppColors.colorBackgrondProfile,
-                        borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                            1.0,
-                            GlobalData.sizeScreen!))
-                    ),
-                    child: TextField(
-                      style: TextStyle(
-                          color: AppColors.textColorPhone,
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(1.8,
-                              GlobalData.sizeScreen!)),
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                          hintText: 'Поиск услуги',
-                          hintStyle: TextStyle(
-                              color: AppColors.textColorHint
-                          ),
-                          contentPadding: EdgeInsets.all(SizeUtil.getSize(
-                              1.5, GlobalData.sizeScreen!)),
-                          border: InputBorder.none),
-                      onChanged: (text) {
-                        if (_searchController.text.isEmpty) {
-                          setState(() {
-                            _isSearching = false;
-                          });
-                        } else {
-                          setState(() {
-                            _isSearching = true;
-                          });
-                        }
-                        search(text);
-                      },
-                    ),
-                  ):Container(),
-                )
               ],
             ),
           ), _isLoading?Center(child: Padding(

@@ -149,11 +149,9 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               TimeStart(widget.time,widget.timeStart,onTimeHour: (hour){
-                setState(() {
-                  _h=hour!;
-                  _edit=true;
-                  _isValidate=true;
-                });
+                _h=hour!;
+                _edit=true;
+                _isValidate=true;
               },
               onTimeMin: (min){
                 setState(() {
@@ -162,7 +160,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
                 });
 
               },),
-              TimeEnd(widget.time,_h,_m,
+              TimeEnd(widget.time,
               onTimeMin: (min){
                 _m1=min!;
                 _isValidate=true;
@@ -208,15 +206,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 backgroundColor: Colors.red,
-                                content: Text('Время начала и окончания заказа совпадают')));
-                      }
-                      if(isTime(_timeStart,_timeEnd)){
-                        _isValidate=false;
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text('Время начала больше чем время окончания')));
+                                content: Text('Заказ не может быть равен суткам')));
                       }
 
                       if(_isValidate){
@@ -379,15 +369,13 @@ class _TimeStartState extends State<TimeStart> {
  class TimeEnd extends StatefulWidget{
 
    String time;
-   String selH;
-   String selM;
    var onTimeHour=(String? timeH)=>timeH;
    var onTimeMin=(String? timeM)=>timeM;
    bool edit;
   
   @override
   State<TimeEnd> createState() => _TimeEndState();
-  TimeEnd(this.time, this.selH,this.selM,{required this.edit,required this.onTimeMin,required this.onTimeHour});
+  TimeEnd(this.time,{required this.edit,required this.onTimeMin,required this.onTimeHour});
 }
 
 class _TimeEndState extends State<TimeEnd> {
@@ -411,26 +399,13 @@ class _TimeEndState extends State<TimeEnd> {
           Container(
             width: SizeUtil.getSize(8.0,GlobalData.sizeScreen!),
             child: FutureBuilder<List<String>>(
-              future: TimeParser.getListTimeHourEnd(widget.selH),
+              future: TimeParser.getListTimeHourEnd(),
               builder: (context,hour){
                 if(hour.hasData){
-                  _i=0;
-                  if(widget.selH!='24'){
-                    _i=1;
-                  }
-                  try {
-                    print('Time ${hour.data![getTHE('00:00-${widget.selH}:${widget.selM}', hour.data!)+_i]}');
-                    if(widget.edit){
-                      widget.onTimeHour(hour.data![getTHE('00:00-${widget.selH}:${widget.selM}', hour.data!)+_i]);
-                    }
-                  } catch (e) {
-                    print(e);
-                  }
                   return CarouselSlider(
                     options: CarouselOptions(
                       onPageChanged: (i,k){
                         widget.onTimeHour(hour.data![i]);
-                        _i=0;
                       },
                         scrollDirection: Axis.vertical,
                         initialPage: getTHE(widget.time, hour.data!),

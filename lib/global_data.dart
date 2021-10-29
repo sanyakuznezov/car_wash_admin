@@ -17,6 +17,35 @@
    static const String URL_BASE_IMAGE='https://app.crmstep.ru';
    static String? date;
    static List<List> times=[time_1,time_2,time_3,time_4];
+
+   static List<Map> timeSelect = [
+     {'time':'00','index':0},
+     {'time':'01','index':1},
+     {'time':'02','index':2},
+     {'time':'03','index':3},
+     {'time':'04','index':4},
+     {'time':'05','index':5},
+     {'time':'06','index':6},
+     {'time':'07','index':7},
+     {'time':'08','index':8},
+     {'time':'09','index':9},
+     {'time':'10','index':10},
+     {'time':'11','index':11},
+     {'time':'12','index':12},
+     {'time':'13','index':13},
+     {'time':'14','index':14},
+     {'time':'15','index':15},
+     {'time':'16','index':16},
+     {'time':'17','index':17},
+     {'time':'18','index':18},
+     {'time':'19','index':19},
+     {'time':'20','index':20},
+     {'time':'21','index':21},
+     {'time':'22','index':22},
+     {'time':'23','index':23},
+
+   ];
+
    static List<String> time_1 = [
      '00:00',
      '01:00',

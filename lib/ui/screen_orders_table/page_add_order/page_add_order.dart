@@ -64,6 +64,7 @@ class PageAddOrder extends StatefulWidget{
   int timeEndWash;
   bool isClose=false;
   bool isVisibleFAB=true;
+  bool _isInit=true;
 
   @override
   StatePageAddOrder createState() {
@@ -93,12 +94,7 @@ class PageAddOrder extends StatefulWidget{
               context: context,
               builder: (context) => ContainerAddOrder(
                 onAccept: (int? i) {
-                  _order.update('post', (value) => widget.post);
-                  _order.update('date', (value) => widget.date);
-                  _order.update('startTime', (value) =>TimeParser.parseHourForTimeLine(widget.time!.split('-')[0]));
-                  _order.update('endTime', (value) => TimeParser.parseHourForTimeLine(widget.time!.split('-')[1]));
-                  print('endTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[1])}');
-                  _validateTime(map: _order, context: context);
+                 _validateTime(map: _order, context: context);
 
               },));
 
@@ -170,6 +166,10 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
+    _order.update('post', (value) => widget.post);
+    _order.update('date', (value) => widget.date);
+    _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
+    _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
     _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
         .onError((error, stackTrace){
       setState(() {
@@ -196,7 +196,7 @@ class PageAddOrder extends StatefulWidget{
           msg: "Ошибка проверки времени....",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
+          timeInSecForIosWeb: 3,
           backgroundColor: Colors.red,
           textColor: Colors.black,
           fontSize: 16.0
@@ -229,7 +229,7 @@ class PageAddOrder extends StatefulWidget{
               msg: "Ошибка создания заказа....",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
+              timeInSecForIosWeb: 3,
               backgroundColor: Colors.red,
               textColor: Colors.black,
               fontSize: 16.0
@@ -259,8 +259,8 @@ class PageAddOrder extends StatefulWidget{
             msg: "Заказ не опубликован",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
             textColor: Colors.black,
             fontSize: 16.0
         );
@@ -1877,8 +1877,8 @@ class _ItemDateState extends State<ItemDate> {
                              setState(() {
                                _timeStart=tStart;
                                _timeEnd=tEnd;
-                               _order.update('startTime', (value) => TimeParser.parseHourForTimeLine(_timeStart!));
-                               _order.update('endTime', (value) =>  TimeParser.parseHourForTimeLine(_timeEnd!));
+                               _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
+                               _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
                              });
                            },
                            time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
@@ -1935,13 +1935,27 @@ class _ItemDateState extends State<ItemDate> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child:  Text('$_timeStart-$_timeEnd',
+                          child:  Text('${TimeParser.parseHouForWidget(_timeStart!)}-${TimeParser.parseHouForWidget(_timeEnd!)}',
                               textAlign: TextAlign.end,
                               style: TextStyle(color: AppColors.textColorPhone,
                                   fontWeight: FontWeight.bold,
                                   fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
                         ),
                       ),
+                      _order['startTime']>_order['endTime']&&_order['endTime']!=0?
+                      GestureDetector(
+                         onTap: (){
+                           Fluttertoast.showToast(
+                               msg: "Заказ переходит на след. день",
+                               toastLength: Toast.LENGTH_SHORT,
+                               gravity: ToastGravity.CENTER,
+                               timeInSecForIosWeb: 2,
+                               backgroundColor: Colors.white,
+                               textColor: Colors.black,
+                               fontSize: 16.0
+                           );
+                         },
+                          child: Icon(Icons.error,color: Colors.red,size: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),)):Container()
 
                     ],
                   ),
@@ -2007,8 +2021,10 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
 
   late AnimationController controller;
 
+
   @override
   Widget build(BuildContext context) {
+
    return  Column(
      children: [
        Padding(
@@ -2091,9 +2107,7 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
     controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
-    )..addListener(() {
-      setState(() {});
-    });
+    );
     controller.repeat(reverse: true);
   }
 
