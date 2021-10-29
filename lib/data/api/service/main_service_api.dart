@@ -34,7 +34,7 @@ class MainServiseApi{
         data: value,
         options: Options(
           sendTimeout: 5000,
-          receiveTimeout: 3000,
+          receiveTimeout: 10000,
           contentType: 'application/x-www-form-urlencoded',
         )
       ).catchError((error){
@@ -58,7 +58,7 @@ class MainServiseApi{
             data: value,
             options: Options(
               sendTimeout: 5000,
-              receiveTimeout: 3000,
+              receiveTimeout: 10000,
               contentType: 'application/x-www-form-urlencoded',
             )
         ).catchError((error){
@@ -85,7 +85,7 @@ class MainServiseApi{
           data: formData,
           options: Options(
             sendTimeout: 5000,
-            receiveTimeout: 3000,
+            receiveTimeout: 10000,
             contentType: 'multipart/form-data',
           )
       ).catchError((error){
@@ -105,7 +105,7 @@ class MainServiseApi{
           data: value,
           options: Options(
             sendTimeout: 5000,
-            receiveTimeout: 3000,
+            receiveTimeout: 10000,
             contentType: 'application/x-www-form-urlencoded',
           )
       ).catchError((error){
@@ -123,7 +123,7 @@ class MainServiseApi{
           data: value,
           options: Options(
             sendTimeout: 5000,
-            receiveTimeout: 3000,
+            receiveTimeout: 10000,
             contentType: 'application/x-www-form-urlencoded',
           )
       ).catchError((error){
@@ -180,7 +180,7 @@ class MainServiseApi{
            data: value,
            options: Options(
              sendTimeout: 5000,
-             receiveTimeout: 3000,
+             receiveTimeout: 10000,
              contentType: 'application/x-www-form-urlencoded',
            )
        ).catchError((error){
@@ -218,7 +218,7 @@ class MainServiseApi{
            data: value,
            options: Options(
              sendTimeout: 5000,
-             receiveTimeout: 3000,
+             receiveTimeout: 10000,
              contentType: 'application/x-www-form-urlencoded',
            )
        ).catchError((error){
@@ -250,7 +250,7 @@ class MainServiseApi{
             data: value,
             options: Options(
               sendTimeout: 5000,
-              receiveTimeout: 3000,
+              receiveTimeout: 10000,
               contentType: 'application/x-www-form-urlencoded',
             )
         ).catchError((error){
@@ -308,18 +308,26 @@ class MainServiseApi{
                         data: value,
                         options: Options(
                           sendTimeout: 5000,
-                          receiveTimeout: 3000,
+                          receiveTimeout: 10000,
                   contentType: 'application/x-www-form-urlencoded',
                 ));
         return result.data['result'];
       }on DioError catch (e) {
+        if(e.type==DioErrorType.receiveTimeout||e.type==DioErrorType.sendTimeout){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Сервер не отвечает, повторите попытку'),
+          ));
+        }
         if(e.response!=null){
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.red,
             content: Text('${e.response!.data['errors']['startTime']==null?e.response!.data['errors']['post']:e.response!.data['errors']['startTime']}'),
           ));
-          return false;
+
         }
+        return false;
+
       }
 
     }
@@ -339,6 +347,7 @@ class MainServiseApi{
       Map data = await blocVerifyUser.checkDataValidUser();
       final value = {
         'cwId': data['cwid'],
+        'post':map['post'],
         'pId': data['pid'],
         'orderId': null,
         'date':map['date'],
@@ -351,7 +360,7 @@ class MainServiseApi{
                   data: value,
                   options: Options(
                     sendTimeout: 5000,
-                    receiveTimeout: 3000,
+                    receiveTimeout: 10000,
                     contentType: 'application/x-www-form-urlencoded',
                   ));
         if(result.data['intersection']!=null){
@@ -366,6 +375,13 @@ class MainServiseApi{
         }
 
       }on DioError catch (e) {
+        if(e.type==DioErrorType.receiveTimeout||e.type==DioErrorType.sendTimeout){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Сервер не отвечает, повторите попытку'),
+          ));
+          return false;
+        }
         if(e.response!=null){
           if(e.response!.statusCode==400){
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -373,6 +389,27 @@ class MainServiseApi{
               content: Text('Время начала и окончания совпадает'),
             ));
           }
+          if(e.response!.statusCode==403){
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Нет доступа'),
+            ));
+          }
+
+          if(e.response!.statusCode==404){
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Заказ не найден'),
+            ));
+          }
+
+          if(e.response!.statusCode==500){
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Ошибка сервера'),
+            ));
+          }
+
           return false;
         }
       }

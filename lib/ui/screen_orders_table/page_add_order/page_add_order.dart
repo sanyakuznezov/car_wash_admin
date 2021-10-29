@@ -2,7 +2,6 @@
 
 
   import 'dart:async';
-import 'dart:developer';
 
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
@@ -12,7 +11,6 @@ import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
-import 'package:car_wash_admin/ui/screen_auth/splash_screen.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
@@ -22,7 +20,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -96,8 +93,13 @@ class PageAddOrder extends StatefulWidget{
               context: context,
               builder: (context) => ContainerAddOrder(
                 onAccept: (int? i) {
+                  _order.update('post', (value) => widget.post);
+                  _order.update('date', (value) => widget.date);
+                  _order.update('startTime', (value) =>TimeParser.parseHourForTimeLine(widget.time!.split('-')[0]));
+                  _order.update('endTime', (value) => TimeParser.parseHourForTimeLine(widget.time!.split('-')[1]));
+                  print('endTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[1])}');
                   _validateTime(map: _order, context: context);
-                  //_addOrder(map: _order, context: context);
+
               },));
 
         },
@@ -168,11 +170,6 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-    print('post ${widget.post} date ${widget.date} startTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[0])} endTime ${TimeParser.parseHourForTimeLine(widget.time!.split('-')[1])}');
-    _order.update('post', (value) => widget.post);
-    _order.update('date', (value) => widget.date);
-    _order.update('startTime', (value) =>TimeParser.parseHourForTimeLine(widget.time!.split('-')[0]));
-    _order.update('endTime', (value) => TimeParser.parseHourForTimeLine(widget.time!.split('-')[1]));
     _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
         .onError((error, stackTrace){
       setState(() {
@@ -188,17 +185,25 @@ class PageAddOrder extends StatefulWidget{
     _notifier.dispose();
   }
 
-  Future<void> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
+  Future<bool?> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
     showLoaderDialog(context);
     final result= await RepositoryModule.userRepository().intersectionValidate(map: map, context: context)
         .catchError((error){
       setState(() {
         widget.isClose=true;
       });
+      Fluttertoast.showToast(
+          msg: "Ошибка проверки времени....",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.black,
+          fontSize: 16.0
+      );
     });
 
-      if(result!=null){
-         if(result){
+         if(result!){
            _order.update('clientFullname', (value) =>'$_surName $_patronymicName $_lastName');
            _order.update('ComplexesList', (value) => _idComplexList);
            _order.update('ServicesList', (value) => _idServiceList);
@@ -207,44 +212,31 @@ class PageAddOrder extends StatefulWidget{
            setState(() {
              widget.isClose=true;
            });
-           Fluttertoast.showToast(
-               msg: "Данное время уже занято...",
-               toastLength: Toast.LENGTH_SHORT,
-               gravity: ToastGravity.CENTER,
-               timeInSecForIosWeb: 1,
-               backgroundColor: Colors.red,
-               textColor: Colors.black,
-               fontSize: 16.0
-           );
          }
-      }else{
-        print('RESuLT time NULL');
-        setState(() {
-          widget.isClose=true;
-        });
-        Fluttertoast.showToast(
-            msg: "Ошибка при проверке времени заказа...",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0
-        );
-      }
 
 
+     return result;
   }
 
 
-  Future<void> _addOrder({required Map<String,dynamic> map,required BuildContext context}) async{
+  Future<bool> _addOrder({required Map<String,dynamic> map,required BuildContext context}) async{
     final result= await RepositoryModule.userRepository().addOrder(map: map, context: context)
         .catchError((error){
-          print('ERROR widget order $error');
+          setState(() {
+            widget.isClose=true;
+          });
+          Fluttertoast.showToast(
+              msg: "Ошибка создания заказа....",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.black,
+              fontSize: 16.0
+          );
 
     });
-    if(result!=null){
-      if(result){
+      if(result!){
         setState(() {
           widget.isClose=true;
           widget.isVisibleFAB=false;
@@ -259,34 +251,22 @@ class PageAddOrder extends StatefulWidget{
             fontSize: 16.0
         );
 
-      } else{
+      }else{
         setState(() {
           widget.isClose=true;
         });
         Fluttertoast.showToast(
-            msg: "Ошибка создания заказа....",
+            msg: "Заказ не опубликован",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.white,
             textColor: Colors.black,
             fontSize: 16.0
         );
       }
-    }else{
-      setState(() {
-        widget.isClose=true;
-      });
-      Fluttertoast.showToast(
-          msg: "Ошибка создания заказа....",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0
-      );
-      print('RESuLT order NULL');
+      return result;
+
     }
 
 
@@ -312,9 +292,6 @@ class PageAddOrder extends StatefulWidget{
     );
   }
 
-
-
-}
 
    class ItemReview extends StatelessWidget{
   @override
@@ -2026,7 +2003,10 @@ class _ItemDateState extends State<ItemDate> {
   State<Work> createState() => _WorkState();
 }
 
-class _WorkState extends State<Work> {
+class _WorkState extends State<Work> with TickerProviderStateMixin{
+
+  late AnimationController controller;
+
   @override
   Widget build(BuildContext context) {
    return  Column(
@@ -2080,10 +2060,13 @@ class _WorkState extends State<Work> {
            ],
          ),
        ),
-       widget.modelCalculatePrice.type!='complex'?Container(
+       widget.modelCalculatePrice.type!='complex'?!widget.isLoad?Container(
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
-           color: AppColors.colorLine):Container(),
+           color: AppColors.colorLine):LinearProgressIndicator(
+         value: controller.value,
+         color: AppColors.colorIndigo,
+       ):Container(),
 
        widget.modelCalculatePrice.type=='complex'?Container(
          width: MediaQuery.of(context).size.width,
@@ -2102,7 +2085,25 @@ class _WorkState extends State<Work> {
 
   }
 
-   String getTextDetails(List<ModelService> list,int id){
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..addListener(() {
+      setState(() {});
+    });
+    controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  String getTextDetails(List<ModelService> list,int id){
     String tetx='';
     list.forEach((element) {
          if(element.id==id){
