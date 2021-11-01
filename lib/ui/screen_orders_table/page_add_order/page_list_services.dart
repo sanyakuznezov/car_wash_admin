@@ -403,7 +403,7 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_searchList.length, (index) {
-                    return ItemList(modelService:_searchList[index],listAlready: _selListAlready,
+                    return _ItemList(modelService:_searchList[index],listAlready: _selListAlready,
                         onSelect: (value,remove) {
                           if(!remove){
                             _selListAlready.add(value!);
@@ -441,7 +441,7 @@ class _PageListServicesState extends State<PageListServices> {
                     3.0, GlobalData.sizeScreen!), 0, 0),
                 child: Column(
                   children: List.generate(_mainList.length, (index) {
-                    return ItemList(modelService:_mainList[index],listAlready: _selListAlready,
+                    return _ItemList(modelService:_mainList[index],listAlready: _selListAlready,
                         onSelect: (value,remove) {
                       if(!remove){
                        _selListAlready.add(value!);
@@ -548,7 +548,7 @@ class _PageListServicesState extends State<PageListServices> {
 
 }
 
- class ItemList extends StatefulWidget{
+ class _ItemList extends StatefulWidget{
 
 
    var onSelect=(ModelService? modelService,bool isRemove)=>modelService,isRemove;
@@ -558,13 +558,13 @@ class _PageListServicesState extends State<PageListServices> {
 
 
 
-   ItemList({required this.modelService,required this.onSelect,required this.listAlready});
+   _ItemList({required this.modelService,required this.onSelect,required this.listAlready});
 
    @override
-   State<ItemList> createState() => _ItemListState();
+   State<_ItemList> createState() => _ItemListState();
  }
 
- class _ItemListState extends State<ItemList> {
+ class _ItemListState extends State<_ItemList> {
 
    bool _isAlreadySelected=false;
    bool _isSelect=false;

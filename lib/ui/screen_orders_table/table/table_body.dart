@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
-import 'body_boxes_order/body_order.dart';
-import 'body_boxes_order/box_order.dart';
-import 'body_boxes_order/drag_target_table.dart';
+import '../body_boxes_order/body_order.dart';
+import '../body_boxes_order/box_order.dart';
+import '../body_boxes_order/drag_target_table.dart';
 import 'box_time.dart';
 import 'layer_drag_controller.dart';
 import 'package:sizer/sizer.dart';

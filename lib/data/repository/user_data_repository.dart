@@ -84,6 +84,12 @@ class UserDataRepository extends UserRepository{
   }
 
   @override
+  Future<List<ModelService>> getServiceInfo({required BuildContext context, required int carType, required int serviceType, required bool isDetailing, required String query}) async {
+    return await _apiUtil.getService(context: context, carType: carType, serviceType: serviceType, isDetailing: isDetailing, query: query);
+  }
+
+
+  @override
   Future<ModelCalculatePrice?> getPrice({required BuildContext context, required int carType, required List<int> servicesIds, required List<int> complexesIds})async {
     return await _apiUtil.getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
   }

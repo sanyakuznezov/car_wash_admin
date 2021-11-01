@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 
-import '../../app_colors.dart';
-import '../../global_data.dart';
+import '../../../app_colors.dart';
+import '../../../global_data.dart';
 
 
 

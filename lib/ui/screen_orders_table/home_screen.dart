@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../global_data.dart';
-import 'multiplication_table.dart';
+import '../screen_info.dart';
+import 'table/multiplication_table.dart';
 
 class MyHomePage extends StatefulWidget {
   bool valid;
@@ -88,9 +89,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                     alignment: Alignment.centerRight,
                                     child: Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
-                                      child: Icon(
-                                        Icons.info_outline,
-                                        color: Colors.white,
+                                      child: GestureDetector(
+                                        onTap: (){
+                                          Navigator.push(
+                                            context,
+                                            SlideTransitionRight(ScreenInfo()),
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     )),
                                 flex: 1,

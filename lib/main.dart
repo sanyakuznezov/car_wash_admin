@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'internal/dependencies/repository_module.dart';
-import 'ui/screen_orders_table/multiplication_table.dart';
+import 'ui/screen_orders_table/table/multiplication_table.dart';
 import 'package:sizer/sizer.dart';
 
 

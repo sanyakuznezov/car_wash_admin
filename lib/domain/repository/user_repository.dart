@@ -23,5 +23,6 @@ abstract class UserRepository{
     Future<bool>uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email});
     Future<List<ModelBrandCar>> getListBrandCar({required BuildContext context,required int id});
     Future<List<ModelService>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});
+  Future<List<ModelService>?> getServiceInfo({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});
     Future<ModelCalculatePrice?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds});
   }
