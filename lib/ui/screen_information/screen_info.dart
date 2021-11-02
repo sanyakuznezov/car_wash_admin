@@ -5,17 +5,20 @@
 
 
    import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/ui/screen_information/page_search_services.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../app_colors.dart';
-import '../global_data.dart';
+import '../../app_colors.dart';
+import '../../global_data.dart';
 
 
    bool _isLoading=true;
+   List<ModelService> _mainList=[];
 
 class ScreenInfo extends StatefulWidget{
   @override
@@ -25,7 +28,7 @@ class ScreenInfo extends StatefulWidget{
 class _ScreenInfoState extends State<ScreenInfo> {
 
 
-
+  int _index=0;
 
   @override
   Widget build(BuildContext context) {
@@ -68,16 +71,17 @@ class _ScreenInfoState extends State<ScreenInfo> {
                                2.8, GlobalData.sizeScreen!)),
                      ),
                    ),
-                   Align(alignment: Alignment.centerRight,
+                    _mainList.length!=0&&_index==0?Align(alignment: Alignment.centerRight,
                      child: GestureDetector(
                        onTap:(){
-                         setState(() {
-
-                         });
+                         Navigator.push(
+                           context,
+                           SlideTransitionRight(PageSearchServices(mainList:_mainList)),
+                         );
                        },
                        child: Icon(Icons.search,color: AppColors.colorIndigo),
                      ),
-                   )
+                   ):Container()
 
                  ],
                ),
@@ -85,6 +89,11 @@ class _ScreenInfoState extends State<ScreenInfo> {
            )
          ],
          bottom: TabBar(
+             onTap: (index) {
+               setState(() {
+                 _index=index;
+               });
+             },
             labelColor: Colors.black,
              tabs: [
            Tab(
@@ -96,8 +105,13 @@ class _ScreenInfoState extends State<ScreenInfo> {
            )
          ]),
        ),
-       body: TabBarView(children: [
-         PageServices(),
+       body: TabBarView(
+         children: [
+         PageServices(onLoad: (load){
+           setState(() {
+
+           });
+         },),
        PageSale()
        ],
 
@@ -109,8 +123,13 @@ class _ScreenInfoState extends State<ScreenInfo> {
 
 
   class PageServices extends StatefulWidget{
+
+   var onLoad=(bool? load)=>load;
+
   @override
   State<PageServices> createState() => _PageServicesState();
+
+   PageServices({required this.onLoad});
 }
 
 
@@ -124,7 +143,10 @@ class _ScreenInfoState extends State<ScreenInfo> {
    bool _isDetailing=false;
    int _serviceType=2;
    int _carType=1;
-   List<ModelService> _mainList=[];
+   late String _typeCar='Седан';
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -304,8 +326,68 @@ class _ScreenInfoState extends State<ScreenInfo> {
                           )
 
                         ],
-                      )
+                      ),
+                      Padding(
+                        padding:EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.0, GlobalData.sizeScreen!),0,0),
+                        child: Row(
+                          children: [
+                            Text('Тип ТС',
+                                style: TextStyle(
+                                    color: AppColors.textColorItem,
+                                    fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                )),
+                            Expanded(
+                              child: Padding(
+                                padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                child:Align(
+                                  alignment: Alignment.centerRight,
+                                  child: DropdownButton<String>(
+                                    value: _typeCar,
+                                    icon: const Icon(Icons.arrow_drop_down,
+                                      color: Colors.black,),
+                                    iconSize: 24,
+                                    elevation: 1,
+                                    alignment: Alignment.centerRight,
+                                    style: TextStyle(color: AppColors.textColorPhone,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                                    underline: Container(
+                                      height: 2,
+                                      color: Colors.transparent,
+                                    ),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _typeCar = newValue!;
+                                        if(_typeCar=='Седан'){
+                                          _carType=1;
+                                        }else if(_typeCar=='Кроссовер'){
+                                          _carType=2;
+                                        }else if(_typeCar=='Внедорожник'){
+                                          _carType=3;
+                                        }else if(_typeCar=='Микроавтобус'){
+                                          _carType=4;
+                                        }else if(_typeCar=='Иное'){
+                                          _carType=5;
+                                        }
+                                        _getServiceInfo(context: context, carType:_carType, serviceType:_serviceType, isDetailing:_isDetailing, query:'');
 
+                                      });
+                                    },
+                                    items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
 
@@ -405,6 +487,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
      setState(() {
        _isLoading=false;
        _mainList=result!;
+       widget.onLoad(true);
      });
 
 

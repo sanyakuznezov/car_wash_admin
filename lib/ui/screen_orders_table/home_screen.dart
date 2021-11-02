@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../global_data.dart';
-import '../screen_info.dart';
+import '../screen_information/screen_info.dart';
 import 'table/multiplication_table.dart';
 
 class MyHomePage extends StatefulWidget {
