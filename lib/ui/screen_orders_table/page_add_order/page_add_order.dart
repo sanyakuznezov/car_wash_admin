@@ -64,7 +64,7 @@ class PageAddOrder extends StatefulWidget{
   int timeEndWash;
   bool isClose=false;
   bool isVisibleFAB=true;
-  bool _isInit=true;
+
 
   @override
   StatePageAddOrder createState() {
@@ -2086,14 +2086,15 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
 
        widget.modelCalculatePrice.type=='complex'?Container(
          width: MediaQuery.of(context).size.width,
-         color: AppColors.colorBackgrondProfile,
+         color: AppColors.colorLine,
          child: Padding(
            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
            child: Text('${getTextDetails(widget.listServices,widget.modelCalculatePrice.id)}',
              textAlign: TextAlign.center,
              style: TextStyle(
              color: AppColors.textColorDark_100
-           ),),
+           ),
+           ),
          ),
        ):Container()
      ],

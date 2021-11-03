@@ -6,9 +6,11 @@ import 'package:car_wash_admin/data/mapper/mapper_calculate_price.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
+import 'package:car_wash_admin/data/mapper/mapper_sale.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
@@ -17,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'model/model_brand_car_api.dart';
+import 'model/model_sale_api.dart';
 
 class ApiUtil{
 
@@ -91,6 +94,15 @@ class ApiUtil{
     }
     Future<bool?> intersectionValidate({required BuildContext context,required Map<String,dynamic> map})async{
        return await _mainServiseApi.intersectionValidate(context: context, map: map);
+    }
+
+    Future<List<ModelSale>?> getSaleInfo({required BuildContext context,required int carType}) async{
+      List<ModelSale> list=[];
+      final result= await _mainServiseApi.getSaleInfo(context: context,carType: carType);
+      result!.forEach((element) {
+        list.add(MapperSale.fromApi(modelSaleApi: element));
+      });
+      return list;
     }
 
 }

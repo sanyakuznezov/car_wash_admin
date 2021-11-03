@@ -5,6 +5,7 @@ import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
+import 'package:car_wash_admin/ui/screen_quick_order/page_qick_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,9 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )),
                                 flex: 1,
                               ),
-                              Icon(
-                                Icons.add,
-                                color: Colors.white,
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    SlideTransitionRight(PageQuickOrder()),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
                               ),
                             ],
                           ),

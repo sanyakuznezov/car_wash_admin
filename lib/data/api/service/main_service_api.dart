@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
+import 'package:car_wash_admin/data/api/model/model_sale_api.dart';
 import 'package:car_wash_admin/data/api/model/model_service_api.dart';
 import 'package:car_wash_admin/data/api/model/model_worker_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
@@ -499,8 +500,56 @@ class MainServiseApi{
   }
 
 
+    Future<List<ModelSaleApi>?> getSaleInfo({required BuildContext context,required int carType})async{
+      if(await StateNetwork.initConnectivity()==2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Отсутствует подключение к сети...'),));
+      }else {
+        BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+        Map data = await blocVerifyUser.checkDataValidUser();
+        final value = {'cwId': data['cwid'],'pId': data['pid'],'carType':carType};
+        try {
+          final result=await _dio.post(
+                      'services/info-sales',
+                      data: value,
+                      options: Options(
+                        sendTimeout: 5000,
+                        receiveTimeout: 10000,
+                        contentType: 'application/x-www-form-urlencoded',
+                      )
+                  ).catchError((error){
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text('Ошибка получения данных...'),));
+                  });
+
+          return (result.data['sales'] as List)
+              .map((x) => ModelSaleApi.fromApi(data: x))
+              .toList();
+        }on DioError catch (e) {
+          if(e.response!=null) {
+            if (e.response!.statusCode == 400) {
+              Fluttertoast.showToast(
+                  msg: "Не все обязательные параметры переданы",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 3,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.black,
+                  fontSize: 16.0
+              );
+            }
+          }
+        }
+
+      }
+
+      return null;
+    }
 
 
 
 
-  }
+
+}

@@ -4,7 +4,8 @@
 
 
 
-   import 'package:car_wash_admin/domain/model/model_service.dart';
+   import 'package:car_wash_admin/domain/model/model_sale.dart';
+import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_information/page_search_services.dart';
@@ -18,7 +19,9 @@ import '../../global_data.dart';
 
 
    bool _isLoading=true;
+   bool _isLoading_1=true;
    List<ModelService> _mainList=[];
+   List<ModelSale> _mainList_1=[];
 
 class ScreenInfo extends StatefulWidget{
   @override
@@ -29,6 +32,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
 
 
   int _index=0;
+  int _carType=1;
 
   @override
   Widget build(BuildContext context) {
@@ -107,12 +111,12 @@ class _ScreenInfoState extends State<ScreenInfo> {
        ),
        body: TabBarView(
          children: [
-         PageServices(onLoad: (load){
+         PageServices(onLoad: (load,carType){
            setState(() {
-
+              _carType=carType;
            });
          },),
-       PageSale()
+       PageSale(carType: _carType)
        ],
 
        ),
@@ -124,7 +128,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
 
   class PageServices extends StatefulWidget{
 
-   var onLoad=(bool? load)=>load;
+   var onLoad=(bool? load,int carType)=>load,carType;
 
   @override
   State<PageServices> createState() => _PageServicesState();
@@ -405,7 +409,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
                       padding:EdgeInsets.all(SizeUtil.getSize(
                           1.5, GlobalData.sizeScreen!)),
                       child:
-                      Text('${getType(_carType)}; ${getTypeSer(_selType)}; ${getTypeVid(_selVid)}',
+                      Text('${_getType(_carType)}; ${_getTypeSer(_selType)}; ${_getTypeVid(_selVid)}',
                         style: TextStyle(
                             color: AppColors.textColorHint,
                             fontWeight: FontWeight.bold,
@@ -452,7 +456,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
     );
   }
 
-   getType(int id){
+   _getType(int id){
      if(id==1){
        return 'Седан';
      }else if(id==2){
@@ -466,7 +470,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
      }
 
    }
-   getTypeSer(int type){
+   _getTypeSer(int type){
      if(type==0){
        return 'Мойка';
      }else{
@@ -474,7 +478,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
      }
    }
 
-   getTypeVid(int type){
+   _getTypeVid(int type){
      if(type==0){
        return 'Комплекс';
      }else{
@@ -487,11 +491,13 @@ class _ScreenInfoState extends State<ScreenInfo> {
      setState(() {
        _isLoading=false;
        _mainList=result!;
-       widget.onLoad(true);
+       widget.onLoad(true,_carType);
      });
 
 
    }
+
+
 
    @override
   void initState() {
@@ -509,17 +515,153 @@ class _ScreenInfoState extends State<ScreenInfo> {
 
 
 class PageSale extends StatefulWidget{
+
+
+  int carType;
+
+
   @override
   State<PageSale> createState() => _PageSaleState();
+
+  PageSale({required this.carType});
 }
 
 class _PageSaleState extends State<PageSale> {
+
+  String _typeCar='Седан';
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.pink,
+    return Column(
+      children: [
+        Container(
+          height: SizeUtil.getSize(5.1,GlobalData.sizeScreen!),
+          margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+        3.0, GlobalData.sizeScreen!), 0, 0),
+          color: Colors.white,
+          child: Padding(
+            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(3.0, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
+            child: Row(
+              children: [
+                Text('Тип ТС',
+                    style: TextStyle(
+                        color: AppColors.textColorItem,
+                        fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                    )),
+                Expanded(
+                  child: Padding(
+                    padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                    child:Align(
+                      alignment: Alignment.centerRight,
+                      child:  DropdownButton<String>(
+                        value: _typeCar,
+                        icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.black,),
+                        iconSize: 24,
+                        elevation: 1,
+                        alignment: Alignment.centerRight,
+                        style: TextStyle(color: AppColors.textColorPhone,
+                            fontWeight: FontWeight.bold,
+                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.transparent,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _typeCar = newValue!;
+                            if(_typeCar=='Седан'){
+                              widget.carType=1;
+                            }else if(_typeCar=='Кроссовер'){
+                              widget.carType=2;
+                            }else if(_typeCar=='Внедорожник'){
+                              widget.carType=3;
+                            }else if(_typeCar=='Микроавтобус'){
+                              widget.carType=4;
+                            }else if(_typeCar=='Иное'){
+                              widget.carType=5;
+                            }
+                            _getSaleInfo(context: context, carType: widget.carType);
+
+                          });
+                        },
+                        items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        _isLoading_1?Center(child: Padding(
+          padding: EdgeInsets.all(SizeUtil.getSize(
+              3.0, GlobalData.sizeScreen!)),
+          child: CircularProgressIndicator(
+            color: AppColors.colorIndigo, strokeWidth: 2,),
+        )):_mainList_1.length>0?Container(
+          color: Colors.white,
+          margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+              3.0, GlobalData.sizeScreen!), 0, 0),
+          child: Column(
+            children: List.generate(_mainList_1.length, (index) {
+              return _ItemSale(modelSale:_mainList_1[index]);
+            }),
+          ),
+        ):Container(
+          margin:  EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+              3.0, GlobalData.sizeScreen!), 0, 0),
+          child: Center(
+            child: Text('Список акций пуст',style: TextStyle(color: AppColors.textColorHint,
+                fontSize: SizeUtil.getSize(
+                    2.0, GlobalData.sizeScreen!))),
+          ),
+        ),
+      ],
     );
+
   }
+  _getType(int id){
+    if(id==1){
+      return 'Седан';
+    }else if(id==2){
+      return 'Кроссовер';
+    }else if(id==3){
+      return 'Внедорожник';
+    }else if(id==4){
+      return 'Микроавтобус';
+    }else if(id==5){
+      return 'Иное';
+    }
+
+  }
+
+  Future<List<ModelSale>?> _getSaleInfo({required BuildContext context,required int carType}) async{
+    _isLoading_1=true;
+    final result= await RepositoryModule.userRepository().getSaleInfo(context: context, carType:widget.carType);
+    setState(() {
+      _isLoading_1=false;
+      _mainList_1=result!;
+    });
+
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getSaleInfo(context: context, carType: widget.carType);
+  }
+
+
 }
 
 
@@ -528,7 +670,6 @@ class _PageSaleState extends State<PageSale> {
    class _ItemList extends StatefulWidget{
 
 
-     var onSelect=(ModelService? modelService,bool isRemove)=>modelService,isRemove;
      ModelService modelService;
      List<ModelService> listServices;
 
@@ -630,7 +771,7 @@ class _PageSaleState extends State<PageSale> {
                  ),),
                widget.modelService.type=='complex'&&_isSelect?Container(
                  width: MediaQuery.of(context).size.width,
-                 color: AppColors.colorBackgrondProfile,
+                 color: AppColors.colorLine,
                  child: Padding(
                    padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
                    child: Text('${getTextDetails(widget.listServices,widget.modelService.id)}',
@@ -661,4 +802,131 @@ class _PageSaleState extends State<PageSale> {
        return tetx;
      }
 
+   }
+
+   class _ItemSale extends StatefulWidget{
+
+     ModelSale modelSale;
+
+     @override
+     State<_ItemSale> createState() => _ItemSaleState();
+
+     _ItemSale({required this.modelSale});
+}
+
+   class _ItemSaleState extends State<_ItemSale> {
+
+     bool _isSelect=false;
+     double _turns = 0.0;
+     @override
+     Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: (){
+          setState(() {
+            if(_isSelect){
+              _isSelect=false;
+              _turns=0.0;
+            }else{
+              _isSelect=true;
+              _turns=0.5;
+
+            }
+          });
+        },
+        child: Container(
+          color: Colors.white,
+          padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,
+              GlobalData.sizeScreen!), 0,0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding:  EdgeInsets.fromLTRB(SizeUtil.getSize(
+                        5.0,
+                        GlobalData.sizeScreen!), 0, 0, 0),
+                    child: Container(
+                      width:SizeUtil.getSize(
+                          30.0,
+                          GlobalData.sizeScreen!),
+                      child: Text(widget.modelSale.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style:TextStyle(
+                            fontSize: SizeUtil.getSize(
+                                2.0, GlobalData.sizeScreen!),
+                            color: Colors.black
+                        ),),
+                    ),
+                  ),
+                  Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('${widget.modelSale.saleText}',
+                              style: TextStyle(
+                                  color: AppColors.colorText22,
+                                  fontSize:
+                                  SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
+                          Container(
+                              height: SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
+                              width: SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
+                              child:   AnimatedRotation(
+                                  duration: Duration(milliseconds: 600),
+                                  turns: _turns,
+                                  child: Icon(Icons.arrow_drop_down,color: AppColors.colorIndigo,))),
+                        ],
+                      )),
+                ],
+              ),
+
+              Padding(padding: EdgeInsets.fromLTRB(SizeUtil.getSize(
+                  5.0,
+                  GlobalData.sizeScreen!), SizeUtil.getSize(
+                  1.0,
+                  GlobalData.sizeScreen!), 0, 0),
+                child: Container(
+                  height: 1,
+                  color: AppColors.colorLine,
+                ),),
+             _isSelect?Container(
+                width: MediaQuery.of(context).size.width,
+                color: AppColors.colorLine,
+                child: Padding(
+                  padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding:EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                        child: Text('${widget.modelSale.name}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                              color: AppColors.textColorDark_100,
+                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                          ),),
+                      ),
+                      Text('${widget.modelSale.itemsText}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: AppColors.textColorDark_100
+                        ),),
+                      Padding(
+                        padding:EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                        child: Text('Акция продлиться с ${widget.modelSale.startAt} до ${widget.modelSale.endAt}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textColorHint
+                          ),),
+                      ),
+                    ],
+                  ),
+                ),
+              ):Container(),
+            ],
+          ),
+        ),
+      );
+     }
    }
