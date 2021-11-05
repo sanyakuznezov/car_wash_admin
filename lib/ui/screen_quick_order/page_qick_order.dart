@@ -12,10 +12,12 @@ import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_add_or
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
+import 'package:car_wash_admin/ui/screen_quick_order/page_quick_order_next.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -24,6 +26,7 @@ import '../../global_data.dart';
 
 
   int _typeCarInt =1;
+  String? _dateValue;
   late ValueNotifier<ModelCalculatePrice> _notifier;
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
@@ -40,6 +43,7 @@ import '../../global_data.dart';
     'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
     'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
     'ServicesList':[]};
+  bool _isEndAddOrder=false;
 
 class PageQuickOrder extends StatefulWidget{
   @override
@@ -47,6 +51,8 @@ class PageQuickOrder extends StatefulWidget{
 }
 
 class _PageQuickOrderState extends State<PageQuickOrder> {
+
+
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -92,8 +98,20 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
            _ItemInfoMain(),
            _ItemListWork(),
-           _ItemPrice()
-
+           _ItemPrice(),
+           SizedBox(height: SizeUtil.getSize(5,GlobalData.sizeScreen!),),
+           SizedBox(
+             width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
+           child: RaisedButton(
+               color: !_isEndAddOrder?AppColors.colorIndigo:AppColors.colorDisableButton,
+               onPressed: (){
+                 if(!_isEndAddOrder){
+                   Navigator.push(context,SlideTransitionRight(PageQuickOrderNext()));
+                 }
+               }, child: Text('Далее',style: TextStyle(
+             color: Colors.white
+           ),)),
+           ),
          ],
        ),
      ),
@@ -105,12 +123,6 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
     super.initState();
     _order.update('post', (value) => 1);
     _order.update('date', (value) => '');
-    _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
-        .onError((error, stackTrace){
-      setState(() {
-        _isLoading=false;
-      });
-    });
     _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
 }
@@ -174,7 +186,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                         Expanded(
                           child: Padding(
                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                            child: Text('2022-11-20',
+                            child: Text('$_dateValue',
                                 textAlign: TextAlign.end,
                                 style: TextStyle(
                                     color: AppColors.textColorPhone,
@@ -187,7 +199,17 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: (){
+                              DatePicker.showDatePicker(context,
+                                  showTitleActions: true,
+                                  minTime: DateTime(2021, 6, 7),
+                                  maxTime: DateTime(2025, 6, 7), onChanged: (date) {
+                                  }, onConfirm: (date) {
+                                    setState(() {
+                                      _dateValue=date.toString().split(' ')[0];
+                                    });
 
+                                  },
+                                  currentTime: DateTime.now(), locale: LocaleType.ru);
                             },
                             child: Icon(
                               Icons.calendar_today_outlined,
@@ -288,6 +310,10 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
+                                    Padding(
+                                      padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), SizeUtil.getSize(3.0,GlobalData.sizeScreen!)),
+                                      child: SvgPicture.asset('assets/frame.svg'),
+                                    ),
                                     Container(
                                       height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                       width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
@@ -354,6 +380,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
     @override
     void initState() {
+      _dateValue=DateTime.now().toString().split(' ')[0];
       numCarController=TextEditingController();
       regionCarController=TextEditingController();
       numCarController!.text='A000AA';
@@ -712,7 +739,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                           child: Row(
                             children: [
-                              Text('Итого',
+                              Text('Итого:',
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
