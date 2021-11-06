@@ -1,7 +1,9 @@
 
 
 
-  import 'package:car_wash_admin/utils/size_util.dart';
+  import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +15,14 @@ import '../../app_colors.dart';
 import '../../global_data.dart';
 
 class PageQuickOrderNext extends StatefulWidget{
+
+ final List<ModelService> list;
+ final Map<String,dynamic> order;
+ final int totalPriceFinalOfListService;
+
+
+  PageQuickOrderNext({required this.totalPriceFinalOfListService,required this.order,required this.list});
+
   @override
   State<PageQuickOrderNext> createState() => _PageQuickOrderNextState();
 }
@@ -62,11 +72,38 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
               ],
             ),
             _PageTime(),
-            _ItemInfoMain()
+            _ItemInfoMain(order: widget.order),
+            _ListService(modelServiceList: widget.list),
+            _ItemPrice(
+              order: widget.order,
+                priceTotal: widget.totalPriceFinalOfListService),
+            Padding(
+              padding:EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
+              child: SizedBox(
+                width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
+                child: RaisedButton(
+                    color: AppColors.colorIndigo,
+                    onPressed: (){
+
+                    }, child: Text('Записать',style: TextStyle(
+                    color: Colors.white
+                ),)),
+              ),
+            )
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print('Data ${widget.order['date']} carType ${widget.order['carType']} '
+        'carNumber ${widget.order['carNumber']}'
+    'carRegion ${widget.order['carRegion']} totalPrice ${widget.order['totalPrice']}'
+        'sale ${widget.order['sale']} workTime ${widget.order['workTime']} ComplexesList ${widget.order['ComplexesList']}'
+        'ServicesList ${widget.order['ServicesList']}');
   }
 }
 
@@ -113,8 +150,14 @@ class _PageTimeState extends State<_PageTime> {
         children: [
           Row(
             children: [
-              Container(child: Text('Часы',textAlign: TextAlign.center,),width:SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
-               Container(child: Text('Минуты',textAlign: TextAlign.center),width: SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
+              Container(child: Text('Часы',textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize:SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
+              ),),width:SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
+               Container(child: Text('Минуты',textAlign: TextAlign.center,
+                 style: TextStyle(
+                     fontSize:SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
+                 ),),width: SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
             ],
           ),
           Container(
@@ -233,9 +276,14 @@ class _PageTimeState extends State<_PageTime> {
 
   class _ItemInfoMain extends StatefulWidget{
 
+
+    Map order;
+
     @override
     State<_ItemInfoMain> createState() => _ItemInfoMainState();
-  }
+
+    _ItemInfoMain({required this.order});
+}
 
   class _ItemInfoMainState extends State<_ItemInfoMain> {
     String _typeCar = 'Седан';
@@ -246,7 +294,7 @@ class _PageTimeState extends State<_PageTime> {
     Widget build(BuildContext context) {
       // TODO: implement build
       return Container(
-        margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
+        margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,0),
         child: Column(
           children: [
             Container(
@@ -289,7 +337,7 @@ class _PageTimeState extends State<_PageTime> {
                         Expanded(
                           child: Padding(
                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                            child: Text('2021-10-09',
+                            child: Text('${widget.order['date']}',
                                 textAlign: TextAlign.end,
                                 style: TextStyle(
                                     color: AppColors.textColorPhone,
@@ -322,7 +370,7 @@ class _PageTimeState extends State<_PageTime> {
                               padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                               child:Align(
                                 alignment: Alignment.centerRight,
-                                child: Text('Седан',
+                                child: Text('${_carType(widget.order['carType'])}',
                                   style: TextStyle(color: AppColors.textColorPhone,
                                       fontWeight: FontWeight.bold,
                                       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),),
@@ -358,10 +406,10 @@ class _PageTimeState extends State<_PageTime> {
                                     SvgPicture.asset('assets/frame.svg'),
                                     SizedBox(width: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),),
                                     Container(
-                                      child: Text('WW6766',
+                                      child: Text('${widget.order['carNumber']}',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                            fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                                         ),),
                                         padding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                         decoration: BoxDecoration(
@@ -371,11 +419,11 @@ class _PageTimeState extends State<_PageTime> {
                                     ),
                                     Container(
                                       child: Text(
-                                        '777',
+                                        widget.order['carRegion']==0?'000':'${widget.order['carRegion']}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: SizeUtil.getSize(
-                                                2.0, GlobalData.sizeScreen!)),
+                                                1.8, GlobalData.sizeScreen!)),
                                       ),
                                       padding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                       decoration: BoxDecoration(
@@ -391,7 +439,10 @@ class _PageTimeState extends State<_PageTime> {
                       ],
                     ),
                   ),
-
+                  Container(
+                      margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
+                      height: 1,
+                      color: AppColors.colorLine),
                 ],
               ),
             )
@@ -399,6 +450,21 @@ class _PageTimeState extends State<_PageTime> {
           ],
         ),
       );
+    }
+
+    _carType(int type){
+      if(type==1){
+        return 'Седан';
+      }else if(type==2){
+        return 'Кроссовер';
+      }else if(type==3){
+        return 'Внедорожник';
+      }else if(type==4){
+        return 'Микроавтобус';
+      }else if(type==5){
+        return 'Иное';
+
+      }
     }
 
     @override
@@ -409,3 +475,216 @@ class _PageTimeState extends State<_PageTime> {
       regionCarController!.text='000';
     }
   }
+
+
+  class _ItemPrice extends StatefulWidget{
+
+    int priceTotal;
+    Map order;
+
+    @override
+    State<_ItemPrice> createState() => _ItemPriceState();
+
+    _ItemPrice({required this.order,required this.priceTotal});
+}
+
+  class _ItemPriceState extends State<_ItemPrice> {
+
+
+
+    @override
+    Widget build(BuildContext context) {
+      return Container(
+        child:Column(
+          children: [
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                    child: Row(
+                      children: [
+                        Text('Всего',
+                            style: TextStyle(
+                                color: AppColors.textColorItem,
+                                fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                            )),
+                        Expanded(
+                          child: Padding(
+                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                              child: Text('${widget.priceTotal} RUB',
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                  )
+                              )
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                      margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
+                      height: 1,
+                      color: AppColors.colorLine),
+                  Padding(
+                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                    child: Row(
+                      children: [
+                        Text('Скидка',
+                            style: TextStyle(
+                                color: AppColors.textColorItem,
+                                fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                            )),
+                        Expanded(
+                          child: Padding(
+                            padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                            child: Text('${widget.order['sale']} RUB',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                )
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  Container(
+                      height: 1,
+                      color: AppColors.colorLine),
+
+                  Padding(
+                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                    child: Row(
+                      children: [
+                        Text('Итого:',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                            )),
+                        Expanded(
+                          child: Padding(
+                            padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                            child: Text('${widget.order['totalPrice']} RUB',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                )
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  Container(
+                      height: 1,
+                      color: AppColors.colorLine),
+
+                ],
+              ),
+            ),
+          ],
+        )
+      );
+    }
+
+
+    @override
+    void dispose() {
+      super.dispose();
+    }
+
+    @override
+    void initState() {
+      super.initState();
+    }
+
+
+  }
+
+
+  class _ListService extends StatefulWidget{
+    final  List<ModelService> modelServiceList;
+
+
+    _ListService({required this.modelServiceList});
+
+    @override
+  State<_ListService> createState() => _ListServiceState();
+}
+
+class _ListServiceState extends State<_ListService> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+
+      children: List.generate(widget.modelServiceList.length, (index){
+          return index>0?_ItemListServise(modelService: widget.modelServiceList[index]):Container();
+      }),
+    );
+  }
+}
+
+
+   class _ItemListServise extends StatefulWidget{
+
+   final  ModelService modelService;
+
+  @override
+  State<_ItemListServise> createState() => _ItemListServiseState();
+
+     _ItemListServise({required this.modelService});
+}
+
+class _ItemListServiseState extends State<_ItemListServise> {
+  @override
+  Widget build(BuildContext context) {
+   return Container(
+     color: Colors.white,
+     child: Column(
+       children: [
+         Padding(
+           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+           child: Row(
+             children: [
+               Text(widget.modelService.name,
+                   style: TextStyle(
+                       color: AppColors.textColorItem,
+                       fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                   )),
+               Expanded(
+                 child: Padding(
+                   padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                   child: Text('${widget.modelService.price} RUB',
+                       textAlign: TextAlign.end,
+                       style: TextStyle(
+                           color: AppColors.textColorPhone,
+                           fontWeight: FontWeight.bold,
+                           fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                       )),
+                 ),
+               ),
+
+             ],
+           ),
+         ),
+         Container(
+             margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
+             height: 1,
+             color: AppColors.colorLine),
+       ],
+     ),
+   );
+  }
+}

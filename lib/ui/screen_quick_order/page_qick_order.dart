@@ -5,21 +5,16 @@
   import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
-import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/ui/screen_quick_order/page_quick_order_next.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
-import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../global_data.dart';
 
@@ -27,6 +22,8 @@ import '../../global_data.dart';
 
   int _typeCarInt =1;
   String? _dateValue;
+  int _totalPriceFinalOfListService=0;
+  List<ModelService> _listService=[];
   late ValueNotifier<ModelCalculatePrice> _notifier;
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
@@ -39,11 +36,11 @@ import '../../global_data.dart';
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   bool _isLoading=false;
-  Map<String,dynamic> _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
-    'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
-    'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
+  Map<String,dynamic> _order={'date':'','post':0,'startTime':'','carType':1,'carNumber':'A000AA',
+    'carRegion':000,
+    'totalPrice':0,'sale':0,'workTime':0,'ComplexesList':[],
     'ServicesList':[]};
-  bool _isEndAddOrder=false;
+
 
 class PageQuickOrder extends StatefulWidget{
   @override
@@ -52,6 +49,7 @@ class PageQuickOrder extends StatefulWidget{
 
 class _PageQuickOrderState extends State<PageQuickOrder> {
 
+  bool _isEndAddOrder=false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,20 +95,31 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
            ),
 
            _ItemInfoMain(),
-           _ItemListWork(),
+           _ItemListWork(onEdit: (verifi){
+             setState(() {
+                _isEndAddOrder=verifi!;
+
+              });
+           },),
            _ItemPrice(),
-           SizedBox(height: SizeUtil.getSize(5,GlobalData.sizeScreen!),),
-           SizedBox(
-             width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
-           child: RaisedButton(
-               color: !_isEndAddOrder?AppColors.colorIndigo:AppColors.colorDisableButton,
-               onPressed: (){
-                 if(!_isEndAddOrder){
-                   Navigator.push(context,SlideTransitionRight(PageQuickOrderNext()));
-                 }
-               }, child: Text('Далее',style: TextStyle(
-             color: Colors.white
-           ),)),
+
+           Padding(
+             padding: EdgeInsets.all(SizeUtil.getSize(5,GlobalData.sizeScreen!)),
+             child: SizedBox(
+               width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
+             child: RaisedButton(
+                 color: _isEndAddOrder?AppColors.colorIndigo:AppColors.colorDisableButton,
+                 onPressed: (){
+                   if(_isEndAddOrder){
+                     Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
+                         totalPriceFinalOfListService:_totalPriceFinalOfListService,
+                         order:_order,
+                         list:_listService)));
+                   }
+                 }, child: Text('Далее',style: TextStyle(
+               color: Colors.white
+             ),)),
+             ),
            ),
          ],
        ),
@@ -121,8 +130,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
   @override
   void initState() {
     super.initState();
-    _order.update('post', (value) => 1);
-    _order.update('date', (value) => '');
+    _order.update('date', (value) =>DateTime.now().toString().split(' ')[0]);
     _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
 }
@@ -206,6 +214,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                   }, onConfirm: (date) {
                                     setState(() {
                                       _dateValue=date.toString().split(' ')[0];
+                                      _order.update('date', (value) =>_dateValue);
                                     });
 
                                   },
@@ -269,8 +278,12 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                       }else if(_typeCar=='Иное'){
                                         _typeCarInt=5;
                                       }
+                                      print('_typeCarInt $_typeCarInt');
                                       _order.update('carType', (value) => _typeCarInt);
-                                      _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                      if(_listService.length>1){
+                                        _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                      }
+
                                     });
                                   },
                                   items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
@@ -327,6 +340,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         onChanged: (text){
                                           if(text.isNotEmpty){
                                             _order.update('carNumber', (value) => text);
+                                          }else{
+                                            _order.update('carNumber', (value) => 'A000AA');
                                           }
                                         },
                                         decoration: InputDecoration(
@@ -349,6 +364,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         onChanged: (text){
                                           if(text.isNotEmpty){
                                             _order.update('carRegion', (value) => text);
+                                          }else{
+                                            _order.update('carRegion', (value) => '000');
                                           }
                                         },
                                         keyboardType: TextInputType.number,
@@ -391,18 +408,19 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
   class _ItemListWork extends StatefulWidget{
 
-
+     var onEdit=(bool? verifi)=>verifi;
 
     @override
     State<_ItemListWork> createState() => _ItemListWorkState();
-  }
+
+     _ItemListWork({required this.onEdit});
+}
 
   class _ItemListWorkState extends State<_ItemListWork> {
 
 
     bool _isEdit=false;
     List<ModelServiceFromCalculate> _calculateList=[];
-    List<ModelService> _listService=[];
     int i=-2;
     bool _loadData=true;
 
@@ -499,6 +517,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
                                       });
                                       _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                      _onEdit(_listService.length);
                                     });
 
                                   },)));
@@ -545,6 +564,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         break;
                                       }
                                     }
+                                    _onEdit(_listService.length);
                                     if(model!.type=='complex'){
                                       for(int i=0;_idComplexList.length>i;i++){
                                         if(_idComplexList[i]==model.id){
@@ -561,15 +581,19 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                       }
                                     }
                                     _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                    _onEdit(_listService.length);
                                     if(_calculateList.length==2){
                                       _isEdit=false;
 
                                     }
+
                                   });
                                 },);
                             })
 
                         );
+
+
                       }
                   )
 
@@ -582,10 +606,17 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
       );
     }
 
+    _onEdit(int length){
+      if(length>1){
+        widget.onEdit(true);
+      }else{
+        widget.onEdit(false);
+      }
+    }
+
     @override
     void initState() {
       super.initState();
-
 
     }
 
@@ -603,19 +634,24 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
   class _ItemPriceState extends State<_ItemPrice> {
 
-
+     late TextEditingController _textEditingController;
+     late FocusNode _focusNode;
+     String _finalPrice='';
 
     @override
     Widget build(BuildContext context) {
+
       return Container(
         margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
         child: ValueListenableBuilder<ModelCalculatePrice>(
             valueListenable: _notifier,
             builder: (context,snapshot,widget) {
               if(snapshot!=null){
-                _order.update('totalPrice', (value) => snapshot.totalPrice);
+                _totalPriceFinalOfListService=snapshot.totalPrice;
+                _order.update('totalPrice', (value) => snapshot.totalPrice-snapshot.sale);
                 _order.update('sale', (value) => snapshot.sale);
                 _order.update('workTime', (value) => snapshot.workTime);
+                _finalPrice= (snapshot.totalPrice-snapshot.sale).toString();
               }
               return Column(
                 children: [
@@ -638,7 +674,26 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                               ),),
                           ),
                         ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Expanded(
+                            child: _listService.length>1?GestureDetector(
+                              child: Text('Править',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                                    color: AppColors.colorIndigo
+                                ),),
+                              onTap: (){
+                                setState(() {
+                                  _focusNode.requestFocus();
 
+                                });
+                              },
+                            ):Container(),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -743,37 +798,68 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                      fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
                                   )),
                               Expanded(
-                                child: Padding(
-                                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                                  child: !_isLoading?Text('${snapshot.totalPrice-snapshot.sale} RUB',
-                                      textAlign: TextAlign.end,
-                                      style: TextStyle(
-                                          color: AppColors.textColorPhone,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                      )):Align(
-                                    alignment: Alignment.centerRight,
-                                    child: SizedBox(
-                                      height: SizeUtil.getSize(
-                                          2.0,
+                                child: !_isLoading?
+                                TextField(
+                                  keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      hintText: _finalPrice,
+                                        hintStyle: TextStyle(
+                                            color: AppColors.textColorPhone,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                        ),
+                                        contentPadding: EdgeInsets.all(
+                                            SizeUtil.getSize(
+                                                1.5,
+                                                GlobalData
+                                                    .sizeScreen!)),
+                                        border: InputBorder.none),
+                                    onChanged: (text) {
+                                      if (text.isNotEmpty) {
+                                        _order.update('totalPrice', (value) => int.parse(text));
+                                      }else{
+                                        _order.update('totalPrice', (value) => _finalPrice);
+                                      }
+                                    },
+                                  controller: _textEditingController,
+                                   focusNode: _focusNode,
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                        color: AppColors.textColorPhone,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                    )):Align(
+                                  alignment: Alignment.centerRight,
+                                  child: SizedBox(
+                                    height: SizeUtil.getSize(
+                                        2.0,
+                                        GlobalData.sizeScreen!),
+                                    width: SizeUtil.getSize(
+                                        2.0,
+                                        GlobalData.sizeScreen!),
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.colorIndigo,
+                                      strokeWidth: SizeUtil.getSize(
+                                          0.3,
                                           GlobalData.sizeScreen!),
-                                      width: SizeUtil.getSize(
-                                          2.0,
-                                          GlobalData.sizeScreen!),
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.colorIndigo,
-                                        strokeWidth: SizeUtil.getSize(
-                                            0.3,
-                                            GlobalData.sizeScreen!),
-                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-
+                              Padding(
+                                padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(
+                                    2.0,
+                                    GlobalData.sizeScreen!), 0),
+                                child: Text('RUB',
+                                    style: TextStyle(
+                                        color: AppColors.textColorPhone,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                    )),
+                              ),
                             ],
                           ),
                         ),
@@ -795,11 +881,15 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
     @override
     void dispose() {
       super.dispose();
+      _textEditingController.dispose();
+      _focusNode.dispose();
     }
 
     @override
     void initState() {
       super.initState();
+     _focusNode=FocusNode();
+     _textEditingController=TextEditingController();
     }
 
 

@@ -28,17 +28,18 @@ class ScreenInfo extends StatefulWidget{
   State<ScreenInfo> createState() => _ScreenInfoState();
 }
 
-class _ScreenInfoState extends State<ScreenInfo> {
+class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateMixin{
 
 
   int _index=0;
   int _carType=1;
+  late TabController _tabController;
 
   @override
   Widget build(BuildContext context) {
    return DefaultTabController(
-     length: 2,
      initialIndex: 0,
+     length: 2,
      child: Scaffold(
        backgroundColor: AppColors.colorBackgrondProfile,
        appBar: AppBar(
@@ -110,6 +111,7 @@ class _ScreenInfoState extends State<ScreenInfo> {
          ]),
        ),
        body: TabBarView(
+         controller: _tabController,
          children: [
          PageServices(onLoad: (load,carType){
            setState(() {
@@ -122,6 +124,24 @@ class _ScreenInfoState extends State<ScreenInfo> {
        ),
      ),
    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, length:2);
+    _tabController.addListener(() {
+      setState(() {
+        _index=_tabController.index;
+      });
+
+    });
   }
 }
 

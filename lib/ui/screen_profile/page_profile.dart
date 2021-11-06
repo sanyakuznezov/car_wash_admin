@@ -420,11 +420,11 @@ class _PageProfileState extends State<PageProfile> {
 
   @override
   void initState() {
-
+    super.initState();
   }
 
 
-
+    //загрузка фото из камеры
   _imgFromCamera() async {
      _image = await _picker.pickImage(
         source: ImageSource.camera, imageQuality: 50
@@ -441,20 +441,34 @@ class _PageProfileState extends State<PageProfile> {
 
   }
 
+   //загрузка фото из алереи
   _imgFromGallery() async {
     _image = await  _picker.pickImage(source: ImageSource.gallery, imageQuality: 50
     ).catchError((error){
       print('Error $error');
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Ошибка загрузки'),));
+        _isLoadAva=false;
+      });
     });
-    setState(() {
-      _isLoadAva=true;
-    });
-    final result= await uploadAvatar(_image!);
-    setState(() {
-      _imgPiker=true;
-      _isLoadAva=false;
-      _avatar=GlobalData.URL_BASE_IMAGE+result!.url;
-    });
+    if(_image!=null){
+      setState(() {
+        _isLoadAva=true;
+      });
+      final result= await uploadAvatar(_image!).catchError((onError){
+        setState(() {
+          _isLoadAva=false;
+        });
+      });
+      setState(() {
+        _imgPiker=true;
+        _isLoadAva=false;
+        _avatar=GlobalData.URL_BASE_IMAGE+result!.url;
+      });
+    }
+
   }
 
    Future<ResponseUploadAvatar?> uploadAvatar(XFile image)async{

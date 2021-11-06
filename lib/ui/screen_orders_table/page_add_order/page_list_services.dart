@@ -113,10 +113,11 @@ class _PageListServicesState extends State<PageListServices> {
                                  _searhVisible=true;
                                }else{
                                  _searhVisible=false;
+                                 _searchList.clear();
                                }
                              });
                               },
-                              child: Icon(Icons.search,color: AppColors.colorIndigo),
+                              child: !_isLoading?Icon(Icons.search,color: AppColors.colorIndigo):Container(),
                             ),
                           )
 
@@ -174,7 +175,7 @@ class _PageListServicesState extends State<PageListServices> {
                 ),
               ),
 
-              !_isSwithSearch?Container(
+              !_searhVisible?!_isSwithSearch?Container(
                 padding: EdgeInsets.all(SizeUtil.getSize(
                     2.8, GlobalData.sizeScreen!)),
                 color: AppColors.color120,
@@ -391,12 +392,13 @@ class _PageListServicesState extends State<PageListServices> {
                 ),
               ],
             ),
-          ), _isLoading?Center(child: Padding(
+          ):Container(),
+              _isLoading?Center(child: Padding(
                 padding: EdgeInsets.all(SizeUtil.getSize(
                     3.0, GlobalData.sizeScreen!)),
                 child: CircularProgressIndicator(
                   color: AppColors.colorIndigo, strokeWidth: 2,),
-              )):_searchList.length != 0||_searchController.text.isNotEmpty?
+              )):_searchList.length != 0?
               Container(
                 color: Colors.white,
                 margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
@@ -408,7 +410,6 @@ class _PageListServicesState extends State<PageListServices> {
                           if(!remove){
                             _selListAlready.add(value!);
                             _selList.add(value);
-                            print('Add list ${_selList.length}');
                           }else{
                             _selList.remove(value);
                             for(int i=0;_selListAlready.length>i;i++){
@@ -446,7 +447,6 @@ class _PageListServicesState extends State<PageListServices> {
                       if(!remove){
                        _selListAlready.add(value!);
                         _selList.add(value);
-                       print('Add list ${_selList.length}');
                       }else{
                         for(int i=0;_selListAlready.length>i;i++){
                           if(_selListAlready[i].id==value!.id){

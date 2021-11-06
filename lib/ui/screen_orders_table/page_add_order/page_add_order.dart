@@ -550,7 +550,7 @@ class _ItemPriceState extends State<ItemPrice> {
        valueListenable: _notifier,
        builder: (context,snapshot,widget) {
          if(snapshot!=null){
-           _order.update('totalPrice', (value) => snapshot.totalPrice);
+           _order.update('totalPrice', (value) => snapshot.totalPrice-snapshot.sale);
            _order.update('sale', (value) => snapshot.sale);
            _order.update('workTime', (value) => snapshot.workTime);
          }
@@ -685,7 +685,7 @@ class _ItemPriceState extends State<ItemPrice> {
                          Expanded(
                            child: Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.totalPrice-snapshot.sale} RUB',
+                             child: !_isLoading?Text('${snapshot.totalPrice} RUB',
                                  textAlign: TextAlign.end,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
