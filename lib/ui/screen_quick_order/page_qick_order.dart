@@ -24,6 +24,7 @@ import '../../global_data.dart';
   String? _dateValue;
   int _totalPriceFinalOfListService=0;
   List<ModelService> _listService=[];
+  List<ModelServiceFromCalculate> _calculateList=[];
   late ValueNotifier<ModelCalculatePrice> _notifier;
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
@@ -114,7 +115,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                      Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
                          totalPriceFinalOfListService:_totalPriceFinalOfListService,
                          order:_order,
-                         list:_listService)));
+                         list:_calculateList)));
                    }
                  }, child: Text('Далее',style: TextStyle(
                color: Colors.white
@@ -278,7 +279,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                       }else if(_typeCar=='Иное'){
                                         _typeCarInt=5;
                                       }
-                                      print('_typeCarInt $_typeCarInt');
+
                                       _order.update('carType', (value) => _typeCarInt);
                                       if(_listService.length>1){
                                         _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
@@ -420,7 +421,6 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
 
     bool _isEdit=false;
-    List<ModelServiceFromCalculate> _calculateList=[];
     int i=-2;
     bool _loadData=true;
 
@@ -514,8 +514,9 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         }
                                         _listService.add(element);
 
-
                                       });
+                                      _order.update('ComplexesList', (value) => _idComplexList);
+                                      _order.update('ServicesList', (value) => _idServiceList);
                                       _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                       _onEdit(_listService.length);
                                     });
@@ -580,6 +581,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         }
                                       }
                                     }
+                                    _order.update('ComplexesList', (value) => _idComplexList);
+                                    _order.update('ServicesList', (value) => _idServiceList);
                                     _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                     _onEdit(_listService.length);
                                     if(_calculateList.length==2){
@@ -648,10 +651,10 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
             builder: (context,snapshot,widget) {
               if(snapshot!=null){
                 _totalPriceFinalOfListService=snapshot.totalPrice;
-                _order.update('totalPrice', (value) => snapshot.totalPrice-snapshot.sale);
+                _order.update('totalPrice', (value) => snapshot.totalPrice);
                 _order.update('sale', (value) => snapshot.sale);
                 _order.update('workTime', (value) => snapshot.workTime);
-                _finalPrice= (snapshot.totalPrice-snapshot.sale).toString();
+                _finalPrice= (snapshot.totalPrice).toString();
               }
               return Column(
                 children: [

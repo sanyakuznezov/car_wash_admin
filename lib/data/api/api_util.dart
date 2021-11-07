@@ -6,10 +6,12 @@ import 'package:car_wash_admin/data/mapper/mapper_calculate_price.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
+import 'package:car_wash_admin/data/mapper/mapper_order.dart';
 import 'package:car_wash_admin/data/mapper/mapper_sale.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
@@ -101,6 +103,19 @@ class ApiUtil{
       final result= await _mainServiseApi.getSaleInfo(context: context,carType: carType);
       result!.forEach((element) {
         list.add(MapperSale.fromApi(modelSaleApi: element));
+      });
+      return list;
+    }
+
+    Future<bool?> addQuickOrder({required BuildContext context, required Map<String, dynamic> map}) async{
+      return await _mainServiseApi.addQuickOrder(context: context, map: map);
+    }
+
+    Future<List<ModelOrder>?> getListOrder({required BuildContext context,required String date}) async{
+      List<ModelOrder> list=[];
+      final result= await _mainServiseApi.getListOrder(context: context,date: date);
+      result!.forEach((element) {
+        list.add(MapperOrder.fromApi(modelOrderApi: element));
       });
       return list;
     }

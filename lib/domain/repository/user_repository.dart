@@ -4,6 +4,7 @@
   import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
@@ -27,4 +28,6 @@ abstract class UserRepository{
   Future<List<ModelService>?> getServiceInfo({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});
     Future<ModelCalculatePrice?> getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds});
   Future<List<ModelSale>?> getSaleInfo({required BuildContext context,required int carType});
+  Future<bool?> addQuickOrder({required BuildContext context, required Map<String, dynamic> map});
+  Future<List<ModelOrder>?> getListOrder({required BuildContext context, required String date});
   }

@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/state/bloc_table_order.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
+import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,9 +63,21 @@ class _TableBodyState extends State<TableBody> {
     _centerColumnsController.addListener(() {
       AppModule.blocTable.streamSinkScroll.add(_centerColumnsController.offset);
     });
-
+    _getListOrder(context, '2021-11-07');
   }
 
+
+
+   //Получение списка заказов за определенный день
+   Future<List<ModelOrder>?> _getListOrder(BuildContext buildContext,String date) async{
+      final result = await RepositoryModule.userRepository().getListOrder(context: context, date: date);
+       result!.forEach((element) {
+         print('List ${element.startDate}');
+       });
+      return result;
+   }
+
+  //текущее время для управления линией времени на таблице
   void getTime() {
      DateTime now=DateTime.now();
     _time=now.hour.toString() + ":" + now.minute.toString();
@@ -117,7 +131,7 @@ class _TableBodyState extends State<TableBody> {
                   Row(
                 children: [
 
-                  // Сетка талицы с нумераией постов и временной шкалой
+                  // Сетка талицы с нумерацией постов и временной шкалой
                   SizedBox(
                     width: 50,
                     child:

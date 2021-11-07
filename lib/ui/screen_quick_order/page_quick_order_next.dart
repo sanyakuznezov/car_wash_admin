@@ -3,6 +3,7 @@
 
   import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -10,15 +11,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../app_colors.dart';
 import '../../global_data.dart';
 
 class PageQuickOrderNext extends StatefulWidget{
 
- final List<ModelService> list;
+ final List<ModelServiceFromCalculate> list;
  final Map<String,dynamic> order;
  final int totalPriceFinalOfListService;
+ bool _isSuccesSendOrder=false;
+ bool isClose=false;
 
 
   PageQuickOrderNext({required this.totalPriceFinalOfListService,required this.order,required this.list});
@@ -28,8 +32,14 @@ class PageQuickOrderNext extends StatefulWidget{
 }
 
 class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
+
   @override
   Widget build(BuildContext context) {
+
+    if(widget.isClose){
+      Navigator.of(context, rootNavigator: true).pop('dialog');
+    }
+
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
       body: SingleChildScrollView(
@@ -77,28 +87,76 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
             _ItemPrice(
               order: widget.order,
                 priceTotal: widget.totalPriceFinalOfListService),
-            Padding(
+            !widget._isSuccesSendOrder?Padding(
               padding:EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
                 child: RaisedButton(
                     color: AppColors.colorIndigo,
                     onPressed: (){
-
+                      _sendOrder(context,widget.order);
                     }, child: Text('Записать',style: TextStyle(
                     color: Colors.white
                 ),)),
               ),
-            )
+            ):Container()
           ],
         ),
       ),
+    );
+  }
+  
+  
+   Future<void>_sendOrder(BuildContext context,Map<String,dynamic> map)async{
+     _showLoaderDialog(context);
+      final result=await RepositoryModule.userRepository().addQuickOrder(context: context, map: map)
+          .catchError((error){
+        setState(() {
+          widget.isClose=true;
+        });
+      });
+
+      if(result!){
+        widget._isSuccesSendOrder=true;
+        Fluttertoast.showToast(
+            msg: "Заказ успешно создан!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+      }
+     setState(() {
+       widget.isClose=true;
+     });
+
+   }
+
+  _showLoaderDialog(BuildContext context){
+    AlertDialog alert=AlertDialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      content: Image.asset(
+        "assets/car_wash.gif",
+        height: SizeUtil.getSize(8, GlobalData.sizeScreen!),
+        width: SizeUtil.getSize(8, GlobalData.sizeScreen!),
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context:context,
+      builder:(BuildContext context){
+        return alert;
+      },
     );
   }
 
   @override
   void initState() {
     super.initState();
+    widget.order.update('startTime', (value) => 1350);
     print('Data ${widget.order['date']} carType ${widget.order['carType']} '
         'carNumber ${widget.order['carNumber']}'
     'carRegion ${widget.order['carRegion']} totalPrice ${widget.order['totalPrice']}'
@@ -615,7 +673,7 @@ class _PageTimeState extends State<_PageTime> {
 
 
   class _ListService extends StatefulWidget{
-    final  List<ModelService> modelServiceList;
+    final  List<ModelServiceFromCalculate> modelServiceList;
 
 
     _ListService({required this.modelServiceList});
@@ -639,7 +697,7 @@ class _ListServiceState extends State<_ListService> {
 
    class _ItemListServise extends StatefulWidget{
 
-   final  ModelService modelService;
+   final  ModelServiceFromCalculate modelService;
 
   @override
   State<_ItemListServise> createState() => _ItemListServiseState();

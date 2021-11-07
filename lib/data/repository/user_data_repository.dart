@@ -5,6 +5,7 @@ import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
@@ -113,6 +114,16 @@ class UserDataRepository extends UserRepository{
   @override
   Future<List<ModelSale>?> getSaleInfo({required BuildContext context, required int carType})async {
    return await _apiUtil.getSaleInfo(context: context, carType: carType);
+  }
+
+  @override
+  Future<bool?> addQuickOrder({required BuildContext context, required Map<String, dynamic> map})async {
+     return await _apiUtil.addQuickOrder(context: context, map: map);
+  }
+
+  @override
+  Future<List<ModelOrder>?> getListOrder({required BuildContext context, required String date})async {
+   return await _apiUtil.getListOrder(context: context, date: date);
   }
 
 
