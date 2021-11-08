@@ -7,6 +7,7 @@ import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_time.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
@@ -30,4 +31,5 @@ abstract class UserRepository{
   Future<List<ModelSale>?> getSaleInfo({required BuildContext context,required int carType});
   Future<bool?> addQuickOrder({required BuildContext context, required Map<String, dynamic> map});
   Future<List<ModelOrder>?> getListOrder({required BuildContext context, required String date});
+  Future<ModelTime> getListTimes({required BuildContext context, required String date,required int workTimeMin,required bool considerLeftTime});
   }

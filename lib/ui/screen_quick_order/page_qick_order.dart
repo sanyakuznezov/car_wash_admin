@@ -537,6 +537,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                       margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
                       height: 1,
                       color: AppColors.colorLine),
+
                   ValueListenableBuilder<ModelCalculatePrice>(
                       valueListenable: _notifier,
                       builder: (context,data,widget){

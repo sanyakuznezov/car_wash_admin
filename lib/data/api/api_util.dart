@@ -8,12 +8,14 @@ import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
 import 'package:car_wash_admin/data/mapper/mapper_order.dart';
 import 'package:car_wash_admin/data/mapper/mapper_sale.dart';
+import 'package:car_wash_admin/data/mapper/mapper_time.dart';
 import 'package:car_wash_admin/data/mapper/user_data_mapper.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_time.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
@@ -118,6 +120,12 @@ class ApiUtil{
         list.add(MapperOrder.fromApi(modelOrderApi: element));
       });
       return list;
+    }
+
+
+    Future<ModelTime> getListTimes({required BuildContext context, required String date,required int workTimeMin,required bool considerLeftTime})async{
+      final result= await _mainServiseApi.getListTimes(context: context,date: date,workTimeMin: workTimeMin,considerLeftTime: considerLeftTime);
+      return MapperTime.fromAPi(modelTimeApi: result!);
     }
 
 }

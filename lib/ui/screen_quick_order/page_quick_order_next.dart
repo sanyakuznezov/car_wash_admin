@@ -3,6 +3,7 @@
 
   import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
+import 'package:car_wash_admin/domain/model/model_time.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
@@ -15,6 +16,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../app_colors.dart';
 import '../../global_data.dart';
+
+  late ValueNotifier<int> _notifierTime;
 
 class PageQuickOrderNext extends StatefulWidget{
 
@@ -81,25 +84,37 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
 
               ],
             ),
-            _PageTime(),
+            _PageTime(order: widget.order),
             _ItemInfoMain(order: widget.order),
             _ListService(modelServiceList: widget.list),
             _ItemPrice(
               order: widget.order,
                 priceTotal: widget.totalPriceFinalOfListService),
-            !widget._isSuccesSendOrder?Padding(
+            Padding(
               padding:EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
-                child: RaisedButton(
-                    color: AppColors.colorIndigo,
-                    onPressed: (){
-                      _sendOrder(context,widget.order);
-                    }, child: Text('Записать',style: TextStyle(
-                    color: Colors.white
-                ),)),
+                child: ValueListenableBuilder(
+                  valueListenable: _notifierTime,
+                  builder: (BuildContext context, int value, Widget? child) {
+
+                    return RaisedButton(
+                        color: value!=0?AppColors.colorIndigo:AppColors.colorDisableButton,
+                        onPressed: (){
+                          if(value!=0){
+                            print('carType ${widget.order['carType']}');
+                           widget.order.update('startTime', (val) => value);
+                             _sendOrder(context,widget.order);
+
+                          }
+                        }, child: Text('Записать',style: TextStyle(
+                        color: Colors.white
+                    ),));
+                  },
+
+                ),
               ),
-            ):Container()
+            )
           ],
         ),
       ),
@@ -156,17 +171,17 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
   @override
   void initState() {
     super.initState();
-    widget.order.update('startTime', (value) => 1350);
-    print('Data ${widget.order['date']} carType ${widget.order['carType']} '
-        'carNumber ${widget.order['carNumber']}'
-    'carRegion ${widget.order['carRegion']} totalPrice ${widget.order['totalPrice']}'
-        'sale ${widget.order['sale']} workTime ${widget.order['workTime']} ComplexesList ${widget.order['ComplexesList']}'
-        'ServicesList ${widget.order['ServicesList']}');
+    _notifierTime=ValueNotifier<int>(0);
   }
 }
 
   class _PageTime extends StatefulWidget{
-  @override
+
+   Map order;
+
+   _PageTime({required this.order});
+
+   @override
   State<_PageTime> createState() => _PageTimeState();
 }
 
@@ -176,16 +191,46 @@ class _PageTimeState extends State<_PageTime> {
     return Container(
       padding: EdgeInsets.all(SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
       color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
         children: [
-          Text('Время начала',style:
-            TextStyle(
-              color:  Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-            ),),
-          _TimeWindow(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text('Время начала',style:
+                TextStyle(
+                  color:  Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                ),),
+              _TimeWindow(order: widget.order),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(4.0,GlobalData.sizeScreen!), 0,
+                SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
+            child: Container(
+              height: 1,
+              color: AppColors.colorLine,
+            ),
+          ),
+          Row(
+            children: [
+              Text('Продолжительность заказа:',
+                  style: TextStyle(
+                      color: AppColors.textColorItem,
+                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                  )),
+              Spacer(),
+              Text('${widget.order['workTime']} мин.',
+                style:
+              TextStyle(
+                  color:  AppColors.textColorPhone,
+                  fontWeight: FontWeight.bold,
+                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+              ),),
+
+            ],
+          )
         ],
       ),
     );
@@ -194,142 +239,179 @@ class _PageTimeState extends State<_PageTime> {
 
   class _TimeWindow extends StatefulWidget{
 
-
+    Map order;
 
     @override
     State<_TimeWindow> createState() => _TimeWindowState();
 
-  }
+    _TimeWindow({required this.order});
+}
 
   class _TimeWindowState extends State<_TimeWindow> {
+
+    int i=0;
+    late ValueNotifier<List<dynamic>> _notifier;
+    late String hour;
+    late String min;
+
     @override
     Widget build(BuildContext context) {
-      return Column(
-        children: [
-          Row(
+      return FutureBuilder<ModelTime>(
+        future: RepositoryModule.userRepository().getListTimes(context: context, date: widget.order['date'], workTimeMin: widget.order['workTime'], considerLeftTime: false),
+        builder: (context,data) {
+          return Column(
             children: [
-              Container(child: Text('Часы',textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize:SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
-              ),),width:SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
-               Container(child: Text('Минуты',textAlign: TextAlign.center,
-                 style: TextStyle(
-                     fontSize:SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
-                 ),),width: SizeUtil.getSize(12.0,GlobalData.sizeScreen!),),
+              Row(
+                children: [
+                  Container(child: Text('Часы', textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: SizeUtil.getSize(1.5, GlobalData.sizeScreen!)
+                    ),),
+                    width: SizeUtil.getSize(12.0, GlobalData.sizeScreen!),),
+                  Container(child: Text('Минуты', textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: SizeUtil.getSize(1.5, GlobalData.sizeScreen!)
+                    ),),
+                    width: SizeUtil.getSize(12.0, GlobalData.sizeScreen!),),
+                ],
+              ),
+              Container(
+                alignment: Alignment.center,
+                height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: AppColors.colorBackgrondProfile,
+                          borderRadius: BorderRadius.circular(
+                              SizeUtil.getSize(1.5, GlobalData.sizeScreen!))
+                      ),
+                      width: SizeUtil.getSize(8.0, GlobalData.sizeScreen!),
+                      child: data.hasData?CarouselSlider(
+                        options: CarouselOptions(
+                            onPageChanged: (i, j) {
+                              hour = data.data!.hour[i];
+                              _notifier.value = _getMinutes(data.data!.hour[i], data.data!);
+                            },
+                            initialPage: 0,
+                            scrollDirection: Axis.vertical,
+                            height: SizeUtil.getSize(
+                                8.0, GlobalData.sizeScreen!)),
+                        items: data.data!.hour.map((i) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Text('$i',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(
+                                          4.0, GlobalData.sizeScreen!)
+                                  ));
+                            },
+                          );
+                        }).toList(),
+
+                      ):Center(
+                        child: SizedBox(
+                          height: SizeUtil.getSize(
+                              2.0, GlobalData.sizeScreen!),
+                          width:  SizeUtil.getSize(
+                              2.0, GlobalData.sizeScreen!),
+                          child: CircularProgressIndicator(color: AppColors.textColorHint),
+                        ),
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(
+                          SizeUtil.getSize(1.0, GlobalData.sizeScreen!)),
+                      child: Text(
+                          ':',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: AppColors.textColorPhone,
+                              fontWeight: FontWeight.bold,
+                              fontSize: SizeUtil.getSize(
+                                  4.0, GlobalData.sizeScreen!)
+                          )),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: AppColors.colorBackgrondProfile,
+                          borderRadius: BorderRadius.circular(
+                              SizeUtil.getSize(1.5, GlobalData.sizeScreen!))
+                      ),
+                      width: SizeUtil.getSize(8.0, GlobalData.sizeScreen!),
+                      child: ValueListenableBuilder<List<dynamic>>(
+                        valueListenable: _notifier,
+                        builder: (context, minutes, widget) {
+                          return data.hasData?CarouselSlider(
+                              options: CarouselOptions(
+                                  onPageChanged: (i, j) {
+                                    min = minutes[i];
+                                    _notifierTime.value =
+                                        TimeParser.parseHourForTimeLine(
+                                            '$hour:$min');
+                                  },
+                                  initialPage: 0,
+                                  scrollDirection: Axis.vertical,
+                                  height: SizeUtil.getSize(
+                                      8.0, GlobalData.sizeScreen!)),
+                              items: minutes.map((i) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Text('$i',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: AppColors.textColorPhone,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: SizeUtil.getSize(
+                                                4.0, GlobalData.sizeScreen!)
+                                        ));
+                                  },
+                                );
+                              }).toList()
+                            ):Center(
+                              child: SizedBox(
+                                height: SizeUtil.getSize(
+                                    2.0, GlobalData.sizeScreen!),
+                                width:  SizeUtil.getSize(
+                                    2.0, GlobalData.sizeScreen!),
+                                child: CircularProgressIndicator(color: AppColors.textColorHint),
+                              ),
+                            );
+                          }
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
-          ),
-          Container(
-            alignment: Alignment.center,
-            height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
-            child: Row(
-              mainAxisAlignment:MainAxisAlignment.center,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: AppColors.colorBackgrondProfile,
-                      borderRadius: BorderRadius.circular(SizeUtil.getSize(1.5,GlobalData.sizeScreen!))
-                  ),
-                  width: SizeUtil.getSize(8.0,GlobalData.sizeScreen!),
-                  child: FutureBuilder<List<String>>(
-                    future: TimeParser.getListTimeHourStart(),
-                    builder: (context,hour){
-                      if(hour.hasData){
-                        return CarouselSlider(
-                          options: CarouselOptions(
-                              onPageChanged: (i,j){
-
-                                },
-                              initialPage: 0,
-                              scrollDirection: Axis.vertical,
-                              height:SizeUtil.getSize(8.0,GlobalData.sizeScreen!) ),
-                          items: hour.data!.map((i) {
-                            return Builder(
-                              builder: (BuildContext context) {
-                                return Text('$i',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: AppColors.textColorPhone,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!)
-                                    ));
-                              },
-                            );
-                          }).toList(),
-                        );
-                      }else{
-                        return Text('--',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: AppColors.textColorPhone,
-                                fontWeight: FontWeight.bold,
-                                fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!)
-                            ));
-                      }
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                  child: Text(
-                      ':',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: AppColors.textColorPhone,
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!)
-                      )),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: AppColors.colorBackgrondProfile,
-                      borderRadius: BorderRadius.circular(SizeUtil.getSize(1.5,GlobalData.sizeScreen!))
-                  ),
-                  width: SizeUtil.getSize(8.0,GlobalData.sizeScreen!),
-                  child: FutureBuilder<List<String>>(
-                    future: TimeParser.getListTimeMinuteStart(),
-                    builder: (comtext,minutes){
-                      if(minutes.hasData){
-                        return CarouselSlider(
-                          options: CarouselOptions(
-                              onPageChanged: (i,j){
-
-                              },
-                              initialPage: 0,
-                              scrollDirection: Axis.vertical,
-                              height:SizeUtil.getSize(8.0,GlobalData.sizeScreen!)),
-                          items: minutes.data!.map((i) {
-                            return Builder(
-                              builder: (BuildContext context) {
-                                return Text('$i',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: AppColors.textColorPhone,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!)
-                                    ));
-                              },
-                            );
-                          }).toList(),
-                        );
-                      }else{
-                        return Text('--',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: AppColors.textColorPhone,
-                                fontWeight: FontWeight.bold,
-                                fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!)
-                            ));
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          );
+        }
       );
     }
+
+    //В зависимости от выбранного часа показать минуты
+    _getMinutes(String hour,ModelTime modelTime){
+      int i=-1;
+      List<dynamic> min=[];
+      modelTime.hour.forEach((element) {
+        i++;
+        if(element==hour){
+          min=modelTime.minutes[i];
+        }
+      });
+      return min;
+    }
+
+    @override
+  void initState() {
+   super.initState();
+   _notifier=ValueNotifier<List<dynamic>>([]);
   }
+}
 
 
   class _ItemInfoMain extends StatefulWidget{
