@@ -18,13 +18,13 @@ import '../../app_colors.dart';
 import '../../global_data.dart';
 
   late ValueNotifier<int> _notifierTime;
-
+   String _hour='';
+   String _min='';
 class PageQuickOrderNext extends StatefulWidget{
 
  final List<ModelServiceFromCalculate> list;
  final Map<String,dynamic> order;
  final int totalPriceFinalOfListService;
- bool _isSuccesSendOrder=false;
  bool isClose=false;
 
 
@@ -35,6 +35,8 @@ class PageQuickOrderNext extends StatefulWidget{
 }
 
 class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
+
+  bool _isSuccesSendOrder=false;
 
   @override
   Widget build(BuildContext context) {
@@ -94,25 +96,20 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
               padding:EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
-                child: ValueListenableBuilder(
-                  valueListenable: _notifierTime,
-                  builder: (BuildContext context, int value, Widget? child) {
+                child: !_isSuccesSendOrder?RaisedButton(
+                    color: AppColors.colorIndigo,
+                    onPressed: (){
+                      if(_hour.isNotEmpty&&_min.isNotEmpty){
+                        print('${'$_hour:$_min'}');
+                        widget.order.update('startTime', (val) => TimeParser.parseHourForTimeLine('$_hour:$_min'));
+                        _sendOrder(context,widget.order);
+                      }else{
+                        print('Empty');
+                      }
 
-                    return RaisedButton(
-                        color: value!=0?AppColors.colorIndigo:AppColors.colorDisableButton,
-                        onPressed: (){
-                          if(value!=0){
-                            print('carType ${widget.order['carType']}');
-                           widget.order.update('startTime', (val) => value);
-                             _sendOrder(context,widget.order);
-
-                          }
-                        }, child: Text('Записать',style: TextStyle(
-                        color: Colors.white
-                    ),));
-                  },
-
-                ),
+                    }, child: Text('Записать',style: TextStyle(
+                    color: Colors.white
+                ),)):Container()
               ),
             )
           ],
@@ -130,9 +127,13 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
           widget.isClose=true;
         });
       });
-
+       if(result==null){
+         setState(() {
+           widget.isClose=true;
+         });
+       }
       if(result!){
-        widget._isSuccesSendOrder=true;
+        _isSuccesSendOrder=true;
         Fluttertoast.showToast(
             msg: "Заказ успешно создан!",
             toastLength: Toast.LENGTH_SHORT,
@@ -175,67 +176,65 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
   }
 }
 
-  class _PageTime extends StatefulWidget{
+  class _PageTime extends StatelessWidget{
 
    Map order;
 
    _PageTime({required this.order});
 
-   @override
-  State<_PageTime> createState() => _PageTimeState();
-}
-
-class _PageTimeState extends State<_PageTime> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-      color: Colors.white,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text('Время начала',style:
-                TextStyle(
-                  color:  Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                ),),
-              _TimeWindow(order: widget.order),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(4.0,GlobalData.sizeScreen!), 0,
-                SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
-            child: Container(
-              height: 1,
-              color: AppColors.colorLine,
-            ),
-          ),
-          Row(
-            children: [
-              Text('Продолжительность заказа:',
-                  style: TextStyle(
-                      color: AppColors.textColorItem,
-                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                  )),
-              Spacer(),
-              Text('${widget.order['workTime']} мин.',
-                style:
-              TextStyle(
-                  color:  AppColors.textColorPhone,
-                  fontWeight: FontWeight.bold,
-                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-              ),),
+   return Container(
+     padding: EdgeInsets.all(SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+     color: Colors.white,
+     child: Column(
+       children: [
+         Row(
+           mainAxisAlignment: MainAxisAlignment.spaceAround,
+           children: [
+             Text('Время начала',style:
+             TextStyle(
+                 color:  Colors.black,
+                 fontWeight: FontWeight.bold,
+                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+             ),),
+             _TimeWindow(order: order),
+           ],
+         ),
+         Padding(
+           padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(4.0,GlobalData.sizeScreen!), 0,
+               SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
+           child: Container(
+             height: 1,
+             color: AppColors.colorLine,
+           ),
+         ),
+         Row(
+           children: [
+             Text('Продолжительность заказа:',
+                 style: TextStyle(
+                     color: AppColors.textColorItem,
+                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                 )),
+             Spacer(),
+             Text('${order['workTime']} мин.',
+               style:
+               TextStyle(
+                   color:  AppColors.textColorPhone,
+                   fontWeight: FontWeight.bold,
+                   fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+               ),),
 
-            ],
-          )
-        ],
-      ),
-    );
+           ],
+         )
+       ],
+     ),
+   );
   }
+
 }
+
+
 
   class _TimeWindow extends StatefulWidget{
 
@@ -250,15 +249,23 @@ class _PageTimeState extends State<_PageTime> {
   class _TimeWindowState extends State<_TimeWindow> {
 
     int i=0;
-    late ValueNotifier<List<dynamic>> _notifier;
-    late String hour;
-    late String min;
+    late ValueNotifier<int> _notifier;
+    late int _isLoad;
+
 
     @override
     Widget build(BuildContext context) {
+      _isLoad=0;
       return FutureBuilder<ModelTime>(
         future: RepositoryModule.userRepository().getListTimes(context: context, date: widget.order['date'], workTimeMin: widget.order['workTime'], considerLeftTime: false),
         builder: (context,data) {
+          if(data.hasData){
+            _isLoad=2;
+            _hour=data.data!.hour[0];
+            _min=data.data!.minutes[0][0];
+          }else{
+            _isLoad=1;
+          }
           return Column(
             children: [
               Row(
@@ -288,12 +295,12 @@ class _PageTimeState extends State<_PageTime> {
                               SizeUtil.getSize(1.5, GlobalData.sizeScreen!))
                       ),
                       width: SizeUtil.getSize(8.0, GlobalData.sizeScreen!),
-                      child: data.hasData?CarouselSlider(
+                      child: _isLoad==2?CarouselSlider(
                         options: CarouselOptions(
                             onPageChanged: (i, j) {
-                              hour = data.data!.hour[i];
-                              _notifier.value = _getMinutes(data.data!.hour[i], data.data!);
-                            },
+                              _hour = data.data!.hour[i];
+                              _notifier.value = i;
+                              },
                             initialPage: 0,
                             scrollDirection: Axis.vertical,
                             height: SizeUtil.getSize(
@@ -313,15 +320,22 @@ class _PageTimeState extends State<_PageTime> {
                           );
                         }).toList(),
 
-                      ):Center(
+                      ):_isLoad==0?Center(
                         child: SizedBox(
                           height: SizeUtil.getSize(
                               2.0, GlobalData.sizeScreen!),
                           width:  SizeUtil.getSize(
                               2.0, GlobalData.sizeScreen!),
-                          child: CircularProgressIndicator(color: AppColors.textColorHint),
+                          child: CircularProgressIndicator(color: AppColors.textColorHint,strokeWidth: 1,),
                         ),
-                      )
+                      ):_isLoad==1?Center(
+                        child: SizedBox(
+                            height: SizeUtil.getSize(
+                                4.0, GlobalData.sizeScreen!),
+                            width:  SizeUtil.getSize(
+                                4.0, GlobalData.sizeScreen!),
+                            child: Icon(Icons.error_outline_outlined)),
+                      ):Container()
                     ),
                     Padding(
                       padding: EdgeInsets.all(
@@ -343,22 +357,23 @@ class _PageTimeState extends State<_PageTime> {
                               SizeUtil.getSize(1.5, GlobalData.sizeScreen!))
                       ),
                       width: SizeUtil.getSize(8.0, GlobalData.sizeScreen!),
-                      child: ValueListenableBuilder<List<dynamic>>(
+                      child: ValueListenableBuilder<int>(
                         valueListenable: _notifier,
-                        builder: (context, minutes, widget) {
-                          return data.hasData?CarouselSlider(
+                        builder: (context, index, widget) {
+                          if(data.hasData&&data.data!.minutes.isNotEmpty){
+                            _min = data.data!.minutes[index][0];
+                          }
+                          return _isLoad==2?CarouselSlider(
                               options: CarouselOptions(
+                                  enableInfiniteScroll: true,
                                   onPageChanged: (i, j) {
-                                    min = minutes[i];
-                                    _notifierTime.value =
-                                        TimeParser.parseHourForTimeLine(
-                                            '$hour:$min');
+                                   _min = data.data!.minutes[index][i];
                                   },
                                   initialPage: 0,
                                   scrollDirection: Axis.vertical,
                                   height: SizeUtil.getSize(
                                       8.0, GlobalData.sizeScreen!)),
-                              items: minutes.map((i) {
+                              items: _getMinutes(index, data.data!).map((i) {
                                 return Builder(
                                   builder: (BuildContext context) {
                                     return Text('$i',
@@ -371,22 +386,43 @@ class _PageTimeState extends State<_PageTime> {
                                         ));
                                   },
                                 );
-                              }).toList()
-                            ):Center(
-                              child: SizedBox(
-                                height: SizeUtil.getSize(
-                                    2.0, GlobalData.sizeScreen!),
-                                width:  SizeUtil.getSize(
-                                    2.0, GlobalData.sizeScreen!),
-                                child: CircularProgressIndicator(color: AppColors.textColorHint),
-                              ),
-                            );
+                                    }).toList())
+                                : _isLoad == 0
+                                    ? Center(
+                                        child: SizedBox(
+                                          height: SizeUtil.getSize(
+                                              2.0, GlobalData.sizeScreen!),
+                                          width: SizeUtil.getSize(
+                                              2.0, GlobalData.sizeScreen!),
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.textColorHint,
+                                            strokeWidth: 1,
+                                          ),
+                                        ),
+                                      )
+                                    : _isLoad == 1
+                                        ? Center(
+                                            child: SizedBox(
+                                                height: SizeUtil.getSize(4.0,
+                                                    GlobalData.sizeScreen!),
+                                                width: SizeUtil.getSize(4.0,
+                                                    GlobalData.sizeScreen!),
+                                                child: Icon(Icons
+                                                    .error_outline_outlined)),
+                                          )
+                                        : Container();
                           }
                       ),
                     ),
                   ],
                 ),
               ),
+              _isLoad == 1?SizedBox(height: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)):Container(),
+              _isLoad == 1?Text('Нет доступного времени',style:
+                TextStyle(
+                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                  color: Colors.redAccent
+                ),):Container()
             ],
           );
         }
@@ -394,22 +430,14 @@ class _PageTimeState extends State<_PageTime> {
     }
 
     //В зависимости от выбранного часа показать минуты
-    _getMinutes(String hour,ModelTime modelTime){
-      int i=-1;
-      List<dynamic> min=[];
-      modelTime.hour.forEach((element) {
-        i++;
-        if(element==hour){
-          min=modelTime.minutes[i];
-        }
-      });
-      return min;
+    List<dynamic>_getMinutes(int index,ModelTime modelTime){
+      return modelTime.minutes[index];
     }
 
     @override
   void initState() {
    super.initState();
-   _notifier=ValueNotifier<List<dynamic>>([]);
+   _notifier=ValueNotifier<int>(0);
   }
 }
 

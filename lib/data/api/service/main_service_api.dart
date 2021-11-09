@@ -820,6 +820,7 @@ class MainServiseApi {
         );
 
         return ModelTimeApi.fromApi(map: result.data['intervals']);
+        //return ModelTimeApi.fromApi(map: {});
       } on DioError catch (e) {
         if (e.response != null) {
           if (e.response!.statusCode == 404) {

@@ -835,23 +835,26 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         color: AppColors.textColorPhone,
                                         fontWeight: FontWeight.bold,
                                         fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
-                                    )):Align(
+                                    )):Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(2.3,GlobalData.sizeScreen!), 0),
+                                      child: Align(
                                   alignment: Alignment.centerRight,
                                   child: SizedBox(
-                                    height: SizeUtil.getSize(
-                                        2.0,
-                                        GlobalData.sizeScreen!),
-                                    width: SizeUtil.getSize(
-                                        2.0,
-                                        GlobalData.sizeScreen!),
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.colorIndigo,
-                                      strokeWidth: SizeUtil.getSize(
-                                          0.3,
+                                      height: SizeUtil.getSize(
+                                          2.0,
                                           GlobalData.sizeScreen!),
-                                    ),
+                                      width: SizeUtil.getSize(
+                                          2.0,
+                                          GlobalData.sizeScreen!),
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.colorIndigo,
+                                        strokeWidth: SizeUtil.getSize(
+                                            0.3,
+                                            GlobalData.sizeScreen!),
+                                      ),
                                   ),
                                 ),
+                                    ),
                               ),
                               Padding(
                                 padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(
