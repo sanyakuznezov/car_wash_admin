@@ -5,6 +5,7 @@ import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
@@ -130,6 +131,11 @@ class UserDataRepository extends UserRepository{
   @override
   Future<ModelTime> getListTimes({required BuildContext context, required String date, required int workTimeMin, required bool considerLeftTime}) async{
     return await _apiUtil.getListTimes(context: context, date: date, workTimeMin: workTimeMin, considerLeftTime: considerLeftTime);
+  }
+
+  @override
+  Future<ModelDataTable?> getDataSetting({required BuildContext context, required String date})async {
+    return await _apiUtil.getDataSetting(context: context, date: date);
   }
 
 

@@ -5,9 +5,11 @@ import '../../../global_data.dart';
 import 'table_cell.dart';
 
 class TableHead extends StatelessWidget {
+
+  final int posts;
   final ScrollController scrollController;
 
-  TableHead({
+  TableHead({required this.posts,
     required this.scrollController,
   });
 
@@ -23,8 +25,8 @@ class TableHead extends StatelessWidget {
                 controller: scrollController,
                 physics: ClampingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
-                children: List.generate(GlobalData.numBoxes.toInt(), (index) {
-                  return MultiplicationTableCell(
+                children: List.generate(posts, (index) {
+                  return MultiplicationTableCell(posts: posts,
                     value: index + 1,
                   );
                 }),

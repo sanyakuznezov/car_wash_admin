@@ -94,6 +94,7 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
            )
          ],
          bottom: TabBar(
+           controller: _tabController,
              onTap: (index) {
                setState(() {
                  _index=index;
@@ -129,7 +130,7 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
+    //_tabController.dispose();
   }
 
   @override

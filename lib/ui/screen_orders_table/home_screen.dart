@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     AppModule.blocTable.streamSink.add(0);
-
+    GlobalData.date=DateTime.now().toString().split(' ')[0];
 
   }
 
@@ -169,10 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         color: Colors.transparent,
                                       ),
                                       onChanged: (String? newValue) {
-                                        setState(() {
-                                          dropdownValue = newValue!;
-                                          AppModule.blocTable.streamSink.add(state(newValue));
-                                        });
+                                        dropdownValue = newValue!;
+                                        AppModule.blocTable.streamSink.add(state(newValue));
                                       },
                                       items: <String>['1 час', '30 минут', '15 минут', '5 минут']
                                           .map<DropdownMenuItem<String>>((String value) {

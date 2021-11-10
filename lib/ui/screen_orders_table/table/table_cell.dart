@@ -10,16 +10,17 @@ import '../../../global_data.dart';
 
 class MultiplicationTableCell extends StatelessWidget {
   final int value;
+  final int posts;
 
 
-  MultiplicationTableCell({
+  MultiplicationTableCell({required this.posts,
     required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150,
+      width: getWight(posts),
       height: SizeUtil.getSize(6.22,GlobalData.sizeScreen!),
       color: AppColors.colorBackgrondProfile,
       alignment: Alignment.center,
@@ -41,5 +42,15 @@ class MultiplicationTableCell extends StatelessWidget {
           )
 
     );
+  }
+
+
+  //ширина столбцов в зависимости от количества постов
+  double getWight(int posts){
+    double w=150;
+    if(posts==1){
+      w=SizeUtil.getSize(40.0,GlobalData.sizeScreen!);
+    }
+    return w;
   }
 }

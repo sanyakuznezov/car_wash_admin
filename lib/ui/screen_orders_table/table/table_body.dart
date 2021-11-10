@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/state/bloc_table_order.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,13 @@ class TableBody extends StatefulWidget {
   final ScrollController scrollController;
   final ScrollController scrollController_top;
   final List<Map> orderList=GlobalData.dataOrdersList;
-  TableBody({ required this.scrollController_top,required this.scrollController,
+  final ModelDataTable modelDataTable;
+
+
+
+
+
+  TableBody({required this.modelDataTable, required this.scrollController_top,required this.scrollController,
   });
 
   @override
@@ -51,6 +59,7 @@ class _TableBodyState extends State<TableBody> {
   double? startY;
 
 
+
   @override
   void initState() {
     super.initState();
@@ -63,19 +72,12 @@ class _TableBodyState extends State<TableBody> {
     _centerColumnsController.addListener(() {
       AppModule.blocTable.streamSinkScroll.add(_centerColumnsController.offset);
     });
-    _getListOrder(context, '2021-11-07');
+
   }
 
 
 
-   //Получение списка заказов за определенный день
-   Future<List<ModelOrder>?> _getListOrder(BuildContext buildContext,String date) async{
-      final result = await RepositoryModule.userRepository().getListOrder(context: context, date: date);
-       result!.forEach((element) {
-         print('List ${element.startDate}');
-       });
-      return result;
-   }
+
 
   //текущее время для управления линией времени на таблице
   void getTime() {
@@ -88,6 +90,16 @@ class _TableBodyState extends State<TableBody> {
       AppModule.blocTable.streamSinkTime.add(_time);
     });
 
+  }
+
+
+  //ширина столбцов в зависимости от количества постов
+  double _getWight(int posts){
+    double w=150;
+    if(posts==1){
+      w=SizeUtil.getSize(40.0,GlobalData.sizeScreen!);
+    }
+    return w;
   }
 
   @override
@@ -114,130 +126,118 @@ class _TableBodyState extends State<TableBody> {
                 child: CircularProgressIndicator(color: Colors.indigo),
               );
             }
-            return FutureBuilder<List>(
-              future: AppModule.blocTable.addOrderInBox(timeState,numBoxes,widget.orderList),
-                builder: (context,data) {
-                  index=-1;
-              if (data.data == null) {
-                return Container(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(
-                    color: Colors.indigo,
-                  ),
-                );
-              }
-              return Stack(
+            index=-1;
+            return Stack(
                 children: [
                   Row(
-                children: [
-
-                  // Сетка талицы с нумерацией постов и временной шкалой
-                  SizedBox(
-                    width: 50,
-                    child:
-                    ListView(
-                      controller: _timeColumnsController,
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
+                    children: [
+                      // Сетка талицы с нумерацией постов и временной шкалой
+                      SizedBox(
+                        width: 50,
+                        child:
+                        ListView(
+                          controller: _timeColumnsController,
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          children: List.generate(GlobalData.times[snapshot.data].length, (index) {
+                            return BoxTime(time: GlobalData.times[snapshot.data][index]);
+                          }),
+                        ),
                       ),
-                      children: List.generate(GlobalData.times[snapshot.data].length, (index) {
-                        return BoxTime(time: GlobalData.times[snapshot.data][index]);
-                      }),
-                    ),
-                  ),
 
-                       Expanded(
-                         child: Container(
-                           margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                           child: SingleChildScrollView(
-                               controller: widget.scrollController,
-                               scrollDirection: Axis.horizontal,
-                               physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                  ),
-                               child: SizedBox(
-                                 width: 150 * GlobalData.numBoxes.toDouble(),
-                                 child: ListView(
-                                   controller: _restColumnsController,
-                                   physics: const AlwaysScrollableScrollPhysics(
-                                     parent: BouncingScrollPhysics(),
-                                   ),
-                                   children: List.generate(GlobalData.times[snapshot.data].length - 1, (y) {
-                                     return Row(
-                                       children: List.generate(GlobalData.numBoxes.toInt(), (x) {
-                                         return BoxOrder(
-                                             dataOrder: data.data![0],
-                                             index: index,
-                                             callbackBox: (drag, x, y) {
-                                               setState(() {
-                                                 _x = x;
-                                                 _y = y;
-                                                 dragControll = true;
-                                               });
-                                             });
-                                       }
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                          child: SingleChildScrollView(
+                              controller: widget.scrollController,
+                              scrollDirection: Axis.horizontal,
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              child: SizedBox(
+                                width: _getWight(widget.modelDataTable.posts)*widget.modelDataTable.posts,
+                                child: ListView(
+                                  controller: _restColumnsController,
+                                  physics: const AlwaysScrollableScrollPhysics(
+                                    parent: BouncingScrollPhysics(),
+                                  ),
+                                  children: List.generate(GlobalData.times[snapshot.data].length - 1, (y) {
+                                    return Row(
+                                      children: List.generate(widget.modelDataTable.posts, (x) {
+                                        return BoxOrder(
+                                          posts: widget.modelDataTable.posts,
+                                            index: index,
+                                            callbackBox: (drag, x, y) {
+                                              setState(() {
+                                                _x = x;
+                                                _y = y;
+                                                dragControll = true;
+                                              });
+                                            });
+                                      }
 
-                                       ),
+                                      ),
 
                                     );
                                   }),
-                                 )
-                                 ,
-                               )
-                           ),
-                         ),
-                       ),
+                                )
+                                ,
+                              )
+                          ),
+                        ),
+                      ),
 
-                     ],
-                ),
+                    ],
+                  ),
 
                   //линия текущего времени
                   StreamBuilder<String>(
-                    stream:  AppModule.blocTable.streamTimer,
+                      stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
-                    if(time.data!=null){
-                      startY=c1+TimeParser.shiftTime(
-                          time_start: TimeParser.parseHourForTimeLine(time.data!),
-                          timeStep: snapshot.data);
-                      return Expanded(
-                          child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                              child: SingleChildScrollView(
-                                  controller: _timeLineColumnsController,
-                                  scrollDirection: Axis.vertical,
-                                  physics: const AlwaysScrollableScrollPhysics(
-                                      parent: BouncingScrollPhysics()),
-                                  child: SizedBox(
-                                      width: 150 * GlobalData.numBoxes.toDouble(),
-                                      height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                      child: Stack(
-                                        children: [
-                                          Positioned(
-                                              top:startY,
-                                              child: Container(
-                                                margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
-                                                color: Colors.indigo,
-                                                width: 150 * GlobalData.numBoxes.toDouble(),
-                                                height: 2,
-                                              ))
-                                        ],
-                                      )))));
-                    }else{
-                      return Container();
-                    }
+                        if(time.data!=null){
+                          startY=c1+TimeParser.shiftTime(
+                              time_start: TimeParser.parseHourForTimeLine(time.data!),
+                              timeStep: snapshot.data);
+                          return Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                                  child: SingleChildScrollView(
+                                      controller: _timeLineColumnsController,
+                                      scrollDirection: Axis.vertical,
+                                      physics: const AlwaysScrollableScrollPhysics(
+                                          parent: BouncingScrollPhysics()),
+                                      child: SizedBox(
+                                          width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
+                                          height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                          child: Stack(
+                                            children: [
+                                              Positioned(
+                                                  top:startY,
+                                                  child: Container(
+                                                    margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
+                                                    color: Colors.indigo,
+                                                    width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
+                                                    height: 2,
+                                                  ))
+                                            ],
+                                          )))));
+                        }else{
+                          return Container();
+                        }
 
-                  }),
+                      }),
 
 
-                //Столбцы таблицы
+                  //Столбцы таблицы
                   StreamBuilder<Map>(
-                    stream:  AppModule.blocTable.dragS,
+                      stream:  AppModule.blocTable.dragS,
                       builder: (context,value){
-                      if(value.data!=null){
-                        if(value.data!['action']==1){
-                              int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                             _map={'id':widget.orderList[i]['id'],
-                               'enable':1,
+                        if(value.data!=null){
+                          if(value.data!['action']==1){
+                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                            _map={'id':widget.orderList[i]['id'],
+                              'enable':1,
                               'start_date':widget.orderList[i]['start_date'],
                               'expiration_date':widget.orderList[i]['expiration_date'],
                               'post':widget.orderList[i]['post'],
@@ -246,81 +246,82 @@ class _TableBodyState extends State<TableBody> {
                               'type_car':widget.orderList[i]['type_car'],
                               'number_car':widget.orderList[i]['number_car'],
                               'region':widget.orderList[i]['region'],};
-                              _mapOld={'id':widget.orderList[i]['id'],
-                                'enable':1,
-                                'start_date':widget.orderList[i]['start_date'],
-                                'expiration_date':widget.orderList[i]['expiration_date'],
-                                'post':widget.orderList[i]['post'],
-                                'status':widget.orderList[i]['status'],
-                                'brand_car':widget.orderList[i]['brand_car'],
-                                'type_car':widget.orderList[i]['type_car'],
-                                'number_car':widget.orderList[i]['number_car'],
-                                'region':widget.orderList[i]['region'],};
-                              widget.orderList[i].update('enable', (value) =>0);
+                            _mapOld={'id':widget.orderList[i]['id'],
+                              'enable':1,
+                              'start_date':widget.orderList[i]['start_date'],
+                              'expiration_date':widget.orderList[i]['expiration_date'],
+                              'post':widget.orderList[i]['post'],
+                              'status':widget.orderList[i]['status'],
+                              'brand_car':widget.orderList[i]['brand_car'],
+                              'type_car':widget.orderList[i]['type_car'],
+                              'number_car':widget.orderList[i]['number_car'],
+                              'region':widget.orderList[i]['region'],};
+                            widget.orderList[i].update('enable', (value) =>0);
 
-                        }else if(value.data!['action']==3){
-                          int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                          widget.orderList[i].update('start_date', (v) => value.data!['start']);
-                          widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
-                          widget.orderList[i].update('post', (v) => value.data!['post']);
+                          }else if(value.data!['action']==3){
+                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                            widget.orderList[i].update('start_date', (v) => value.data!['start']);
+                            widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
+                            widget.orderList[i].update('post', (v) => value.data!['post']);
 
-                        }else if(value.data!['action']==5){
-                          int i=getIndex(value.data!['id'],widget.orderList);
-                          widget.orderList[i].update('start_date', (v) => value.data!['start']);
-                          widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
-                          widget.orderList[i].update('post', (v) => value.data!['post']);
-                        }else if(value.data!['action']==6){
-                          int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                          widget.orderList[i].update('enable', (value) =>0);
-                          _mapOld!.update('id', (value) =>widget.orderList.length);
-                          widget.orderList.add(_mapOld!);
-                          print('Data old 2 ${_mapOld!['start_date']}  -- ${_mapOld!['post']}');
+                          }else if(value.data!['action']==5){
+                            int i=getIndex(value.data!['id'],widget.orderList);
+                            widget.orderList[i].update('start_date', (v) => value.data!['start']);
+                            widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
+                            widget.orderList[i].update('post', (v) => value.data!['post']);
+                          }else if(value.data!['action']==6){
+                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                            widget.orderList[i].update('enable', (value) =>0);
+                            _mapOld!.update('id', (value) =>widget.orderList.length);
+                            widget.orderList.add(_mapOld!);
+
+                          }
                         }
-                      }
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
-                    child: Expanded(
-                        child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                            child: SingleChildScrollView(
-                              controller: _centerColumnsController,
-                              scrollDirection: Axis.vertical,
-                              physics: const AlwaysScrollableScrollPhysics(
-                                  parent: BouncingScrollPhysics()),
-                              child: SizedBox(
-                                width: 150 * GlobalData.numBoxes.toDouble(),
-                                height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                child: SingleChildScrollView(
-                                    controller: widget.scrollController_top,
-                                    scrollDirection: Axis.horizontal,
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                          child: Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                                  child: SingleChildScrollView(
+                                    controller: _centerColumnsController,
+                                    scrollDirection: Axis.vertical,
                                     physics: const AlwaysScrollableScrollPhysics(
                                         parent: BouncingScrollPhysics()),
-                                    child: Row(
-                                      children: List.generate(GlobalData.numBoxes.toInt(), (i) {
-                                        return Container(
-                                            width: 150,
-                                            child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                              post:i,
-                                              time: _time!,
-                                              orderList: widget.orderList,
-                                              timeStep: snapshot.data,
-                                             accept: (start,end,postNum){
-                                              AppModule.blocTable.streamSinkDrag.add({'action':2});
-                                                _map!.update('start_date', (value) => start);
-                                                _map!.update('expiration_date', (value) => end);
-                                                _map!.update('post', (value) => postNum);
-                                                _map!.update('id', (value) =>widget.orderList.length);
-                                              widget.orderList.add(_map!);
-                                            },));
-                                      }),
-                                    )
-                                ),
-                              ),
-                            ))),
-                  );
-                  }),
+                                    child: SizedBox(
+                                      width: 150 * GlobalData.numBoxes.toDouble(),
+                                      height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                      child: SingleChildScrollView(
+                                          controller: widget.scrollController_top,
+                                          scrollDirection: Axis.horizontal,
+                                          physics: const AlwaysScrollableScrollPhysics(
+                                              parent: BouncingScrollPhysics()),
+                                          child: Row(
+                                            children: List.generate(widget.modelDataTable.posts, (i) {
+                                              return Container();
+                                              // return Container(
+                                              //     width: 150,
+                                              //     child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                              //       post:i,
+                                              //       time: _time!,
+                                              //       orderList: widget.orderList,
+                                              //       timeStep: snapshot.data,
+                                              //      accept: (start,end,postNum){
+                                              //       AppModule.blocTable.streamSinkDrag.add({'action':2});
+                                              //         _map!.update('start_date', (value) => start);
+                                              //         _map!.update('expiration_date', (value) => end);
+                                              //         _map!.update('post', (value) => postNum);
+                                              //         _map!.update('id', (value) =>widget.orderList.length);
+                                              //       widget.orderList.add(_map!);
+                                              //     },));
+                                            }),
+                                          )
+                                      ),
+                                    ),
+                                  ))),
+                        );
+                      }),
 
-                 //Датчики для скроллов таблицы
+                  //Датчики для скроллов таблицы
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
@@ -328,12 +329,12 @@ class _TableBodyState extends State<TableBody> {
                         height: 50,
                         child: DragTarget<int>(
                             onLeave: (value) {
-                          leave = 0;
-                          _centerColumnsController.animateTo(
-                              _centerColumnsController.offset,
-                              duration: Duration(seconds: 10),
-                              curve: Curves.easeOut);
-                        }, onMove: (e) {
+                              leave = 0;
+                              _centerColumnsController.animateTo(
+                                  _centerColumnsController.offset,
+                                  duration: Duration(seconds: 10),
+                                  curve: Curves.easeOut);
+                            }, onMove: (e) {
                           leave++;
                           if (leave == 1) {
                             _centerColumnsController.animateTo(
@@ -354,12 +355,12 @@ class _TableBodyState extends State<TableBody> {
                         height: 50,
                         child: DragTarget<int>(
                             onLeave: (value) {
-                          leave = 0;
-                          _centerColumnsController.animateTo(
-                              _centerColumnsController.offset,
-                              duration: Duration(seconds: 10),
-                              curve: Curves.easeOut);
-                        }, onMove: (e) {
+                              leave = 0;
+                              _centerColumnsController.animateTo(
+                                  _centerColumnsController.offset,
+                                  duration: Duration(seconds: 10),
+                                  curve: Curves.easeOut);
+                            }, onMove: (e) {
                           leave++;
                           if (leave == 1) {
 
@@ -425,8 +426,8 @@ class _TableBodyState extends State<TableBody> {
                         })),
                   )
                 ]);
-              });
-        });
+
+            });
 
 
 

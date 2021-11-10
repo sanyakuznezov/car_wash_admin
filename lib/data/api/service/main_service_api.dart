@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:car_wash_admin/data/api/model/ModelDataTableApi.dart';
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
 import 'package:car_wash_admin/data/api/model/model_order_api.dart';
@@ -852,6 +853,78 @@ class MainServiseApi {
 
     return null;
   }
+
+  Future<ModelDataTableApi?> getDataSetting({required BuildContext context, required String date}) async {
+    if (await StateNetwork.initConnectivity() == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    } else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      print('');
+      final value = {
+        'cwId': data['cwid'],
+        'pId': data['pid'],
+        'date': date
+      };
+      try {
+        final result = await _dio.post(
+            'journal/settings',
+            data: value,
+            options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 10000,
+              contentType: 'application/x-www-form-urlencoded',
+            )
+        );
+
+        return ModelDataTableApi.fromApi(map: result.data['settings']);
+
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 403) {
+            Fluttertoast.showToast(
+                msg: "Нет доступа",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+          if (e.response!.statusCode == 404) {
+            Fluttertoast.showToast(
+                msg: "Сотрудник или автомойка не найдены",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+          if (e.response!.statusCode == 500) {
+            Fluttertoast.showToast(
+                msg: "Ошибка сервера",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
+
 
 
 }
