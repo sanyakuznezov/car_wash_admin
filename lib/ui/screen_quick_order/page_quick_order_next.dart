@@ -21,8 +21,7 @@ import '../../global_data.dart';
    String _hour='';
    String _min='';
 class PageQuickOrderNext extends StatefulWidget{
-
- final List<ModelServiceFromCalculate> list;
+  final List<ModelServiceFromCalculate> list;
  final Map<String,dynamic> order;
  final int totalPriceFinalOfListService;
  bool isClose=false;
@@ -38,13 +37,9 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
 
   bool _isSuccesSendOrder=false;
 
+
   @override
   Widget build(BuildContext context) {
-
-    if(widget.isClose){
-      Navigator.of(context, rootNavigator: true).pop('dialog');
-    }
-
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
       body: SingleChildScrollView(
@@ -93,23 +88,33 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
               order: widget.order,
                 priceTotal: widget.totalPriceFinalOfListService),
             Padding(
-              padding:EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
+              padding:_isSuccesSendOrder?EdgeInsets.all(SizeUtil.getSize(3.0,GlobalData.sizeScreen!)):EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
                 child: !_isSuccesSendOrder?RaisedButton(
                     color: AppColors.colorIndigo,
                     onPressed: (){
+                      print('$_hour:$_min');
                       if(_hour.isNotEmpty&&_min.isNotEmpty){
-                        print('${'$_hour:$_min'}');
                         widget.order.update('startTime', (val) => TimeParser.parseHourForTimeLine('$_hour:$_min'));
                         _sendOrder(context,widget.order);
-                      }else{
-                        print('Empty');
                       }
 
                     }, child: Text('Записать',style: TextStyle(
                     color: Colors.white
-                ),)):Container()
+                ),)):Center(child: Column(
+                  children: [
+                    Icon(Icons.check_circle_outline_outlined,color: Colors.green,size: SizeUtil.getSize(10,GlobalData.sizeScreen!),),
+                    Padding(
+                      padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                      child: Text('Заказ создан!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                          fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!))),
+                    ),
+
+                  ],
+                ))
               ),
             )
           ],
@@ -118,35 +123,38 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
     );
   }
   
-  
+   //Отправка заказа на сервер
    Future<void>_sendOrder(BuildContext context,Map<String,dynamic> map)async{
      _showLoaderDialog(context);
-      final result=await RepositoryModule.userRepository().addQuickOrder(context: context, map: map)
-          .catchError((error){
-        setState(() {
-          widget.isClose=true;
-        });
-      });
+      final result=await RepositoryModule.userRepository().addQuickOrder(context: context, map: map);
        if(result==null){
-         setState(() {
-           widget.isClose=true;
-         });
+         Navigator.of(context, rootNavigator: true).pop('dialog');
+         Fluttertoast.showToast(
+             msg: "Ошибка сервера",
+             toastLength: Toast.LENGTH_SHORT,
+             gravity: ToastGravity.CENTER,
+             timeInSecForIosWeb: 3,
+             backgroundColor: Colors.white,
+             textColor: Colors.black,
+             fontSize: 16.0
+         );
        }
       if(result!){
-        _isSuccesSendOrder=true;
-        Fluttertoast.showToast(
-            msg: "Заказ успешно создан!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 16.0
-        );
+        setState(() {
+          _isSuccesSendOrder=true;
+          Navigator.of(context, rootNavigator: true).pop('dialog');
+          Fluttertoast.showToast(
+              msg: "Заказ успешно создан!",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              fontSize: 16.0
+          );
+        });
+
       }
-     setState(() {
-       widget.isClose=true;
-     });
 
    }
 
@@ -173,6 +181,8 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
   void initState() {
     super.initState();
     _notifierTime=ValueNotifier<int>(0);
+    _hour='';
+    _min='';
   }
 }
 
@@ -251,6 +261,8 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
     int i=0;
     late ValueNotifier<int> _notifier;
     late int _isLoad;
+    CarouselController _carouselController=CarouselController();
+
 
 
     @override
@@ -259,13 +271,20 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
       return FutureBuilder<ModelTime>(
         future: RepositoryModule.userRepository().getListTimes(context: context, date: widget.order['date'], workTimeMin: widget.order['workTime'], considerLeftTime: false),
         builder: (context,data) {
-          if(data.hasData){
-            _isLoad=2;
-            _hour=data.data!.hour[0];
-            _min=data.data!.minutes[0][0];
-          }else{
+          if(data.connectionState.index==3){
+            if(data.hasData){
+              _isLoad=2;
+              _hour=data.data!.hour[0];
+              _min=data.data!.minutes[0][0];
+            }else{
+              _isLoad=1;
+            }
+          }
+
+          if(data.hasError){
             _isLoad=1;
           }
+
           return Column(
             children: [
               Row(
@@ -298,6 +317,7 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
                       child: _isLoad==2?CarouselSlider(
                         options: CarouselOptions(
                             onPageChanged: (i, j) {
+                              _carouselController.jumpToPage(0);
                               _hour = data.data!.hour[i];
                               _notifier.value = i;
                               },
@@ -362,8 +382,10 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
                         builder: (context, index, widget) {
                           if(data.hasData&&data.data!.minutes.isNotEmpty){
                             _min = data.data!.minutes[index][0];
+
                           }
                           return _isLoad==2?CarouselSlider(
+                            carouselController: _carouselController,
                               options: CarouselOptions(
                                   enableInfiniteScroll: true,
                                   onPageChanged: (i, j) {

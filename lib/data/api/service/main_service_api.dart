@@ -820,12 +820,23 @@ class MainServiseApi {
         );
 
         return ModelTimeApi.fromApi(map: result.data['intervals']);
-        //return ModelTimeApi.fromApi(map: {});
+
       } on DioError catch (e) {
         if (e.response != null) {
           if (e.response!.statusCode == 404) {
             Fluttertoast.showToast(
                 msg: "Не найдены автомойка / настройки автомойки",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+          if (e.response!.statusCode == 500) {
+            Fluttertoast.showToast(
+                msg: "Ошибка сервера",
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 3,
