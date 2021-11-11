@@ -8,9 +8,6 @@ import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:car_wash_admin/utils/time_position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'body_order.dart';
@@ -41,7 +38,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   double? startY;
   int? endCollision;
   int? startCollision;
-  double? sizeBode;
+  double? sizeBody;
   bool isCollision=false;
   int? _editState;
   int? _statusCode;
@@ -165,10 +162,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             startY=c1+TimeParser.shiftTime(
                                 time_start: TimeParser.parseHour(widget.orderList[a]['start_date']),
                                 timeStep: widget.timeStep);
-                            sizeBode=sizeBody(TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
-                            endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBode!.toInt());
+                            sizeBody=_sizeBody(TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
+                            endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
                             startCollision=TimeParser.parseHourStartCollision(widget.orderList[a]['start_date']);
-                            sizeBode=sizeBody(TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             if(widget.orderList[a]['enable']==1){
                               _offsetsOrder.add({'start':startCollision,'end':endCollision,'id':widget.orderList[a]['id']});
                             }
@@ -197,7 +193,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   onPost: (post){
                                     GlobalData.post=post;
                                   },
-                                  bodyHeight: sizeBode!,
+                                  bodyHeight: sizeBody!,
                                   dataOrder: widget.orderList[a],
                                   timeStep: widget.timeStep,
                                   stateDrag: _editState!,
@@ -270,7 +266,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
           }
 
           if(_offsetsOrder.isNotEmpty){
-            isCollision=isColission(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -288,25 +284,27 @@ class StateDragTargetTable extends State<DragTargetTable> {
     );
   }
 
-  @override
-  void initState() {
-
-  }
 
   @override
   void dispose() {
+    super.dispose();
     AppModule.blocTable.diponseScrollStream();
     AppModule.blocTable.disponseFeedBackStream();
   }
 
-  double sizeBody(int start,int end,int timeStep){
+  double _sizeBody(int start,int end,int timeStep){
     double? result;
-    result=end.toDouble()-start.toDouble();
+    if(start>end){
+      result=1800-start.toDouble();
+    }else{
+      result=end.toDouble()-start.toDouble();
+    }
+
     return result*GlobalData.timeStepsConstant[timeStep]['coof'];
   }
 
 
-  isColission(List<Map> orders,int b1,int b2){
+  _isColision(List<Map> orders,int b1,int b2){
      for(int i=0;orders.length>i;i++){
        if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
          return true;

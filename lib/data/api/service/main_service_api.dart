@@ -753,38 +753,37 @@ class MainServiseApi {
       } on DioError catch (e) {
         if (e.response != null) {
           if (e.response!.statusCode == 403) {
-            Fluttertoast.showToast(
-                msg: "В доступе отказано",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 3,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0
-            );
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content:
+                    Text('В доступе отказано',
+                      style: TextStyle(
+                          color: Colors.white
+                      ),)));
           }
           if (e.response!.statusCode == 404) {
-            Fluttertoast.showToast(
-                msg: "Не найдены автомойка или сотрудник",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 3,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0
-            );
+
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content:
+                    Text('Не найдены автомойка или сотрудник',
+                      style: TextStyle(
+                          color: Colors.white
+                      ),)));
           }
           if (e.response!.statusCode == 420) {
-            Fluttertoast.showToast(
-                msg: "Неверный токен доступа",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 3,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0
-            );
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.redAccent,
+                    content:
+                Text('Неверный токен доступа',
+                style: TextStyle(
+                  color: Colors.white
+                ),)));
           }
+          return null;
         }
       }
     }

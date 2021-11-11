@@ -26,15 +26,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  String dropdownValue = '1 час';
+  //String dropdownValue = '1 час';
   String dateValue= getDate();
   double? top;
+  late ValueNotifier<String> _notifierDropdownButton;
 
 
 
   @override
   void initState() {
     super.initState();
+    _notifierDropdownButton=ValueNotifier('1 час');
     AppModule.blocTable.streamSink.add(0);
     GlobalData.date=DateTime.now().toString().split(' ')[0];
 
@@ -49,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: AppColors.colorBackgrondProfile,
         body: Column(
@@ -155,30 +156,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                         color: Colors.white
                                     ),
 
-                                    child: DropdownButton<String>(
-                                      value: dropdownValue,
-                                      icon: const Icon(Icons.arrow_drop_down,
-                                        color: Colors.black,),
-                                      iconSize: 24,
-                                      elevation: 16,
-                                      style: TextStyle(color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
-                                      underline: Container(
-                                        height: 2,
-                                        color: Colors.transparent,
-                                      ),
-                                      onChanged: (String? newValue) {
-                                        dropdownValue = newValue!;
-                                        AppModule.blocTable.streamSink.add(state(newValue));
-                                      },
-                                      items: <String>['1 час', '30 минут', '15 минут', '5 минут']
-                                          .map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
+                                    child: ValueListenableBuilder<String>(
+                                      valueListenable: _notifierDropdownButton,
+                                      builder: (context,item,widget){
+                                        return DropdownButton<String>(
+                                          value: item,
+                                          icon: const Icon(Icons.arrow_drop_down,
+                                            color: Colors.black,),
+                                          iconSize: 24,
+                                          elevation: 16,
+                                          style: TextStyle(color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
+                                          underline: Container(
+                                            height: 2,
+                                            color: Colors.transparent,
+                                          ),
+                                          onChanged: (String? newValue) {
+                                            _notifierDropdownButton.value = newValue!;
+                                            AppModule.blocTable.streamSink.add(state(newValue));
+                                          },
+                                          items: <String>['1 час', '30 минут', '15 минут', '5 минут']
+                                              .map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
                                         );
-                                      }).toList(),
+                                      },
                                     ),
 
                                   )),

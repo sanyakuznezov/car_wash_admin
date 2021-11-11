@@ -24,14 +24,14 @@ bool accept=false;
 class TableBody extends StatefulWidget {
   final ScrollController scrollController;
   final ScrollController scrollController_top;
-  final List<Map> orderList=GlobalData.dataOrdersList;
+  final List<Map> orderList;
   final ModelDataTable modelDataTable;
 
 
 
 
 
-  TableBody({required this.modelDataTable, required this.scrollController_top,required this.scrollController,
+  TableBody({required this.orderList,required this.modelDataTable, required this.scrollController_top,required this.scrollController,
   });
 
   @override
@@ -116,8 +116,7 @@ class _TableBodyState extends State<TableBody> {
   @override
   Widget build(BuildContext context) {
     int index=-1;
-    return
-        StreamBuilder<dynamic>(
+    return StreamBuilder<dynamic>(
           stream: AppModule.blocTable.stateTime,
             builder: (context,snapshot){
             if(snapshot.data==null){
@@ -288,7 +287,7 @@ class _TableBodyState extends State<TableBody> {
                                     physics: const AlwaysScrollableScrollPhysics(
                                         parent: BouncingScrollPhysics()),
                                     child: SizedBox(
-                                      width: 150 * GlobalData.numBoxes.toDouble(),
+                                      width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
                                       height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
                                       child: SingleChildScrollView(
                                           controller: widget.scrollController_top,
@@ -297,22 +296,21 @@ class _TableBodyState extends State<TableBody> {
                                               parent: BouncingScrollPhysics()),
                                           child: Row(
                                             children: List.generate(widget.modelDataTable.posts, (i) {
-                                              return Container();
-                                              // return Container(
-                                              //     width: 150,
-                                              //     child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                              //       post:i,
-                                              //       time: _time!,
-                                              //       orderList: widget.orderList,
-                                              //       timeStep: snapshot.data,
-                                              //      accept: (start,end,postNum){
-                                              //       AppModule.blocTable.streamSinkDrag.add({'action':2});
-                                              //         _map!.update('start_date', (value) => start);
-                                              //         _map!.update('expiration_date', (value) => end);
-                                              //         _map!.update('post', (value) => postNum);
-                                              //         _map!.update('id', (value) =>widget.orderList.length);
-                                              //       widget.orderList.add(_map!);
-                                              //     },));
+                                              return Container(
+                                                  width: 150,
+                                                  child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                                    post:i,
+                                                    time: _time!,
+                                                    orderList: widget.orderList,
+                                                    timeStep: snapshot.data,
+                                                   accept: (start,end,postNum){
+                                                    AppModule.blocTable.streamSinkDrag.add({'action':2});
+                                                      _map!.update('start_date', (value) => start);
+                                                      _map!.update('expiration_date', (value) => end);
+                                                      _map!.update('post', (value) => postNum);
+                                                      _map!.update('id', (value) =>widget.orderList.length);
+                                                    widget.orderList.add(_map!);
+                                                  },));
                                             }),
                                           )
                                       ),
