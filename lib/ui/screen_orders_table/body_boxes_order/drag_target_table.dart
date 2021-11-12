@@ -43,9 +43,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
   int? _editState;
   int? _statusCode;
   final double c1=108;
-  final double c2=18;
+  final double c2=15;
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
-  final double c4=SizeUtil.getSize(31.5,GlobalData.sizeScreen!);
   int? _timeParse;
   String? _date;
 
@@ -215,8 +214,10 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   if (value.data != null) {
                                     _scrollY = value.data;
                                   }
+
+                                  //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY + c2,
+                                      top: y.data + _scrollY-c2,
                                       child: Container(
                                         width: 140,
                                         height: GlobalData.bodyHeightFeedBackWidget + c3,
@@ -257,7 +258,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         },
 
         onMove: (e) {
-          _y = e.offset.dy - c4;
+          _y = e.offset.dy;
           AppModule.blocTable.streamSinkFeedback.add(_y);
           if (_leave != 2) {
             setState(() {
@@ -305,11 +306,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
 
   _isColision(List<Map> orders,int b1,int b2){
+
      for(int i=0;orders.length>i;i++){
        if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
          return true;
        }
-
        if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
          return true;
        }

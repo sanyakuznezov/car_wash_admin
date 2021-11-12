@@ -26,7 +26,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  //String dropdownValue = '1 час';
   String dateValue= getDate();
   double? top;
   late ValueNotifier<String> _notifierDropdownButton;
@@ -53,195 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColors.colorBackgrondProfile,
-        body: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child:
-              Container(
-                  padding: EdgeInsets.fromLTRB(10,SizeUtil.getSize(6,GlobalData.sizeScreen!), 10, 10),
-                  color: AppColors.colorIndigo,
-                  child:
-                  Expanded(
-                      child:
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: GestureDetector(
-                                    onTap: (){
-                                      Navigator.push(
-                                        context,
-                                        SlideTransitionRight(PageProfile()),
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                flex: 1,
-                              ),
-                              Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Padding(
-                                      padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
-                                      child: GestureDetector(
-                                        onTap: (){
-                                          Navigator.push(
-                                            context,
-                                            SlideTransitionRight(ScreenInfo()),
-                                          );
-                                        },
-                                        child: Icon(
-                                          Icons.info_outline,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    )),
-                                flex: 1,
-                              ),
-                              GestureDetector(
-                                onTap: (){
-                                  Navigator.push(
-                                    context,
-                                    SlideTransitionRight(PageQuickOrder()),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Expanded(child:
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  flex: 1,
-                                  child:
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
-                                    decoration: BoxDecoration(
-                                      border:Border(
-                                        top: BorderSide(width: 2.0, color: Colors.white),
-                                        bottom: BorderSide(width: 2.0, color: Colors.white),
-                                      ),
-                                    ),
-                                    height: 20,
-                                    child: Icon(
-                                      Icons.height,
-                                      size: 15,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                              ),
-                              Expanded(
-                                  flex: 5,
-                                  child:
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 35,
-                                    margin: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white
-                                    ),
-
-                                    child: ValueListenableBuilder<String>(
-                                      valueListenable: _notifierDropdownButton,
-                                      builder: (context,item,widget){
-                                        return DropdownButton<String>(
-                                          value: item,
-                                          icon: const Icon(Icons.arrow_drop_down,
-                                            color: Colors.black,),
-                                          iconSize: 24,
-                                          elevation: 16,
-                                          style: TextStyle(color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
-                                          underline: Container(
-                                            height: 2,
-                                            color: Colors.transparent,
-                                          ),
-                                          onChanged: (String? newValue) {
-                                            _notifierDropdownButton.value = newValue!;
-                                            AppModule.blocTable.streamSink.add(state(newValue));
-                                          },
-                                          items: <String>['1 час', '30 минут', '15 минут', '5 минут']
-                                              .map<DropdownMenuItem<String>>((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                        );
-                                      },
-                                    ),
-
-                                  )),
-                              Expanded(
-                                  flex: 1,
-                                  child:
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                                    height: 20,
-                                    child: Icon(
-                                      Icons.calendar_today_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                              ),
-                              Expanded(
-                                  flex: 5,
-                                  child:
-                                  Container(
-                                      alignment: Alignment.center,
-                                      margin: EdgeInsets.all(10),
-                                      height: 35,
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: Colors.white
-                                      ),
-                                      child: TextButton(
-                                          onPressed: () {
-                                            DatePicker.showDatePicker(context,
-                                                showTitleActions: true,
-                                                minTime: DateTime(2021, 6, 7),
-                                                maxTime: DateTime(2025, 6, 7), onChanged: (date) {
-                                                }, onConfirm: (date) {
-                                                  setState(() {
-                                                    GlobalData.date=date.toString().split(' ')[0];
-                                                    dateValue= dateFormat(date.weekday, date.month, date.day);
-                                                  });
-
-                                                },
-                                                currentTime: DateTime.now(), locale: LocaleType.ru);
-                                          },
-                                          child: Text(
-                                            dateValue,
-                                            style: TextStyle(color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                                            ),
-                                          ))
-                                  )),
-                            ],
-                          ))
-                        ],
-                      ))),
-            ),
-            Expanded(flex: 4, child: MultiplicationTable()),
-          ],
-        ));
+        body: MultiplicationTable());
   }
 }
 
@@ -317,5 +128,193 @@ int state(String step){
   return i;
 }
 
-
-
+//
+// Column(
+// children: [
+// Expanded(
+// flex: 1,
+// child:
+// Container(
+// padding: EdgeInsets.fromLTRB(10,SizeUtil.getSize(6,GlobalData.sizeScreen!), 10, 10),
+// color: AppColors.colorIndigo,
+// child:
+// Expanded(
+// child:
+// Column(
+// children: [
+// Row(
+// children: [
+// Expanded(
+// child: Align(
+// alignment: Alignment.centerLeft,
+// child: GestureDetector(
+// onTap: (){
+// Navigator.push(
+// context,
+// SlideTransitionRight(PageProfile()),
+// );
+// },
+// child: Icon(
+// Icons.person,
+// color: Colors.white,
+// ),
+// ),
+// ),
+// flex: 1,
+// ),
+// Expanded(
+// child: Align(
+// alignment: Alignment.centerRight,
+// child: Padding(
+// padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
+// child: GestureDetector(
+// onTap: (){
+// Navigator.push(
+// context,
+// SlideTransitionRight(ScreenInfo()),
+// );
+// },
+// child: Icon(
+// Icons.info_outline,
+// color: Colors.white,
+// ),
+// ),
+// )),
+// flex: 1,
+// ),
+// GestureDetector(
+// onTap: (){
+// Navigator.push(
+// context,
+// SlideTransitionRight(PageQuickOrder()),
+// );
+// },
+// child: Icon(
+// Icons.add,
+// color: Colors.white,
+// ),
+// ),
+// ],
+// ),
+// Expanded(child:
+// Row(
+// crossAxisAlignment: CrossAxisAlignment.end,
+// mainAxisAlignment: MainAxisAlignment.center,
+// children: [
+// Expanded(
+// flex: 1,
+// child:
+// Container(
+// margin: EdgeInsets.fromLTRB(0, 0, 0, 18),
+// decoration: BoxDecoration(
+// border:Border(
+// top: BorderSide(width: 2.0, color: Colors.white),
+// bottom: BorderSide(width: 2.0, color: Colors.white),
+// ),
+// ),
+// height: 20,
+// child: Icon(
+// Icons.height,
+// size: 15,
+// color: Colors.white,
+// ),
+// )
+// ),
+// Expanded(
+// flex: 5,
+// child:
+// Container(
+// alignment: Alignment.center,
+// height: 35,
+// margin: EdgeInsets.all(10),
+// decoration: BoxDecoration(
+// borderRadius: BorderRadius.circular(10),
+// color: Colors.white
+// ),
+//
+// child: ValueListenableBuilder<String>(
+// valueListenable: _notifierDropdownButton,
+// builder: (context,item,widget){
+// return DropdownButton<String>(
+// value: item,
+// icon: const Icon(Icons.arrow_drop_down,
+// color: Colors.black,),
+// iconSize: 24,
+// elevation: 16,
+// style: TextStyle(color: Colors.black,
+// fontWeight: FontWeight.bold,
+// fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)),
+// underline: Container(
+// height: 2,
+// color: Colors.transparent,
+// ),
+// onChanged: (String? newValue) {
+// _notifierDropdownButton.value = newValue!;
+// AppModule.blocTable.streamSink.add(state(newValue));
+// },
+// items: <String>['1 час', '30 минут', '15 минут', '5 минут']
+//     .map<DropdownMenuItem<String>>((String value) {
+// return DropdownMenuItem<String>(
+// value: value,
+// child: Text(value),
+// );
+// }).toList(),
+// );
+// },
+// ),
+//
+// )),
+// Expanded(
+// flex: 1,
+// child:
+// Container(
+// margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+// height: 20,
+// child: Icon(
+// Icons.calendar_today_outlined,
+// color: Colors.white,
+// ),
+// )
+// ),
+// Expanded(
+// flex: 5,
+// child:
+// Container(
+// alignment: Alignment.center,
+// margin: EdgeInsets.all(10),
+// height: 35,
+// decoration: BoxDecoration(
+// borderRadius: BorderRadius.circular(10),
+// color: Colors.white
+// ),
+// child: TextButton(
+// onPressed: () {
+// DatePicker.showDatePicker(context,
+// showTitleActions: true,
+// minTime: DateTime(2021, 6, 7),
+// maxTime: DateTime(2025, 6, 7), onChanged: (date) {
+// }, onConfirm: (date) {
+// setState(() {
+// GlobalData.date=date.toString().split(' ')[0];
+// dateValue= dateFormat(date.weekday, date.month, date.day);
+// });
+//
+// },
+// currentTime: DateTime.now(), locale: LocaleType.ru);
+// },
+// child: Text(
+// dateValue,
+// style: TextStyle(color: Colors.black,
+// fontWeight: FontWeight.bold,
+// fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+// ),
+// ))
+// )),
+// ],
+// ))
+// ],
+// ))),
+// ),
+// Expanded(flex: 4, child: MultiplicationTable()),
+// ],
+// )

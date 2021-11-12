@@ -22,7 +22,7 @@ class MultiplicationTableCell extends StatelessWidget {
     return Container(
       width: getWight(posts),
       height: SizeUtil.getSize(6.22,GlobalData.sizeScreen!),
-      color: AppColors.colorBackgrondProfile,
+      color: Colors.transparent,
       alignment: Alignment.center,
       child:
           Container(

@@ -97,20 +97,13 @@ class _MultiplicationTableState extends State<MultiplicationTable> {
                       )
                   );
                 }
-              return Column(
+              return Stack(
                 children: [
-                  TableHead(posts: data.requireData!.posts,
-                    scrollController: _headController,
-                  ),
                   Expanded(
                       child: Container(
                         // width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.white,
-                        ),
-                        margin: EdgeInsets.all(10.0),
+                        color: Colors.white,
                         child: TableBody(
                           orderList: MapperDataOrderForTable.fromApi(list: orders.requireData!),
                          // orderList: GlobalData.dataOrdersList,
@@ -118,6 +111,29 @@ class _MultiplicationTableState extends State<MultiplicationTable> {
                           scrollController_top: _bodyControllertop,
                           scrollController: _bodyController,
                         ),)),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(2.5,GlobalData.sizeScreen!), 0, 0),
+                    width: MediaQuery.of(context).size.width,
+                    height: SizeUtil.getSize(13.0,GlobalData.sizeScreen!),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [
+                          0.4,
+                          1.0
+                        ],
+                        colors: [
+                          Colors.black26,
+                          Colors.white10
+
+                        ],
+                      )
+                    ),
+                    child: TableHead(posts: data.requireData!.posts,
+                      scrollController: _headController,
+                    ),
+                  ),
                 ],
               );
 
