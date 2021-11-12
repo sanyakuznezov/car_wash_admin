@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'body_order.dart';
-
+//слой для размещения заказов и перемещение по слою заказов
 class DragTargetTable extends StatefulWidget{
 
   double bodyHeaght;
@@ -217,7 +217,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                                   //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY-c2,
+                                      top: y.data + _scrollY+20,
                                       child: Container(
                                         width: 140,
                                         height: GlobalData.bodyHeightFeedBackWidget + c3,
@@ -256,9 +256,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
             _leave = 1;
           });
         },
-
+        //слушает карточку во время перетягивания
         onMove: (e) {
-          _y = e.offset.dy;
+          _y = e.offset.dy-35;
           AppModule.blocTable.streamSinkFeedback.add(_y);
           if (_leave != 2) {
             setState(() {
@@ -304,7 +304,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
     return result*GlobalData.timeStepsConstant[timeStep]['coof'];
   }
 
-
+  //проверяем пересечение с границами соседних заказов а так же линии времени
   _isColision(List<Map> orders,int b1,int b2){
 
      for(int i=0;orders.length>i;i++){
@@ -314,9 +314,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
        if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
          return true;
        }
-       if(b1<_timeParse!||b2<_timeParse!){
-         return true;
-       }
+
+       //проверка для линии времени
+       // if(b1<_timeParse!||b2<_timeParse!){
+       //   return true;
+       // }
 
      }
 

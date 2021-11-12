@@ -349,8 +349,9 @@ class _TableBodyState extends State<TableBody> {
                   Align(
                     alignment: Alignment.topCenter,
                     child: Container(
+                      margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
                         width: MediaQuery.of(context).size.width,
-                        height: 50,
+                        height: 100,
                         child: DragTarget<int>(
                             onLeave: (value) {
                               leave = 0;
