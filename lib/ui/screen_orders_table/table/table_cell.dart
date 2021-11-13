@@ -26,17 +26,23 @@ class MultiplicationTableCell extends StatelessWidget {
       alignment: Alignment.center,
       child:
           Container(
-            height: SizeUtil.getSize(3.73,GlobalData.sizeScreen!),
-            width: SizeUtil.getSize(3.73,GlobalData.sizeScreen!),
+            height: SizeUtil.getSize(2.73,GlobalData.sizeScreen!),
+            width: SizeUtil.getSize(2.73,GlobalData.sizeScreen!),
             alignment: Alignment.center,
             decoration: BoxDecoration(
+                boxShadow:[
+                  BoxShadow(
+                    color: Colors.black.withOpacity(.15),
+                    blurRadius: 10,
+                    offset: Offset(0,10),
+                  )],
               color: Colors.white,
               shape: BoxShape.circle
             ),
             child: Text(value.toString(),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: SizeUtil.getSize(2.49,GlobalData.sizeScreen!),
+                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                   color: Colors.black),
             ),
           )

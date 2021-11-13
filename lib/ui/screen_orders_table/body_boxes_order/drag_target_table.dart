@@ -122,6 +122,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                         }else{
                          if(GlobalData.timeEnd!.isEmpty){
                            GlobalData.edit_mode=false;
+                           AppModule.blocTable.streamSinkEdit.add(1);
                            AppModule.blocTable.streamSinkDrag.add({'action':4});
                          }else{
                            if(GlobalData.isCollision!){

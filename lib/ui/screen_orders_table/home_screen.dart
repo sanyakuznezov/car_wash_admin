@@ -9,6 +9,7 @@ import 'package:car_wash_admin/ui/screen_quick_order/page_qick_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../global_data.dart';
@@ -24,18 +25,25 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
 
-  String dateValue= getDate();
+
   double? top;
-  late ValueNotifier<String> _notifierDropdownButton;
+  var _currentIndex = 0;
+  late AnimationController _controller;
+
+  static List<Widget> _widgetOptions =<Widget>[
+    ScreenInfo(),
+    PageQuickOrder(),
+  ];
 
 
 
   @override
   void initState() {
     super.initState();
-    _notifierDropdownButton=ValueNotifier('1 час');
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     AppModule.blocTable.streamSink.add(0);
     GlobalData.date=DateTime.now().toString().split(' ')[0];
 
@@ -46,87 +54,82 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     super.dispose();
     AppModule.blocTable.disponse();
+    _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth=MediaQuery.of(context).size.width;
     return Scaffold(
-        backgroundColor: AppColors.colorBackgrondProfile,
-        body: MultiplicationTable());
+       // backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            MultiplicationTable(),
+            StreamBuilder<dynamic>(
+              stream: AppModule.blocTable.editState,
+              builder: (context, snapshot) {
+                if(!snapshot.hasData||snapshot.data==1){
+                  _controller.animateTo(0.0);
+                }else{
+                  _controller.animateBack(1.0);
+                }
+                return FadeTransition(
+                  opacity: Tween(
+                    begin: 1.0,
+                    end: 0.0,
+                  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: SizeUtil.getSize(15.0,GlobalData.sizeScreen!),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            boxShadow:[
+                              BoxShadow(
+                                color: Colors.black.withOpacity(.15),
+                                blurRadius: 30,
+                                offset: Offset(0,10),
+                              )]
+                        ),
+                        height: SizeUtil.getSize(7.0,GlobalData.sizeScreen!),
+                        margin: EdgeInsets.all(SizeUtil.getSize(2.5,GlobalData.sizeScreen!)),
+                        child: ListView.builder(
+                            itemCount: 2,
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.symmetric(horizontal: screenWidth * .024),
+                            itemBuilder: (context, index) => InkWell(
+                                onTap: () {
+                                  _currentIndex = index;
+                                 // HapticFeedback.lightImpact();
+                                  Navigator.push(context,SlideTransitionRight(_widgetOptions.elementAt(_currentIndex)));
+                                },
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                child: Padding(
+                                  padding: EdgeInsets.all(SizeUtil.getSize(1.3,GlobalData.sizeScreen!)),
+                                  child: Center(
+                                    child: Icon(listOfIcons[index],
+                                      size: screenWidth*.08,
+                                      color:AppColors.colorIndigo),
+                                  ),
+                                )))),
+                  ),
+                );
+              }
+            )
+          ],
+        ));
   }
 }
 
-String dateFormat(int dayweek,int int_month,int day_int){
-  String day='';
-  String month='';
-  if(dayweek==1){
-    day='Пн';
-  }else if(dayweek==2){
-    day='Вт';
-  }else if(dayweek==3){
-    day='Ср';
-  }else if(dayweek==4){
-    day='Чт';
-  }else if(dayweek==5){
-    day='Пт';
-  }else if(dayweek==6){
-    day='Сб';
-  }else if(dayweek==7){
-    day='Вс';
-  }
-  if(int_month==1){
-    month='Января';
-  }else if(int_month==2){
-    month='Февраля';
-  }else if(int_month==3){
-    month='Марта';
-  }else if(int_month==4){
-    month='Апреля';
-  }else if(int_month==5){
-    month='Мая';
-  }else if(int_month==6){
-    month='Июня';
-  }else if(int_month==7){
-    month='Июля';
-  }else if(int_month==8){
-    month='Августа';
-  }else if(int_month==9){
-    month='Сентября';
-  }else if(int_month==10){
-    month='Октября';
-  }else if(int_month==11){
-    month='Ноября';
-  }else if(int_month==12){
-    month='Декабря';
-  }
-  return '$day, $day_int $month';
-}
+List<IconData> listOfIcons = [
+  Icons.info_outline,
+  Icons.add,
+];
 
 
-getDate(){
-  final date=DateTime.now();
-  return dateFormat(date.weekday, date.month, date.day);
-}
-
-int state(String step){
-  int i=0;
-  if(step=='1 час'){
-    i=0;
-    GlobalData.stateTime=0;
-  }else if(step=='30 минут'){
-    i=1;
-    GlobalData.stateTime=1;
-  }else if(step=='15 минут'){
-    i=2;
-    GlobalData.stateTime=2;
-  }
-  else if(step=='5 минут'){
-    i=3;
-    GlobalData.stateTime=3;
-  }
-
-  return i;
-}
 
 //
 // Column(
