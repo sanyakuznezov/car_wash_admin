@@ -59,19 +59,22 @@ class StateDragTargetTable extends State<DragTargetTable> {
           _editState=0;
           _timeParse=TimeParser.parseHourForTimeLine(widget.time);
           return Container(
-
               width: 140,
               height: widget.bodyHeaght,
               child: Stack(
                 children: [
                   GestureDetector(
-                    onDoubleTapDown:(y){
-                      _date=DateTime.now().toString().split(' ')[0];
+                    onDoubleTap: (){
+
+                    },
+                      onDoubleTapDown:(y){
+                        _date=DateTime.now().toString().split(' ')[0];
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
                           if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy))){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
+                                  isEdit:false,
                                   timeEndWash: 1440,
                                   timeStartWash: 0,
                                   post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
@@ -81,17 +84,17 @@ class StateDragTargetTable extends State<DragTargetTable> {
                         }else{
                           Navigator.push(context, SlideTransitionSize(
                               PageAddOrder(
+                                isEdit:false,
                                 timeEndWash: 1440,
                                 timeStartWash: 0,
                                 post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
                         }
 
                       }
+
+
                     },
 
-                      onDoubleTap: (){
-
-                      },
                       onTap: () {
                       if (GlobalData.edit_mode) {
                         if(GlobalData.accept){

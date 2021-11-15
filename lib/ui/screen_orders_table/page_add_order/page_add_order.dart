@@ -5,6 +5,7 @@
 
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
@@ -64,6 +65,8 @@ class PageAddOrder extends StatefulWidget{
   int timeEndWash;
   bool isClose=false;
   bool isVisibleFAB=true;
+   int?  idOrder;
+  bool isEdit;
 
 
   @override
@@ -72,7 +75,11 @@ class PageAddOrder extends StatefulWidget{
     return StatePageAddOrder();
   }
 
-  PageAddOrder({required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time});
+  PageAddOrder({required this.isEdit,this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time});
+
+  PageAddOrder.edit({required this.isEdit,required this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time}){
+    isVisibleFAB=false;
+  }
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
@@ -134,11 +141,18 @@ class PageAddOrder extends StatefulWidget{
                                 fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
                         ),
 
-                        Align(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                                height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
-                                child: SvgPicture.asset('assets/flag_1.svg'))
+                        GestureDetector(
+                          onTap: (){
+                            if(widget.isEdit){
+                              //запрос orders/delete
+                            }
+                          },
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                  height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
+                                  child: widget.isEdit?Icon(Icons.delete_outline_outlined,color: Colors.red,):SvgPicture.asset('assets/flag_1.svg'))
+                          ),
                         )
                       ],
                     ),
@@ -170,12 +184,16 @@ class PageAddOrder extends StatefulWidget{
     _order.update('date', (value) => widget.date);
     _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
     _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
-    _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
-        .onError((error, stackTrace){
-      setState(() {
-        _isLoading=false;
+    if(widget.isEdit){
+      //запрос orders/show
+    }else{
+      _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
+          .onError((error, stackTrace){
+        setState(() {
+          _isLoading=false;
+        });
       });
-    });
+    }
     _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
 

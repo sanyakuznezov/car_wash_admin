@@ -2,12 +2,14 @@
 
 
 
+import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
+import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
+import 'package:car_wash_admin/utils/time_position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../table/layer_drag_controller.dart';
@@ -68,6 +70,18 @@ class StateBodyCard extends State<BodyCard>{
     return Stack(
         children: [
           GestureDetector(
+             onDoubleTap: (){
+               Navigator.push(context, SlideTransitionSize(
+                   PageAddOrder.edit(
+                     isEdit:true,
+                     timeEndWash: 1440,
+                     timeStartWash: 0,
+                     post:widget.dataOrder['post'],
+                     time:'${widget.dataOrder['orderBody'].startDate.split(' ')[1]}-${widget.dataOrder['orderBody'].endDate.split(' ')[1]}',
+                     date:GlobalData.date,
+                     idOrder: widget.dataOrder['orderBody'].id,)));
+             },
+
               onLongPress: () {
                 if(isTime(widget.timePosition!,widget.dataOrder['expiration_date'])){
                   if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
@@ -106,7 +120,7 @@ class StateBodyCard extends State<BodyCard>{
                           width: 130,
                           height: widget.bodyHeight,
                           decoration: BoxDecoration(
-                              color: colorBody(widget.dataOrder['status']),
+                              color: colorBody(widget.dataOrder['orderBody'].status),
                               borderRadius: BorderRadius.circular(10)),
 
                           child: widget.bodyHeight>=78?Row(
@@ -116,7 +130,7 @@ class StateBodyCard extends State<BodyCard>{
                                 width: 15,
                                 height: 80,
                                 decoration: BoxDecoration(
-                                    color: colorBage(widget.dataOrder['status']),
+                                    color: colorBage(widget.dataOrder['orderBody'].status),
                                     borderRadius: widget.bodyHeight>=80?
                                     BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(0)):
                                     BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))
@@ -128,7 +142,7 @@ class StateBodyCard extends State<BodyCard>{
                                   child: Column(
                                     children: [
                                       Text(
-                                        widget.dataOrder['number_car'],
+                                        widget.dataOrder['orderBody'].carNumber,
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.grey),
                                       ),
@@ -144,11 +158,11 @@ class StateBodyCard extends State<BodyCard>{
                                           Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('- ${widget.dataOrder['type_car']}',
+                                              Text('- ${widget.dataOrder['orderBody'].carType}',
                                                 style: TextStyle(
                                                     fontSize: 16, color: Colors.grey),
                                               ),
-                                              Text('- ${ widget.dataOrder['brand_car']}',
+                                              Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
                                                 style: TextStyle(
                                                     fontSize: 16, color: Colors.grey),
                                               ),
@@ -160,7 +174,7 @@ class StateBodyCard extends State<BodyCard>{
                           ):Container()),
 
                     ],
-                  ):LayerController(bodyHeaght: widget.bodyHeight,color: colorBage(widget.dataOrder['status'])!,
+                  ):LayerController(bodyHeaght: widget.bodyHeight,color: colorBage(widget.dataOrder['orderBody'].status)!,
                       dataOrder:widget.dataOrder,
                   timeStep: widget.timeStep,
                   offsetsOrder: widget.offsetsOrder);

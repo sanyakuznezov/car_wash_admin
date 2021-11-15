@@ -8,7 +8,6 @@ import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import '../../../global_data.dart';
@@ -23,7 +22,7 @@ class MultiplicationTable extends StatefulWidget {
 class _MultiplicationTableState extends State<MultiplicationTable>  with SingleTickerProviderStateMixin{
   late LinkedScrollControllerGroup _controllers;
   late ScrollController _headController;
-  late ScrollController _bodyController;
+  //late ScrollController _bodyController;
   late ScrollController _bodyControllertop;
   late String dateValue;
   late ValueNotifier<String> _notifierDropdownButton;
@@ -32,12 +31,11 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     _notifierDropdownButton=ValueNotifier('1 час');
     _controllers = LinkedScrollControllerGroup();
     _headController = _controllers.addAndGet();
-    _bodyController = _controllers.addAndGet();
+   // _bodyController = _controllers.addAndGet();
     _bodyControllertop=_controllers.addAndGet();
     dateValue= getDate();
   }
@@ -45,8 +43,9 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   @override
   void dispose() {
     _headController.dispose();
-    _bodyController.dispose();
+   // _bodyController.dispose();
     _controller.dispose();
+    _bodyControllertop.dispose();
     super.dispose();
   }
 
@@ -202,8 +201,8 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                   orderList: MapperDataOrderForTable.fromApi(
                                       list: orders.requireData!),
                                   modelDataTable: data.requireData!,
-                                  scrollController_top: _bodyControllertop,
-                                  scrollController: _bodyController,
+                                  scrollControllertop: _bodyControllertop,
+                                 // scrollController: _bodyController,
                                 ),
                               )),
                           Container(
@@ -362,17 +361,16 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
                             child: TextButton(
                                   onPressed: () {
-                                    DatePicker.showDatePicker(context,
-                                        showTitleActions: true,
-                                        minTime: DateTime(2021, 6, 7),
-                                        maxTime: DateTime(2025, 6, 7),
-                                        onChanged: (date) {}, onConfirm: (date) {
-                                      setState(() {
-                                        GlobalData.date = date.toString().split(' ')[0];
-                                        dateValue =
-                                            dateFormat(date.weekday, date.month, date.day);
-                                      });
-                                    }, currentTime: DateTime.now(), locale: LocaleType.ru);
+                                    // DatePicker.showDatePicker(context,
+                                    //     showTitleActions: true,
+                                    //     minTime: DateTime(2021, 6, 7),
+                                    //     maxTime: DateTime(2025, 6, 7),
+                                    //     onChanged: (date) {}, onConfirm: (date) {
+                                    //   setState(() {
+                                    //     GlobalData.date = date.toString().split(' ')[0];
+                                    //     dateValue =dateFormat(date.weekday, date.month, date.day);
+                                    //   });
+                                    // }, currentTime: DateTime.now(), locale: LocaleType.ru);
                                   },
                                   child: Text(
                                     dateValue,

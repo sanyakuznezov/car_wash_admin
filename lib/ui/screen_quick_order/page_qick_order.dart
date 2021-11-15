@@ -13,7 +13,6 @@ import 'package:car_wash_admin/ui/screen_quick_order/page_quick_order_next.dart'
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../global_data.dart';
@@ -208,18 +207,18 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: (){
-                              DatePicker.showDatePicker(context,
-                                  showTitleActions: true,
-                                  minTime: DateTime(2021, 6, 7),
-                                  maxTime: DateTime(2025, 6, 7), onChanged: (date) {
-                                  }, onConfirm: (date) {
-                                    setState(() {
-                                      _dateValue=date.toString().split(' ')[0];
-                                      _order.update('date', (value) =>_dateValue);
-                                    });
+                              // DatePicker.showDatePicker(context,
+                              //     showTitleActions: true,
+                              //     minTime: DateTime(2021, 6, 7),
+                              //     maxTime: DateTime(2025, 6, 7), onChanged: (date) {
+                              //     }, onConfirm: (date) {
+                              //       setState(() {
+                              //         _dateValue=date.toString().split(' ')[0];
+                              //         _order.update('date', (value) =>_dateValue);
+                              //       });
 
-                                  },
-                                  currentTime: DateTime.now(), locale: LocaleType.ru);
+                                  // },
+                                  // currentTime: DateTime.now(), locale: LocaleType.ru);
                             },
                             child: Icon(
                               Icons.calendar_today_outlined,

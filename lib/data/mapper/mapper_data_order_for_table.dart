@@ -17,12 +17,15 @@ class MapperDataOrderForTable{
                 'enable':1,
                 'start_date':element.startDate,
                 'expiration_date':element.endDate,
-                'post':element.postId,
-                'status':element.status,
-                'brand_car':element.brandTitle,
-                'type_car':element.modelTitle,
-                'number_car':element.carNumber,
-                'region':element.carRegion}
+                'orderBody':element,
+                 'post':element.postId,
+                // 'status':element.status,
+                // 'brand_car':element.brandTitle,
+                // 'type_car':element.modelTitle,
+                // 'number_car':element.carNumber,
+                // 'region':element.carRegion
+
+              }
           );
      });
      return mapListForTable;

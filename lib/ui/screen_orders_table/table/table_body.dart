@@ -10,7 +10,6 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import '../body_boxes_order/body_order.dart';
@@ -22,17 +21,13 @@ import 'package:sizer/sizer.dart';
 
 bool accept=false;
 class TableBody extends StatefulWidget {
-  final ScrollController scrollController;
-  final ScrollController scrollController_top;
+ // final ScrollController scrollController;
+ final ScrollController scrollControllertop;
   final List<Map> orderList;
   final ModelDataTable modelDataTable;
 
 
-
-
-
-  TableBody({required this.orderList,required this.modelDataTable, required this.scrollController_top,required this.scrollController,
-  });
+  TableBody({required this.orderList,required this.modelDataTable, required this.scrollControllertop});
 
   @override
   _TableBodyState createState() => _TableBodyState();
@@ -149,7 +144,8 @@ class _TableBodyState extends State<TableBody> {
                         child: Container(
                           margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
                           child: SingleChildScrollView(
-                              controller: widget.scrollController,
+                            //widget.scrollController
+                             controller: widget.scrollControllertop,
                               scrollDirection: Axis.horizontal,
                               physics: const AlwaysScrollableScrollPhysics(
                                 parent: BouncingScrollPhysics(),
@@ -191,7 +187,7 @@ class _TableBodyState extends State<TableBody> {
                   ),
 
                   //линия текущего времени
-                  StreamBuilder<String>(
+                  GlobalData.date==DateTime.now().toString().split(' ')[0]?StreamBuilder<String>(
                       stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
                         if(time.data!=null){
@@ -225,7 +221,7 @@ class _TableBodyState extends State<TableBody> {
                           return Container();
                         }
 
-                      }),
+                      }):Container(),
 
 
                   //Столбцы таблицы
@@ -235,26 +231,32 @@ class _TableBodyState extends State<TableBody> {
                         if(value.data!=null){
                           if(value.data!['action']==1){
                             int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                            _map={'id':widget.orderList[i]['id'],
+                            _map={
+                              'id':widget.orderList[i]['id'],
                               'enable':1,
                               'start_date':widget.orderList[i]['start_date'],
                               'expiration_date':widget.orderList[i]['expiration_date'],
                               'post':widget.orderList[i]['post'],
-                              'status':widget.orderList[i]['status'],
-                              'brand_car':widget.orderList[i]['brand_car'],
-                              'type_car':widget.orderList[i]['type_car'],
-                              'number_car':widget.orderList[i]['number_car'],
-                              'region':widget.orderList[i]['region'],};
-                            _mapOld={'id':widget.orderList[i]['id'],
+                              'orderBody':widget.orderList[i]['orderBody'],
+                              // 'status':widget.orderList[i]['status'],
+                              // 'brand_car':widget.orderList[i]['brand_car'],
+                              // 'type_car':widget.orderList[i]['type_car'],
+                              // 'number_car':widget.orderList[i]['number_car'],
+                              // 'region':widget.orderList[i]['region'],
+                            };
+                            _mapOld={
+                              'id':widget.orderList[i]['id'],
                               'enable':1,
                               'start_date':widget.orderList[i]['start_date'],
                               'expiration_date':widget.orderList[i]['expiration_date'],
                               'post':widget.orderList[i]['post'],
-                              'status':widget.orderList[i]['status'],
-                              'brand_car':widget.orderList[i]['brand_car'],
-                              'type_car':widget.orderList[i]['type_car'],
-                              'number_car':widget.orderList[i]['number_car'],
-                              'region':widget.orderList[i]['region'],};
+                              'orderBody':widget.orderList[i]['orderBody'],
+                              // 'status':widget.orderList[i]['status'],
+                              // 'brand_car':widget.orderList[i]['brand_car'],
+                              // 'type_car':widget.orderList[i]['type_car'],
+                              // 'number_car':widget.orderList[i]['number_car'],
+                              // 'region':widget.orderList[i]['region'],
+                            };
                             widget.orderList[i].update('enable', (value) =>0);
 
                           }else if(value.data!['action']==3){
@@ -290,7 +292,7 @@ class _TableBodyState extends State<TableBody> {
                                       width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
                                       height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
                                       child: SingleChildScrollView(
-                                          controller: widget.scrollController_top,
+                                          controller: widget.scrollControllertop,
                                           scrollDirection: Axis.horizontal,
                                           physics: const AlwaysScrollableScrollPhysics(
                                               parent: BouncingScrollPhysics()),
@@ -381,15 +383,15 @@ class _TableBodyState extends State<TableBody> {
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(onLeave: (value) {
                           leave = 0;
-                          widget.scrollController_top.animateTo(
-                              widget.scrollController_top.offset,
+                          widget.scrollControllertop.animateTo(
+                              widget.scrollControllertop.offset,
                               duration: Duration(seconds: 5),
                               curve: Curves.easeOut);
                         }, onMove: (e) {
                           leave++;
                           if (leave == 1) {
-                            widget.scrollController_top.animateTo(
-                                widget.scrollController_top
+                            widget.scrollControllertop.animateTo(
+                                widget.scrollControllertop
                                     .position.maxScrollExtent,
                                 duration: Duration(seconds: 5),
                                 curve: Curves.easeOut);
@@ -406,15 +408,15 @@ class _TableBodyState extends State<TableBody> {
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(onLeave: (value) {
                           leave = 0;
-                          widget.scrollController_top.animateTo(
-                              widget.scrollController_top.offset,
+                          widget.scrollControllertop.animateTo(
+                              widget.scrollControllertop.offset,
                               duration: Duration(seconds: 5),
                               curve: Curves.easeOut);
                         }, onMove: (e) {
                           leave++;
                           if (leave == 1) {
-                            widget.scrollController_top.animateTo(
-                                widget.scrollController_top
+                            widget.scrollControllertop.animateTo(
+                                widget.scrollControllertop
                                     .position.minScrollExtent,
                                 duration: Duration(seconds: 5),
                                 curve: Curves.easeOut);
