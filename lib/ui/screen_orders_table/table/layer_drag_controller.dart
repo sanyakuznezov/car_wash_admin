@@ -161,7 +161,7 @@ class LayerController extends StatefulWidget{
                                 child:widget.bodyHeaght>60? Column(
                                   children: [
                                     Text(
-                                      widget.dataOrder['number_car'],
+                                      widget.dataOrder['orderBody'].carNumber,
                                       style: TextStyle(
                                           fontSize: 16, color: Colors.white),
                                     ),
@@ -177,11 +177,11 @@ class LayerController extends StatefulWidget{
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('- ${widget.dataOrder['type_car']}',
+                                            Text('- ${widget.dataOrder['orderBody'].carType}',
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
                                             ),
-                                            Text('- ${ widget.dataOrder['brand_car']}',
+                                            Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
                                             ),
@@ -250,7 +250,6 @@ class LayerController extends StatefulWidget{
                bool result=false;
                for(int i=0;orders.length>i;i++){
                  if(orders[i]['id']!=widget.dataOrder['id']){
-                   print('${orders[i]['id']} != ${widget.dataOrder['id']}');
                    if(orders[i]['start']<b1&&orders[i]['end']>b1){
                      result=true;
                    }
@@ -295,7 +294,7 @@ class LayerController extends StatefulWidget{
                             child: Column(
                               children: [
                                 Text(
-                                  dataOrder['number_car'],
+                                  dataOrder['orderBody'].carNumber,
                                   style: TextStyle(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -311,11 +310,11 @@ class LayerController extends StatefulWidget{
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('- ${dataOrder['type_car']}',
+                                        Text('- ${dataOrder['orderBody'].carType}',
                                           style: TextStyle(
                                               fontSize: 16, color: Colors.white),
                                         ),
-                                        Text('- ${dataOrder['brand_car']}',
+                                        Text('- ${dataOrder['orderBody'].brandTitle}',
                                           style: TextStyle(
                                               fontSize: 16, color: Colors.white),
                                         ),

@@ -7,6 +7,7 @@ import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
+import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_time.dart';
@@ -136,6 +137,11 @@ class UserDataRepository extends UserRepository{
   @override
   Future<ModelDataTable?> getDataSetting({required BuildContext context, required String date})async {
     return await _apiUtil.getDataSetting(context: context, date: date);
+  }
+
+  @override
+  Future<ModelOrderShow?> getOrderShow({required BuildContext context, required int id})async {
+    return await _apiUtil.getOrderShow(context: context, id: id);
   }
 
 

@@ -7,6 +7,7 @@ import 'package:car_wash_admin/data/mapper/mapper_calculate_price.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
+import 'package:car_wash_admin/data/mapper/mapper_model_order_show.dart';
 import 'package:car_wash_admin/data/mapper/mapper_order.dart';
 import 'package:car_wash_admin/data/mapper/mapper_sale.dart';
 import 'package:car_wash_admin/data/mapper/mapper_time.dart';
@@ -15,6 +16,7 @@ import 'package:car_wash_admin/domain/model/model_brand_car.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
+import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_time.dart';
@@ -134,6 +136,12 @@ class ApiUtil{
     Future<ModelDataTable?> getDataSetting({required BuildContext context, required String date})async{
       final result=await _mainServiseApi.getDataSetting(context: context, date: date);
       return MapperDataTable.fromApi(modelDataTableApi: result!);
+    }
+
+    Future<ModelOrderShow?> getOrderShow({required BuildContext context,required int id}) async{
+      final result=await _mainServiseApi.getOrderShow(context: context, id: id);
+      return MapperModelOrderShow.fromApi(modelOrderShowApi: result!);
+
     }
 
 }

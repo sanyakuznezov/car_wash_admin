@@ -21,13 +21,13 @@ import 'package:sizer/sizer.dart';
 
 bool accept=false;
 class TableBody extends StatefulWidget {
- // final ScrollController scrollController;
+  final ScrollController scrollController;
  final ScrollController scrollControllertop;
   final List<Map> orderList;
   final ModelDataTable modelDataTable;
 
 
-  TableBody({required this.orderList,required this.modelDataTable, required this.scrollControllertop});
+  TableBody({required this.scrollController,required this.orderList,required this.modelDataTable, required this.scrollControllertop});
 
   @override
   _TableBodyState createState() => _TableBodyState();
@@ -144,8 +144,7 @@ class _TableBodyState extends State<TableBody> {
                         child: Container(
                           margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
                           child: SingleChildScrollView(
-                            //widget.scrollController
-                             controller: widget.scrollControllertop,
+                             controller: widget.scrollController,
                               scrollDirection: Axis.horizontal,
                               physics: const AlwaysScrollableScrollPhysics(
                                 parent: BouncingScrollPhysics(),

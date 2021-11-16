@@ -22,7 +22,7 @@ class MultiplicationTable extends StatefulWidget {
 class _MultiplicationTableState extends State<MultiplicationTable>  with SingleTickerProviderStateMixin{
   late LinkedScrollControllerGroup _controllers;
   late ScrollController _headController;
-  //late ScrollController _bodyController;
+  late ScrollController _bodyController;
   late ScrollController _bodyControllertop;
   late String dateValue;
   late ValueNotifier<String> _notifierDropdownButton;
@@ -35,7 +35,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
     _notifierDropdownButton=ValueNotifier('1 час');
     _controllers = LinkedScrollControllerGroup();
     _headController = _controllers.addAndGet();
-   // _bodyController = _controllers.addAndGet();
+    _bodyController = _controllers.addAndGet();
     _bodyControllertop=_controllers.addAndGet();
     dateValue= getDate();
   }
@@ -43,7 +43,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   @override
   void dispose() {
     _headController.dispose();
-   // _bodyController.dispose();
+    _bodyController.dispose();
     _controller.dispose();
     _bodyControllertop.dispose();
     super.dispose();
@@ -201,6 +201,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                   orderList: MapperDataOrderForTable.fromApi(
                                       list: orders.requireData!),
                                   modelDataTable: data.requireData!,
+                                  scrollController: _bodyController,
                                   scrollControllertop: _bodyControllertop,
                                  // scrollController: _bodyController,
                                 ),

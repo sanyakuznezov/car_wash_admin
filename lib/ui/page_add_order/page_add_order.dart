@@ -6,15 +6,16 @@
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
+import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_services.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_list_workers.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/page_add_order/page_search_brand.dart';
+import 'package:car_wash_admin/ui/page_add_order/page_list_services.dart';
+import 'package:car_wash_admin/ui/page_add_order/page_list_workers.dart';
+import 'package:car_wash_admin/ui/page_add_order/page_search_brand.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,14 +37,20 @@ import '../../../global_data.dart';
  String _surName='';
  String _lastName='';
  String _patronymicName='';
-
-
  late ValueNotifier<ModelCalculatePrice> _notifier;
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   List<ModelWorker> _listWorker=[];
   int _typeCarInt =1;
   bool _isLoading=false;
+  bool _isEditMain=false;
+
+  Future<ModelOrderShow?> _getOrderShow({required BuildContext context,required int id})async{
+    final order=await RepositoryModule.userRepository().getOrderShow(context: context, id: id);
+     return order;
+  }
+
+
 
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
@@ -53,6 +60,7 @@ import '../../../global_data.dart';
     _isLoading=false;
     return result;
   }
+
 
 
 class PageAddOrder extends StatefulWidget{
@@ -79,12 +87,11 @@ class PageAddOrder extends StatefulWidget{
 
   PageAddOrder.edit({required this.isEdit,required this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time}){
     isVisibleFAB=false;
+    _isEditMain=isEdit;
   }
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
-
-
 
 
   @override
@@ -160,13 +167,53 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-            ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
-            ItemCar(),
-            ItemClient(),
-            ItemListWork(),
-            ItemPrice(),
-            ItemComment(),
-            ItemReview()
+            widget.isEdit?FutureBuilder<ModelOrderShow?>(
+              future: _getOrderShow(context: context,id: widget.idOrder!),
+              builder: (context,order){
+                if(order.hasError){
+                   return Container(
+                     child: Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(Icons.error,color: Colors.redAccent,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
+                         Text('Ошибка получения данных',style:
+                         TextStyle(
+                             fontWeight: FontWeight.bold,
+                             color: Colors.redAccent
+                         ),),
+                       ],
+                     ),
+                   );
+                }
+
+                if(order.hasData){
+                  return Column(
+                    children: [
+                      ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time: widget.time,post:order.data!.post),
+                      ItemCar.editOrder(modelOrderShow: order.data),
+                      ItemClient(),
+                      ItemListWork(),
+                      ItemPrice(),
+                      ItemComment.editOrder(modelOrderShow: order.data),
+                      ItemReview.editOrder(modelOrderShow: order.data,)
+                    ],
+                  );
+                }
+                return Container(child: Center(child: CircularProgressIndicator(color: AppColors.colorIndigo)));
+
+              }
+            ):Column(
+              children: [
+                ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
+                ItemCar(),
+                ItemClient(),
+                ItemListWork(),
+                ItemPrice(),
+                ItemComment(),
+                ItemReview()
+              ],
+            )
+
 
           ],
         ),
@@ -174,6 +221,8 @@ class PageAddOrder extends StatefulWidget{
     );
 
   }
+
+
 
 
 
@@ -312,6 +361,12 @@ class PageAddOrder extends StatefulWidget{
 
 
    class ItemReview extends StatelessWidget{
+
+    ModelOrderShow? modelOrderShow;
+
+    ItemReview.editOrder({this.modelOrderShow});
+    ItemReview({this.modelOrderShow});
+
   @override
   Widget build(BuildContext context) {
      return Container(
@@ -393,10 +448,17 @@ class PageAddOrder extends StatefulWidget{
              ]));
   }
 
-   }
+
+}
 
 
   class ItemComment extends StatefulWidget{
+
+    ModelOrderShow? modelOrderShow;
+
+
+    ItemComment.editOrder({this.modelOrderShow});
+    ItemComment({this.modelOrderShow});
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -456,7 +518,7 @@ class _ItemCommentState extends State<ItemComment> {
                   children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(3.0,GlobalData.sizeScreen!), 0, 0),
-                  child: Text('.....',
+                  child: Text(_isEditMain?widget.modelOrderShow!.clientComment:'.....',
                     style: TextStyle(
                         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                         color: AppColors.textColorPhone
@@ -502,7 +564,7 @@ class _ItemCommentState extends State<ItemComment> {
                                       maxLines: 10,
                                       maxLengthEnforced: true,
                                       decoration: InputDecoration(
-                                          hintText: '.....',
+                                          hintText: _isEditMain?widget.modelOrderShow!.adminComment:'.....',
                                           contentPadding: EdgeInsets.all(
                                               SizeUtil.getSize(
                                                   1.5,
@@ -1434,9 +1496,15 @@ class _ItemClientState extends State<ItemClient> {
 
    class ItemCar extends StatefulWidget{
 
+    ModelOrderShow? modelOrderShow;
+
   @override
   State<ItemCar> createState() => _ItemCarState();
+
+  ItemCar.editOrder({required this.modelOrderShow});
+  ItemCar({this.modelOrderShow});
 }
+
 
 class _ItemCarState extends State<ItemCar> {
      String _typeCar = 'Седан';
@@ -1498,7 +1566,7 @@ class _ItemCarState extends State<ItemCar> {
                          child:Align(
                            alignment: Alignment.centerRight,
                            child: DropdownButton<String>(
-                             value: _typeCar,
+                             value: _isEditMain?_getType(widget.modelOrderShow!.carType):_typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
                              iconSize: 24,
@@ -1636,7 +1704,7 @@ class _ItemCarState extends State<ItemCar> {
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text(_brandCar,
+                         child: Text(_isEditMain?widget.modelOrderShow!.carBrandtitle:_brandCar,
                              textAlign: TextAlign.end,
                              style: TextStyle(
                                  color: AppColors.textColorPhone,
@@ -1685,7 +1753,7 @@ class _ItemCarState extends State<ItemCar> {
                      Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                         child: Text(_modelCar,
+                         child: Text(_isEditMain?widget.modelOrderShow!.carModeltitle:_modelCar,
                              textAlign: TextAlign.end,
                              style: TextStyle(
                                  color: AppColors.textColorPhone,
@@ -1807,15 +1875,32 @@ class _ItemCarState extends State<ItemCar> {
        ],
      ),
    );
+
+
   }
+
+     _getType(int id) {
+       if (id == 1) {
+         return 'Седан';
+       } else if (id == 2) {
+         return 'Кроссовер';
+       } else if (id == 3) {
+         return 'Внедорожник';
+       } else if (id == 4) {
+         return 'Микроавтобус';
+       } else if (id == 5) {
+         return 'Иное';
+       }
+     }
 
      @override
   void initState() {
         numCarController=TextEditingController();
         regionCarController=TextEditingController();
-        numCarController!.text='A000AA';
-        regionCarController!.text='000';
+        numCarController!.text=_isEditMain?widget.modelOrderShow!.carNumber:'A000AA';
+        regionCarController!.text=_isEditMain?widget.modelOrderShow!.carRegion.toString():'000';
      }
+
 }
 
 

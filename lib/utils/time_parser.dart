@@ -280,5 +280,8 @@ class TimeParser{
       int t1=int.parse(timeTable.split('-')[0].split(':')[0])*60+int.parse(timeTable.split('-')[0].split(':')[1]);
       return t<t1;
   }
+
+
+
 }
 

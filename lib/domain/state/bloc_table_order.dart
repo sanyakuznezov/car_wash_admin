@@ -9,7 +9,7 @@ class BlocTableOrder{
     StreamController<int> _streamControllerEdit=StreamController<int>();
     StreamController<double> _streamControllerScroll=StreamController<double>();
     StreamController<double> _streamControllerOffsetFeedback=StreamController<double>();
-    StreamController<Map> _streamControllerDrag=StreamController<Map>();
+   StreamController<Map> _streamControllerDrag=StreamController<Map>();
     StreamController<String> _streamControllerTimer=StreamController<String>();
     StreamSink get streamSinkTime=>_streamControllerTimer.sink;
     StreamSink get streamSinkDrag=>_streamControllerDrag.sink;
@@ -98,20 +98,5 @@ class BlocTableOrder{
       _streamControllerTimer.close();
       _timeSteram.close();
     }
-
-
-   Future<List<Map>> addOrderInBox(int stateTime, int boxes,List<Map> dataOrder) async {
-      List<Map> list=[{'data':0}];
-      // List<Map<String,int>> listCombi=GlobalData.combination_timestate_1;
-      // int lenght=GlobalData.times[stateTime].length*boxes;
-      // for(int i=0;i<lenght;i++){
-      //   final r=await isEmpty(dataOrder,stateTime,listCombi[i]);
-      //   list=await addDataList(list,r['add'],r);
-      //
-      // }
-
-      return list;
-   }
-
 
 }
