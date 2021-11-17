@@ -194,7 +194,6 @@ class TimeParser{
     var u=i.toInt();
     var y=u/5;
     var s=y.toString().split('.')[1][0];
-    print('s $s y $y');
     if(int.parse(s)>0){
       var a=i/10;
       int b=a.toInt();
@@ -282,6 +281,23 @@ class TimeParser{
   }
 
 
-
+  static String parseIntToStringTime(int time){
+    String hour;
+    String min;
+    int h=time~/60;
+    int a=h*60;
+    int m=time-a;
+    if(h<10){
+      hour='0$h';
+    }else{
+      hour='$h';
+    }
+    if(m<10){
+      min='0$m';
+    }else{
+      min='$m';
+    }
+    return '$hour:$min';
+  }
 }
 

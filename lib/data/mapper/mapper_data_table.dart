@@ -1,7 +1,7 @@
 
 
 
- import 'package:car_wash_admin/data/api/model/ModelDataTableApi.dart';
+ import 'package:car_wash_admin/data/api/model/model_data_table_api.dart';
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 
 class MapperDataTable{

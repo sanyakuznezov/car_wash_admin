@@ -26,7 +26,7 @@ import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'model/ModelDataTableApi.dart';
+import 'model/model_data_table_api.dart';
 import 'model/model_brand_car_api.dart';
 import 'model/model_sale_api.dart';
 
