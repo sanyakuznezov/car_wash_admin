@@ -220,6 +220,7 @@ class StateBodyCard extends State<BodyCard>{
 
   @override
   void dispose() {
+    super.dispose();
   // AppModule.blocTable.diponseEditStream();
   }
 }

@@ -47,51 +47,90 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
          backgroundColor: Colors.white,
          actions: [
            Expanded(
-             child: Padding(
-               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-               child: Stack(
-                 alignment: Alignment.center,
-                 children: [
-                   Align(
-                     alignment: Alignment.centerLeft,
-                     child: GestureDetector(
-                       onTap: () {
-                         Navigator.pop(context);
-
-                       },
-                       child: Icon(
-                         Icons.arrow_back_ios,
-                         color: AppColors.colorIndigo,
-                       ),
-                     ),
+             child: Row(
+               mainAxisAlignment: MainAxisAlignment.spaceAround,
+               children: [
+                 GestureDetector(
+                   onTap:(){
+                     Navigator.pop(context);
+                    },
+                   child: Icon(
+                     Icons.arrow_back_ios,
+                     color: AppColors.colorIndigo,
                    ),
-                   Expanded(
-                     child: Text(
-                       'Информация',
-                       textAlign: TextAlign.center,
-                       style: TextStyle(
-                           color: Colors.black,
-                           fontWeight: FontWeight.bold,
-                           fontSize: SizeUtil.getSize(
-                               2.8, GlobalData.sizeScreen!)),
-                     ),
+                 ),
+                 Text(
+                   'Информация',
+                   textAlign: TextAlign.center,
+                   style: TextStyle(
+                       color: Colors.black,
+                       fontWeight: FontWeight.bold,
+                       fontSize: SizeUtil.getSize(
+                           2.8, GlobalData.sizeScreen!)),
+                 ),
+                 _mainList.length!=0&&_index==0?Align(alignment: Alignment.centerRight,
+                   child: GestureDetector(
+                     onTap:(){
+                       Navigator.push(
+                         context,
+                         SlideTransitionRight(PageSearchServices(mainList:_mainList)),
+                       );
+                     },
+                     child: Icon(Icons.search,color: AppColors.colorIndigo),
                    ),
-                    _mainList.length!=0&&_index==0?Align(alignment: Alignment.centerRight,
-                     child: GestureDetector(
-                       onTap:(){
-                         Navigator.push(
-                           context,
-                           SlideTransitionRight(PageSearchServices(mainList:_mainList)),
-                         );
-                       },
-                       child: Icon(Icons.search,color: AppColors.colorIndigo),
-                     ),
-                   ):Container()
-
-                 ],
-               ),
+                 ):Container()
+               ],
              ),
            )
+
+
+
+           // Expanded(
+           //   child: Padding(
+           //     padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+           //     child: Stack(
+           //       alignment: Alignment.center,
+           //       children: [
+           //         Align(
+           //           alignment: Alignment.centerLeft,
+           //           child: GestureDetector(
+           //             onTap: () {
+           //               Navigator.pop(context);
+           //
+           //             },
+           //             child: Icon(
+           //               Icons.arrow_back_ios,
+           //               color: AppColors.colorIndigo,
+           //             ),
+           //           ),
+           //         ),
+           //         Expanded(
+           //           child: Text(
+           //             'Информация',
+           //             textAlign: TextAlign.center,
+           //             style: TextStyle(
+           //                 color: Colors.black,
+           //                 fontWeight: FontWeight.bold,
+           //                 fontSize: SizeUtil.getSize(
+           //                     2.8, GlobalData.sizeScreen!)),
+           //           ),
+           //         ),
+           //          _mainList.length!=0&&_index==0?Align(alignment: Alignment.centerRight,
+           //           child: GestureDetector(
+           //             onTap:(){
+           //               Navigator.push(
+           //                 context,
+           //                 SlideTransitionRight(PageSearchServices(mainList:_mainList)),
+           //               );
+           //             },
+           //             child: Icon(Icons.search,color: AppColors.colorIndigo),
+           //           ),
+           //         ):Container()
+           //
+           //       ],
+           //     ),
+           //   ),
+           // )
          ],
          bottom: TabBar(
            controller: _tabController,

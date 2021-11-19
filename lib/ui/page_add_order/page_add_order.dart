@@ -38,7 +38,7 @@ import '../../../global_data.dart';
  String _lastName='';
  String _patronymicName='';
  late ValueNotifier<ModelCalculatePrice> _notifier;
-  List<int> _idServiceList=[21,22,23];
+  List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   List<ModelWorker> _listWorker=[];
   int _typeCarInt =1;
@@ -194,8 +194,8 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
-                  // _idComplexList=order.data!.complexes;
-                  // _idServiceList=order.data!.services;
+                  _idComplexList=order.data!.complexes;
+                  _idServiceList=order.data!.services;
                   return Column(
                     children: [
                       ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
@@ -237,6 +237,7 @@ class PageAddOrder extends StatefulWidget{
                 ItemPrice(),
                 ItemComment(),
                 ItemReview()
+
               ],
             )
 
@@ -1052,9 +1053,6 @@ class _ItemPriceState extends State<ItemPrice> {
 
                                    });
 
-                                   _listService.forEach((element) {
-                                     print('List service ${element.name}');
-                                   });
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
 
@@ -1115,10 +1113,6 @@ class _ItemPriceState extends State<ItemPrice> {
                             isEdit:_isEdit,
                             onRemove: (model){
                               setState(() {
-                                _listService.forEach((element) {
-                                  print('List service remove ${element.id}');
-                                });
-                                print('Item remove ${model!.id}');
                                 for(int i=0;_listService.length>i;i++){
                                   if(_listService[i].id==model!.id){
                                     _listService.removeAt(i);
@@ -1581,13 +1575,13 @@ class _ItemClientState extends State<ItemClient> {
 
    class ItemCar extends StatefulWidget{
 
-    ModelOrderShow? modelOrderShow;
+  ModelOrderShow? modelOrderShow;
 
   @override
   State<ItemCar> createState() => _ItemCarState();
 
   ItemCar.editOrder({required this.modelOrderShow});
-  ItemCar({this.modelOrderShow});
+  ItemCar();
 }
 
 
@@ -2022,18 +2016,18 @@ class _ItemCarState extends State<ItemCar> {
 
      @override
   void initState() {
-       if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
-         _brandCar=widget.modelOrderShow!.carBrandtitle;
-         _idBrand=widget.modelOrderShow!.carBrandid;
-         _modelCar=widget.modelOrderShow!.carModeltitle;
-       }
         focusEditColor=FocusNode();
         editingControllerColor=TextEditingController();
-        editingControllerColor.text=widget.modelOrderShow!.color;
         numCarController=TextEditingController();
         regionCarController=TextEditingController();
         numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
         regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
+        if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+          _brandCar=widget.modelOrderShow!.carBrandtitle;
+          _idBrand=widget.modelOrderShow!.carBrandid;
+          _modelCar=widget.modelOrderShow!.carModeltitle;
+          editingControllerColor.text=widget.modelOrderShow!.color;
+        }
      }
 
 }

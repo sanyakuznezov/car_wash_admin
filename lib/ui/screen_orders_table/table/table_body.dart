@@ -99,13 +99,13 @@ class _TableBodyState extends State<TableBody> {
 
   @override
   void dispose() {
+    super.dispose();
     _timer.cancel();
     _restColumnsController.dispose();
     _centerColumnsController.dispose();
     _timeColumnsController.dispose();
     _timeLineColumnsController.dispose();
     AppModule.blocTable.disponseDragStream();
-    super.dispose();
   }
 
   @override
