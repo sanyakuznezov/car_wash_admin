@@ -37,8 +37,8 @@
    String adminComment;
    String clientComment;
    String created_at;
-   List<dynamic> services;
-   List<dynamic> complexes;
+   List<int> services;
+   List<int> complexes;
 
    ModelOrderShowApi.fromApi({required Map<String,dynamic> map}):
           id=map['id']??0,
@@ -74,6 +74,6 @@
     adminComment=map['adminComment']==''||map['adminComment']==null?'....':map['adminComment'],
     clientComment=map['clientComment']==''||map['clientComment']==null?'....':map['clientComment'],
     created_at=map['created_at']??'',
-    services=map['services']??[],
-    complexes=map['complexes']??[];
+    services=map['services'].cast<int>()??[],
+    complexes=map['complexes'].cast<int>()??[];
 }

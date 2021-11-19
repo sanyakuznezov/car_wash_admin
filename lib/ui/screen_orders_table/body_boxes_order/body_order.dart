@@ -57,7 +57,7 @@ class BodyCard extends StatefulWidget{
 class StateBodyCard extends State<BodyCard>{
 
 
-
+   int? editStatus;
 
   @override
   void initState() {
@@ -71,9 +71,14 @@ class StateBodyCard extends State<BodyCard>{
         children: [
           GestureDetector(
              onDoubleTap: (){
+               if(widget.dataOrder['orderBody'].status==11){
+                 editStatus=GlobalData.VIEW_MODE;
+               }else{
+                 editStatus=GlobalData.EDIT_MODE;
+               }
                Navigator.push(context, SlideTransitionSize(
-                   PageAddOrder.edit(
-                     isEdit:true,
+                   PageAddOrder(
+                     editStatus:editStatus!,
                      timeEndWash: 1440,
                      timeStartWash: 0,
                      post:widget.dataOrder['post'],

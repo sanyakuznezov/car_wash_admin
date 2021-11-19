@@ -37,8 +37,8 @@
  String adminComment;
  String clientComment;
  String created_at;
- List<dynamic> services;
- List<dynamic> complexes;
+ List<int> services;
+ List<int> complexes;
 
   ModelOrderShow({
     required this.id,

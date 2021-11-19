@@ -16,6 +16,9 @@
    static bool? isCollision=false;
    static const String URL_BASE_IMAGE='https://app.crmstep.ru';
    static String? date;
+   static const int EDIT_MODE=0;
+   static const int VIEW_MODE=1;
+   static const int ADD_ORDER_MODE=2;
    static List<List> times=[time_1,time_2,time_3,time_4];
 
    static List<Map> timeSelect = [

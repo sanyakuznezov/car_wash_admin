@@ -21,6 +21,5 @@
 
    int id;
    String name;
-
    ModelItem({required this.id,required this.name});
   }

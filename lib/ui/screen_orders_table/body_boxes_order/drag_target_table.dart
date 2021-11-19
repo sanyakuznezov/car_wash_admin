@@ -74,7 +74,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                           if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy))){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
-                                  isEdit:false,
+                                  editStatus:GlobalData.ADD_ORDER_MODE,
                                   timeEndWash: 1440,
                                   timeStartWash: 0,
                                   post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
@@ -84,7 +84,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                         }else{
                           Navigator.push(context, SlideTransitionSize(
                               PageAddOrder(
-                                isEdit:false,
+                                editStatus:GlobalData.ADD_ORDER_MODE,
                                 timeEndWash: 1440,
                                 timeStartWash: 0,
                                 post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));

@@ -38,12 +38,12 @@ import '../../../global_data.dart';
  String _lastName='';
  String _patronymicName='';
  late ValueNotifier<ModelCalculatePrice> _notifier;
-  List<int> _idServiceList=[];
+  List<int> _idServiceList=[21,22,23];
   List<int> _idComplexList=[];
   List<ModelWorker> _listWorker=[];
   int _typeCarInt =1;
   bool _isLoading=false;
-  bool _isEditMain=false;
+  int _editStatusMain=2;
 
   Future<ModelOrderShow?> _getOrderShow({required BuildContext context,required int id})async{
     final order=await RepositoryModule.userRepository().getOrderShow(context: context, id: id);
@@ -74,7 +74,8 @@ class PageAddOrder extends StatefulWidget{
   bool isClose=false;
   bool isVisibleFAB=true;
    int?  idOrder;
-  bool isEdit;
+  int editStatus;
+
 
 
   @override
@@ -83,15 +84,16 @@ class PageAddOrder extends StatefulWidget{
     return StatePageAddOrder();
   }
 
-  PageAddOrder({required this.isEdit,this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time});
-
-  PageAddOrder.edit({required this.isEdit,required this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time}){
+  PageAddOrder({required this.editStatus,this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time}){
     isVisibleFAB=false;
-    _isEditMain=isEdit;
+    _editStatusMain=editStatus;
   }
+
+
 }
 
   class StatePageAddOrder extends State<PageAddOrder>{
+
 
 
   @override
@@ -147,19 +149,21 @@ class PageAddOrder extends StatefulWidget{
                             style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
                                 fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
                         ),
-
                         GestureDetector(
-                          onTap: (){
-                            if(widget.isEdit){
-                              //запрос orders/delete
-                            }
+                          onTap: () {
+
                           },
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: SizedBox(
-                                  height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
-                                  child: widget.isEdit?Icon(Icons.delete_outline_outlined,color: Colors.red,):SvgPicture.asset('assets/flag_1.svg'))
-                          ),
+                                  height: SizeUtil.getSize(
+                                      3.0, GlobalData.sizeScreen!),
+                                  child: _editStatusMain==GlobalData.EDIT_MODE
+                                      ? Icon(
+                                          Icons.delete_outline_outlined,
+                                          color: Colors.red,
+                                        )
+                                      : SvgPicture.asset('assets/flag_1.svg'))),
                         )
                       ],
                     ),
@@ -167,7 +171,7 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-            widget.isEdit?FutureBuilder<ModelOrderShow?>(
+            _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?FutureBuilder<ModelOrderShow?>(
               future: _getOrderShow(context: context,id: widget.idOrder!),
               builder: (context,order){
                 if(order.hasError){
@@ -190,16 +194,16 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
-
+                  // _idComplexList=order.data!.complexes;
+                  // _idServiceList=order.data!.services;
                   return Column(
                     children: [
                       ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
                       ItemCar.editOrder(modelOrderShow: order.data),
                       ItemClient(modelOrderShow: order.data),
                       FutureBuilder<ModelCalculatePrice?>(
-                          future:RepositoryModule.userRepository().getPrice(context: context, carType:order.data!.carType, servicesIds: [21,22,23], complexesIds: []),
+                          future:RepositoryModule.userRepository().getPrice(context: context, carType:order.data!.carType, servicesIds:_idServiceList, complexesIds:_idComplexList),
                           builder: (context,price){
-
                             if(price.hasData){
                               _notifier.value=price.data!;
                               _isLoading=false;
@@ -255,7 +259,7 @@ class PageAddOrder extends StatefulWidget{
     _order.update('date', (value) => widget.date);
     _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
     _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
-    if(!widget.isEdit){
+    if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
       _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
           .onError((error, stackTrace){
         setState(() {
@@ -539,7 +543,7 @@ class _ItemCommentState extends State<ItemComment> {
                   children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(3.0,GlobalData.sizeScreen!), 0, 0),
-                  child: Text(_isEditMain?widget.modelOrderShow!.clientComment:'.....',
+                  child: Text(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.clientComment:'.....',
                     style: TextStyle(
                         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
                         color: AppColors.textColorPhone
@@ -585,7 +589,7 @@ class _ItemCommentState extends State<ItemComment> {
                                       maxLines: 10,
                                       maxLengthEnforced: true,
                                       decoration: InputDecoration(
-                                          hintText: _isEditMain?widget.modelOrderShow!.adminComment:'.....',
+                                          hintText: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.adminComment:'.....',
                                           contentPadding: EdgeInsets.all(
                                               SizeUtil.getSize(
                                                   1.5,
@@ -949,7 +953,7 @@ class _ItemPriceState extends State<ItemPrice> {
   List<ModelServiceFromCalculate> _calculateList=[];
   List<ModelService> _listService=[];
   int i=-2;
-  bool _loadData=true;
+  bool _isAddService=false;
 
   @override
   Widget build(BuildContext context) {
@@ -979,7 +983,7 @@ class _ItemPriceState extends State<ItemPrice> {
                  ),
                ),
 
-               Align(
+               _idComplexList.length>0||_idServiceList.length>0?Align(
                  alignment: Alignment.bottomCenter,
                  child: Expanded(
                    child: GestureDetector(
@@ -1005,7 +1009,7 @@ class _ItemPriceState extends State<ItemPrice> {
                      },
                    ),
                  ),
-               ),
+               ):Container(),
 
              ],
            ),
@@ -1033,20 +1037,24 @@ class _ItemPriceState extends State<ItemPrice> {
                                carType: _typeCarInt,listAlreadySelected: _listService,
                              onListServices: (list){
                                  setState(() {
+                                   _isAddService=true;
                                    _idComplexList.clear();
                                    _idServiceList.clear();
                                    _listService.clear();
                                    _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
                                    list!.forEach((element) {
+                                     _listService.insert(1,element);
                                      if(element.type=='complex'){
                                        _idComplexList.add(element.id);
                                      }else if(element.type=='service'){
                                        _idServiceList.add(element.id);
                                      }
-                                     _listService.add(element);
 
+                                   });
 
-                                 });
+                                   _listService.forEach((element) {
+                                     print('List service ${element.name}');
+                                   });
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
 
@@ -1069,25 +1077,32 @@ class _ItemPriceState extends State<ItemPrice> {
                 ValueListenableBuilder<ModelCalculatePrice>(
                   valueListenable: _notifier,
                   builder: (context,data,widget){
+                     data.list.forEach((element) {
+                       print('List calculate ${element.id}');
+                     });
                     _calculateList.clear();
                     _calculateList.add(ModelServiceFromCalculate(id: 0,type: 'test',name: 'Въезд-Выезд',price: 0,oldPrice: 0));
-                    if(_isEditMain){
+                    if(_editStatusMain==GlobalData.EDIT_MODE&&!_isAddService){
                       _listService.clear();
                       _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
                     }
-                    if(data.saleName!='test'){
-                      data.list.forEach((element) {
-                        _calculateList.add(element);
-                        if(_isEditMain){
-                          if(element.type=='complex'){
-                            _idComplexList.add(element.id);
-                          }else if(element.type=='service'){
-                            _idServiceList.add(element.id);
-                          }
-                          _listService.add(ModelService(listServices: [], id: element.id, type: element.type, name: element.name, isDetailing: false, price: element.price, time: 0));
-                        }
-                      });
-                    }
+                    data.list.forEach((element) {
+                      _calculateList.add(element);
+                      if(_editStatusMain==GlobalData.EDIT_MODE&&!_isAddService){
+                        _listService.add(ModelService(listServices: [], id: element.id, type: element.type, name: element.name, isDetailing: false, price: element.price, time: 0));
+                      }
+                    });
+
+                    // if(data.saleName!='test'){
+                    //   data.list.forEach((element) {
+                    //     _calculateList.add(element);
+                    //     if(_editStatusMain==GlobalData.EDIT_MODE&&!_isAddService){
+                    //       _listService.add(ModelService(listServices: [], id: element.id, type: element.type, name: element.name, isDetailing: false, price: element.price, time: 0));
+                    //     }
+                    //   });
+                    //
+                    // }
+
                     return Column(
                         children:
                         List.generate(_calculateList.length, (index){
@@ -1100,6 +1115,10 @@ class _ItemPriceState extends State<ItemPrice> {
                             isEdit:_isEdit,
                             onRemove: (model){
                               setState(() {
+                                _listService.forEach((element) {
+                                  print('List service remove ${element.id}');
+                                });
+                                print('Item remove ${model!.id}');
                                 for(int i=0;_listService.length>i;i++){
                                   if(_listService[i].id==model!.id){
                                     _listService.removeAt(i);
@@ -1189,19 +1208,19 @@ class _ItemClientState extends State<ItemClient> {
     surnameController=TextEditingController();
     patronymicControler=TextEditingController();
 
-    if(_isEditMain){
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
       telController!.text=widget.modelOrderShow!.clientPhone;
     }
 
-    if(_isEditMain&&widget.modelOrderShow!.clientFullname!='....'){
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
       nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
     }
 
-    if(_isEditMain&&widget.modelOrderShow!.clientFullname!='....'){
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
       surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
     }
 
-    if(_isEditMain&&widget.modelOrderShow!.clientFullname!='....'){
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
       patronymicControler!.text=widget.modelOrderShow!.clientFullname.split(' ')[2];
     }
     myFocusNodeTel = FocusNode();
@@ -1634,7 +1653,7 @@ class _ItemCarState extends State<ItemCar> {
                          child:Align(
                            alignment: Alignment.centerRight,
                            child: DropdownButton<String>(
-                             value: _isEditMain?_getType(widget.modelOrderShow!.carType):_typeCar,
+                             value: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?_getType(widget.modelOrderShow!.carType):_typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
                              iconSize: 24,
@@ -1870,7 +1889,7 @@ class _ItemCarState extends State<ItemCar> {
                              color: AppColors.textColorItem,
                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                          )),
-                     !_isEditMain?Expanded(
+                     _editStatusMain==GlobalData.ADD_ORDER_MODE?Expanded(
                        child: Padding(
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                          child: Align(
@@ -1889,7 +1908,7 @@ class _ItemCarState extends State<ItemCar> {
                            ),
                          )
                        ),
-                     ):                      Expanded(
+                     ):Expanded(
                        child: Padding(
                            padding:EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
                            child: SizedBox(
@@ -1922,7 +1941,7 @@ class _ItemCarState extends State<ItemCar> {
                            )
                        ),
                      ),
-                     !_isEditMain?Align(
+                     _editStatusMain==GlobalData.ADD_ORDER_MODE?Align(
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
@@ -2003,7 +2022,7 @@ class _ItemCarState extends State<ItemCar> {
 
      @override
   void initState() {
-       if(_isEditMain){
+       if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
          _brandCar=widget.modelOrderShow!.carBrandtitle;
          _idBrand=widget.modelOrderShow!.carBrandid;
          _modelCar=widget.modelOrderShow!.carModeltitle;
@@ -2013,8 +2032,8 @@ class _ItemCarState extends State<ItemCar> {
         editingControllerColor.text=widget.modelOrderShow!.color;
         numCarController=TextEditingController();
         regionCarController=TextEditingController();
-        numCarController!.text=_isEditMain?widget.modelOrderShow!.carNumber:'A000AA';
-        regionCarController!.text=_isEditMain?widget.modelOrderShow!.carRegion.toString():'000';
+        numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
+        regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
      }
 
 }
