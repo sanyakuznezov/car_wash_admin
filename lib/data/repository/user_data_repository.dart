@@ -144,6 +144,11 @@ class UserDataRepository extends UserRepository{
     return await _apiUtil.getOrderShow(context: context, id: id);
   }
 
+  @override
+  Future<bool?> deleteOrder({required BuildContext context, required int id}) async{
+    return await _apiUtil.deleteOrder(context: context, id: id);
+  }
+
 
 
 

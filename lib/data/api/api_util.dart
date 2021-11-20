@@ -144,4 +144,8 @@ class ApiUtil{
 
     }
 
+    Future<bool?> deleteOrder({required BuildContext context,required int id}) async{
+       final result=await _mainServiseApi.deleteOrder(context: context, id: id);
+       return result;
+    }
 }

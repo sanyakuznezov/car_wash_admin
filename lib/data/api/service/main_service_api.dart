@@ -996,4 +996,76 @@ class MainServiseApi {
     return null;
   }
 
+ //Удаление заказа
+  Future<bool?> deleteOrder({required BuildContext context,required int id}) async{
+
+    if (await StateNetwork.initConnectivity() == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    } else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      print('Delete data $id ${data['pid']} ${data['token']}');
+      final value = {
+        'id': id,
+        'pId': data['pid'],
+        'token': data['token']
+      };
+      try {
+       final result= await _dio.post(
+            'orders/delete',
+            data: value,
+            options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 10000,
+              contentType: 'application/x-www-form-urlencoded',
+            )
+        );
+        return result.data['result'];
+
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response!.statusCode == 403) {
+            Fluttertoast.showToast(
+                msg: "Нет доступа",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+          if (e.response!.statusCode == 404) {
+            Fluttertoast.showToast(
+                msg: "Не найдены базовые модели",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+          if (e.response!.statusCode == 420) {
+            Fluttertoast.showToast(
+                msg: "Токен доступа не совпал",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
+
 }

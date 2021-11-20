@@ -36,4 +36,5 @@ abstract class UserRepository{
   Future<ModelTime> getListTimes({required BuildContext context, required String date,required int workTimeMin,required bool considerLeftTime});
   Future<ModelDataTable?> getDataSetting({required BuildContext context, required String date});
   Future<ModelOrderShow?> getOrderShow({required BuildContext context,required int id});
+  Future<bool?> deleteOrder({required BuildContext context,required int id});
   }

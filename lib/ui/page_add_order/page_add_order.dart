@@ -5,7 +5,6 @@
 
 import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
-import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
@@ -13,6 +12,7 @@ import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
+import 'package:car_wash_admin/ui/global_widgets/container_deleteorder.dart';
 import 'package:car_wash_admin/ui/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/page_add_order/page_list_workers.dart';
 import 'package:car_wash_admin/ui/page_add_order/page_search_brand.dart';
@@ -52,6 +52,8 @@ import '../../../global_data.dart';
 
 
 
+
+
   Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
     _notifier.value=ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []);
@@ -78,6 +80,7 @@ class PageAddOrder extends StatefulWidget{
 
 
 
+
   @override
   StatePageAddOrder createState() {
     // TODO: implement createState
@@ -94,7 +97,8 @@ class PageAddOrder extends StatefulWidget{
 
   class StatePageAddOrder extends State<PageAddOrder>{
 
-
+    bool _isSuccesDeleteOrder=false;
+    int? _idOrder=0;
 
   @override
   Widget build(BuildContext context) {
@@ -149,9 +153,17 @@ class PageAddOrder extends StatefulWidget{
                             style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
                                 fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
                         ),
-                        GestureDetector(
+                        !_isSuccesDeleteOrder?GestureDetector(
                           onTap: () {
-
+                              if(_editStatusMain==GlobalData.EDIT_MODE&&_idOrder!=0){
+                                showMaterialModalBottomSheet(
+                                    backgroundColor: Colors.white,
+                                    context: context,
+                                    builder: (context) => ContainerDeleteOrder(
+                                      onAccept: (int? i) {
+                                        _deleteOrder(context: context, id: _idOrder!);
+                                      },));
+                              }
                           },
                           child: Align(
                               alignment: Alignment.centerRight,
@@ -164,14 +176,32 @@ class PageAddOrder extends StatefulWidget{
                                           color: Colors.red,
                                         )
                                       : SvgPicture.asset('assets/flag_1.svg'))),
-                        )
+                        ):Container()
                       ],
                     ),
                   ),
                 )
               ],
             ),
-            _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?FutureBuilder<ModelOrderShow?>(
+            _isSuccesDeleteOrder?Container(
+              height: MediaQuery.of(context).size.height,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.check_circle_outline_outlined,color: Colors.green,size: SizeUtil.getSize(10,GlobalData.sizeScreen!),),
+              Padding(
+                padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                child: Text('Заказ удален!',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                    fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!))),
+              ),
+
+          ],
+        ),
+              ),
+            ):_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?FutureBuilder<ModelOrderShow?>(
               future: _getOrderShow(context: context,id: widget.idOrder!),
               builder: (context,order){
                 if(order.hasError){
@@ -194,8 +224,9 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
+                  _idOrder=order.data!.id;
                   _idComplexList=order.data!.complexes;
-                  _idServiceList=order.data!.services;
+                   _idServiceList=order.data!.services;
                   return Column(
                     children: [
                       ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
@@ -250,7 +281,48 @@ class PageAddOrder extends StatefulWidget{
   }
 
 
+  Future<void> _deleteOrder({required BuildContext context,required int id}) async{
+    showLoaderDialog(context);
+    final result = await RepositoryModule.userRepository().deleteOrder(context: context, id: id).catchError(
+        (error){
+          setState(() {
+            widget.isClose=true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.white,
+              content:Text('Ошибка удаления заказа....',
+                style: TextStyle(
+                    color: Colors.red
+                ),)));
+        }
+    );
 
+    if(result==null){
+      setState(() {
+        widget.isClose=true;
+      });
+    }
+
+    if(result!){
+      setState(() {
+        widget.isClose=true;
+        _isSuccesDeleteOrder=true;
+      });
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.white,
+          content:Text('Заказ не удален, повторите попытку',
+            style: TextStyle(
+                color: Colors.red
+            ),)));
+      setState(() {
+        widget.isClose=true;
+      });
+
+    }
+
+
+  }
 
 
   @override
@@ -285,16 +357,19 @@ class PageAddOrder extends StatefulWidget{
       setState(() {
         widget.isClose=true;
       });
-      Fluttertoast.showToast(
-          msg: "Ошибка проверки времени....",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 3,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.white,
+          content:Text('Ошибка проверки времени....',
+      style: TextStyle(
+        color: Colors.red
+      ),)));
     });
+
+    if(result==null){
+      setState(() {
+        widget.isClose=true;
+      });
+    }
 
          if(result!){
            _order.update('clientFullname', (value) =>'$_surName $_patronymicName $_lastName');
@@ -329,6 +404,12 @@ class PageAddOrder extends StatefulWidget{
           );
 
     });
+
+    if(result==null){
+      setState(() {
+        widget.isClose=true;
+      });
+    }
       if(result!){
         setState(() {
           widget.isClose=true;
@@ -576,7 +657,7 @@ class _ItemCommentState extends State<ItemComment> {
                                 padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                 child: SizedBox(
                                   height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
-                                  child: TextField(
+                                  child: _editStatusMain!=GlobalData.VIEW_MODE?TextField(
                                       textAlign: TextAlign.start,
                                       focusNode: myFocusNodeComment,
                                       style: TextStyle(
@@ -603,11 +684,21 @@ class _ItemCommentState extends State<ItemComment> {
                                         }
                                       }
 
+                                  ):Padding(
+                                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(1.5,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!), SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0),
+                                    child: Text('${commentController!.text==''?'....':commentController!.text}',
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          color: AppColors.textColorPhone,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: SizeUtil.getSize(1.8,
+                                              GlobalData.sizeScreen!)),
+                                    ),
                                   ),
                                 )
                             ),
                           ),
-                          GestureDetector(
+                          _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                             onTap: (){
                               myFocusNodeComment.requestFocus();
                             },
@@ -615,7 +706,7 @@ class _ItemCommentState extends State<ItemComment> {
                               Icons.edit,
                               color: AppColors.colorBackgrondProfile,
                             ),
-                          ),
+                          ):Container(),
                         ],
                       ),
                     ),
@@ -876,10 +967,10 @@ class _ItemPriceState extends State<ItemPrice> {
                                                       selWorker: _modelWorker!,
                                                     )));
                                               },
-                                              child: Icon(
+                                              child: _editStatusMain!=GlobalData.VIEW_MODE?Icon(
                                                 Icons.arrow_forward_ios,
                                                 color: AppColors.colorIndigo,
-                                              ),
+                                              ):Container(),
                                             ),
                                           ),
                                         ],
@@ -987,7 +1078,7 @@ class _ItemPriceState extends State<ItemPrice> {
                _idComplexList.length>0||_idServiceList.length>0?Align(
                  alignment: Alignment.bottomCenter,
                  child: Expanded(
-                   child: GestureDetector(
+                   child:  _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                      child: Text(_isEdit?'Отмена':'Править',
                        textAlign: TextAlign.right,
                        style: TextStyle(
@@ -1008,7 +1099,7 @@ class _ItemPriceState extends State<ItemPrice> {
                        }
 
                      },
-                   ),
+                   ):Container(),
                  ),
                ):Container(),
 
@@ -1024,12 +1115,12 @@ class _ItemPriceState extends State<ItemPrice> {
                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                  child: Row(
                    children: [
-                     Text('Добавить',
+                     _editStatusMain!=GlobalData.VIEW_MODE?Text('Добавить',
                          style: TextStyle(
                              color: AppColors.textColorItem,
                              fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                         )),
-                     Expanded(
+                         )):Container(),
+                     _editStatusMain!=GlobalData.VIEW_MODE?Expanded(
                        child: Align(
                          alignment: Alignment.centerRight,
                          child: GestureDetector(
@@ -1064,20 +1155,17 @@ class _ItemPriceState extends State<ItemPrice> {
                            ),
                          ),
                        ),
-                     ),
+                     ):Container(),
                    ],
                  ),
                ),
-               Container(
+               _editStatusMain!=GlobalData.VIEW_MODE?Container(
                    margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
                    height: 1,
-                   color: AppColors.colorLine),
+                   color: AppColors.colorLine):Container(),
                 ValueListenableBuilder<ModelCalculatePrice>(
                   valueListenable: _notifier,
                   builder: (context,data,widget){
-                     data.list.forEach((element) {
-                       print('List calculate ${element.id}');
-                     });
                     _calculateList.clear();
                     _calculateList.add(ModelServiceFromCalculate(id: 0,type: 'test',name: 'Въезд-Выезд',price: 0,oldPrice: 0));
                     if(_editStatusMain==GlobalData.EDIT_MODE&&!_isAddService){
@@ -1169,7 +1257,7 @@ class _ItemPriceState extends State<ItemPrice> {
 
   class ItemClient extends StatefulWidget{
 
-    ModelOrderShow? modelOrderShow;
+  final ModelOrderShow? modelOrderShow;
 
 
 
@@ -1207,16 +1295,18 @@ class _ItemClientState extends State<ItemClient> {
     }
 
     if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
-      nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
+      if(widget.modelOrderShow!.clientFullname.split(' ').length==3){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
+        surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+        patronymicControler!.text=widget.modelOrderShow!.clientFullname.split(' ')[2];
+      }else if(widget.modelOrderShow!.clientFullname.split(' ').length==2){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
+        surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+      }else if(widget.modelOrderShow!.clientFullname.split(' ').length==1){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+      }
     }
 
-    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
-      surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
-    }
-
-    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
-      patronymicControler!.text=widget.modelOrderShow!.clientFullname.split(' ')[2];
-    }
     myFocusNodeTel = FocusNode();
     myFocusNodeName=FocusNode();
     myFocusNodeSurname=FocusNode();
@@ -1269,7 +1359,7 @@ class _ItemClientState extends State<ItemClient> {
                 Padding(
                   padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: _editStatusMain!=GlobalData.VIEW_MODE?CrossAxisAlignment.start:CrossAxisAlignment.center,
                     children: [
                       Text('Телефон',
                           style: TextStyle(
@@ -1281,8 +1371,8 @@ class _ItemClientState extends State<ItemClient> {
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                           child: SizedBox(
-                            height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
-                            child: TextFormField(
+                            height: _editStatusMain!=GlobalData.VIEW_MODE?SizeUtil.getSize(6.0, GlobalData.sizeScreen!):SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
+                            child: _editStatusMain!=GlobalData.VIEW_MODE?TextFormField(
                               validator: (value){
                                 _validatePhoneNumber(value!);
                               },
@@ -1320,11 +1410,23 @@ class _ItemClientState extends State<ItemClient> {
                                    }
                                 }
 
+                            ):Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: AppColors.colorDisableButton,
+                                borderRadius: BorderRadius.all(Radius.circular( SizeUtil.getSize(1.0, GlobalData.sizeScreen!)))
+                              ),
+                              child: Text('${widget.modelOrderShow!.clientPhone}',
+                                  style: TextStyle(
+                                      color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(1.8,
+                                          GlobalData.sizeScreen!))),
                             ),
                           ),
                         ),
                       ),
-                      GestureDetector(
+                      _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                         onTap: (){
                           myFocusNodeTel.requestFocus();
                         },
@@ -1332,7 +1434,7 @@ class _ItemClientState extends State<ItemClient> {
                           Icons.edit,
                           color: AppColors.colorBackgrondProfile,
                         ),
-                      ),
+                      ):Container(),
                     ],
                   ),
                 ),
@@ -1355,7 +1457,7 @@ class _ItemClientState extends State<ItemClient> {
                           child: SizedBox(
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
-                            child: TextField(
+                            child: _editStatusMain!=GlobalData.VIEW_MODE?TextField(
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodeSurname,
                                 style: TextStyle(
@@ -1378,11 +1480,17 @@ class _ItemClientState extends State<ItemClient> {
                                       }
                                 }
 
-                            ),
+                            ):Text('${surnameController!.text==''?'....':surnameController!.text}',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,
+                                        GlobalData.sizeScreen!))),
                           )
                         ),
                       ),
-                      GestureDetector(
+                      _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                         onTap: (){
                           myFocusNodeSurname.requestFocus();
                         },
@@ -1390,7 +1498,7 @@ class _ItemClientState extends State<ItemClient> {
                           Icons.edit,
                           color: AppColors.colorBackgrondProfile,
                         ),
-                      ),
+                      ):Container(),
                     ],
                   ),
                 ),
@@ -1414,7 +1522,7 @@ class _ItemClientState extends State<ItemClient> {
                           child: SizedBox(
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
-                            child: TextField(
+                            child:  _editStatusMain!=GlobalData.VIEW_MODE?TextField(
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodeName,
                                 style: TextStyle(
@@ -1437,11 +1545,17 @@ class _ItemClientState extends State<ItemClient> {
                                     }
                                 }
 
-                            ),
+                            ):Text('${nameController!.text==''?'....':nameController!.text}',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  color: AppColors.textColorPhone,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: SizeUtil.getSize(1.8,
+                                      GlobalData.sizeScreen!))),
                           )
                         ),
                       ),
-                      GestureDetector(
+                      _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                         onTap: (){
                           myFocusNodeName.requestFocus();
                         },
@@ -1449,7 +1563,7 @@ class _ItemClientState extends State<ItemClient> {
                           Icons.edit,
                           color: AppColors.colorBackgrondProfile,
                         ),
-                      ),
+                      ):Container(),
                     ],
                   ),
                 ),
@@ -1473,7 +1587,7 @@ class _ItemClientState extends State<ItemClient> {
                           child:SizedBox(
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
-                            child: TextField(
+                            child: _editStatusMain!=GlobalData.VIEW_MODE?TextField(
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodePatronymic,
                                 style: TextStyle(
@@ -1496,11 +1610,17 @@ class _ItemClientState extends State<ItemClient> {
                                      }
                                 }
 
-                            ),
+                            ):Text('${patronymicControler!.text==''?'....':patronymicControler!.text}',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(1.8,
+                                        GlobalData.sizeScreen!))),
                           )
                         ),
                       ),
-                      GestureDetector(
+                      _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                         onTap: (){
                           myFocusNodePatronymic.requestFocus();
                         },
@@ -1508,7 +1628,7 @@ class _ItemClientState extends State<ItemClient> {
                           Icons.edit,
                           color: AppColors.colorBackgrondProfile,
                         ),
-                      ),
+                      ):Container(),
 
                     ],
                   ),
@@ -1646,8 +1766,8 @@ class _ItemCarState extends State<ItemCar> {
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                          child:Align(
                            alignment: Alignment.centerRight,
-                           child: DropdownButton<String>(
-                             value: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?_getType(widget.modelOrderShow!.carType):_typeCar,
+                           child: _editStatusMain!=GlobalData.VIEW_MODE?DropdownButton<String>(
+                             value: _editStatusMain==GlobalData.EDIT_MODE?_getType(widget.modelOrderShow!.carType):_typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
                              iconSize: 24,
@@ -1685,6 +1805,13 @@ class _ItemCarState extends State<ItemCar> {
                                  child: Text(value),
                                );
                              }).toList(),
+                           ):Padding(
+                             padding: EdgeInsets.all(SizeUtil.getSize(0.6,GlobalData.sizeScreen!)),
+                             child: Text('${_getType(widget.modelOrderShow!.carType)}',
+                             style: TextStyle(
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                             ),),
                            ),
                          ),
 
@@ -1711,7 +1838,7 @@ class _ItemCarState extends State<ItemCar> {
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                          child: Align(
                            alignment: Alignment.centerRight,
-                           child: Row(
+                           child: _editStatusMain!=GlobalData.VIEW_MODE?Row(
                              mainAxisAlignment: MainAxisAlignment.end,
                              children: [
                                Container(
@@ -1760,6 +1887,30 @@ class _ItemCarState extends State<ItemCar> {
                                  ),
                                ),
                              ],
+                           ):Row(
+                             mainAxisAlignment: MainAxisAlignment.end,
+                             children: [
+                               Container(
+                                 decoration: BoxDecoration(
+                                     border: Border.all(color: Colors.black),
+                                   borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))
+                                 ),
+                                 alignment: Alignment.center,
+                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
+                                 child: Text('${widget.modelOrderShow!.carNumber}'),
+                               ),
+                               Container(
+                                 decoration: BoxDecoration(
+                                   border: Border.all(color: Colors.black),
+                                   borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))
+                                 ),
+                                 alignment: Alignment.center,
+                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                                 width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
+                                 child: Text('${widget.modelOrderShow!.carRegion}'),
+                               ),
+                             ],
                            ),
                          )
                        ),
@@ -1794,7 +1945,7 @@ class _ItemCarState extends State<ItemCar> {
                              )),
                        ),
                      ),
-                     Align(
+                     _editStatusMain!=GlobalData.VIEW_MODE?Align(
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
@@ -1813,7 +1964,7 @@ class _ItemCarState extends State<ItemCar> {
                            color: AppColors.colorIndigo,
                          ),
                        ),
-                     ),
+                     ):Container(),
                    ],
                  ),
                ),
@@ -1843,7 +1994,7 @@ class _ItemCarState extends State<ItemCar> {
                              )),
                        ),
                      ),
-                     Align(
+                     _editStatusMain!=GlobalData.VIEW_MODE?Align(
                        alignment: Alignment.centerRight,
                        child: GestureDetector(
                          onTap: (){
@@ -1865,7 +2016,7 @@ class _ItemCarState extends State<ItemCar> {
                            color: AppColors.colorIndigo,
                          ),
                        ),
-                     ),
+                     ):Container(),
                    ],
                  ),
                ),
@@ -1981,10 +2132,10 @@ class _ItemCarState extends State<ItemCar> {
                        onTap: (){
                          focusEditColor.requestFocus();
                        },
-                       child: Icon(
+                       child: _editStatusMain!=GlobalData.VIEW_MODE?Icon(
                          Icons.edit,
                          color: AppColors.colorBackgrondProfile,
-                       ),
+                       ):Container(),
                      ),
                    ],
                  ),
@@ -2092,7 +2243,7 @@ class _ItemDateState extends State<ItemDate> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Expanded(
-                    child: GestureDetector(
+                    child: _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                       child: Text('Править',
                         textAlign: TextAlign.right,
                         style: TextStyle(
@@ -2116,7 +2267,7 @@ class _ItemDateState extends State<ItemDate> {
                            time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
 
                       },
-                    ),
+                    ):Container(),
                   ),
                 ),
               ],
