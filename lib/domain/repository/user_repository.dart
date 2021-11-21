@@ -37,4 +37,5 @@ abstract class UserRepository{
   Future<ModelDataTable?> getDataSetting({required BuildContext context, required String date});
   Future<ModelOrderShow?> getOrderShow({required BuildContext context,required int id});
   Future<bool?> deleteOrder({required BuildContext context,required int id});
+  Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context,required int idOrder});
   }

@@ -148,4 +148,9 @@ class ApiUtil{
        final result=await _mainServiseApi.deleteOrder(context: context, id: id);
        return result;
     }
+
+    Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context, required int idOrder})async{
+      final result=await _mainServiseApi.editOrder(map: map, context: context, idOrder: idOrder);
+      return result;
+    }
 }

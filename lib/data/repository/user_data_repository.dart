@@ -149,6 +149,11 @@ class UserDataRepository extends UserRepository{
     return await _apiUtil.deleteOrder(context: context, id: id);
   }
 
+  @override
+  Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context, required int idOrder}) {
+   return _apiUtil.editOrder(map: map, context: context, idOrder: idOrder);
+  }
+
 
 
 

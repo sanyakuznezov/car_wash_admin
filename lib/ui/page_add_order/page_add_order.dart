@@ -81,6 +81,8 @@ class PageAddOrder extends StatefulWidget{
 
 
 
+
+
   @override
   StatePageAddOrder createState() {
     // TODO: implement createState
@@ -99,6 +101,8 @@ class PageAddOrder extends StatefulWidget{
 
     bool _isSuccesDeleteOrder=false;
     int? _idOrder=0;
+    ValueNotifier<bool>? _fabNotifi;
+    bool _isEdit=false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,21 +111,31 @@ class PageAddOrder extends StatefulWidget{
     }
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
-      floatingActionButton: widget.isVisibleFAB?FloatingActionButton(
-        onPressed: () {
-          showMaterialModalBottomSheet(
-              backgroundColor: Colors.white,
-              context: context,
-              builder: (context) => ContainerAddOrder(
-                onAccept: (int? i) {
-                 _validateTime(map: _order, context: context);
+      floatingActionButton: ValueListenableBuilder<bool>(
+        builder: (context,hide,widget){
+          return hide?FloatingActionButton(
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                  backgroundColor: Colors.white,
+                  context: context,
+                  builder: (context) => ContainerAddOrder(
+                    isEdit: _isEdit,
+                    onAccept: (int? i) {
+                      if(_editStatusMain==GlobalData.EDIT_MODE){
+                        _editOrder(map: _order, context: context,id: _idOrder!);
+                      }else{
+                        _validateTime(map: _order, context: context);
+                      }
 
-              },));
 
-        },
-        child: const Icon(Icons.send),
-        backgroundColor: AppColors.colorFAB,
-      ):null,
+                    },));
+
+            },
+            child: const Icon(Icons.send),
+            backgroundColor: AppColors.colorFAB,
+          ):Container();
+        }, valueListenable: _fabNotifi!,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -224,14 +238,58 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
+                  _order.update('post', (value) => order.data!.post);
+                  _order.update('date', (value) => order.data!.date);
+                    _order.update('startTime', (value) =>order.data!.startTime);
+                    _order.update('endTime', (value) =>order.data!.endTime);
+                  _order.update('carType', (value) => order.data!.carType);
+                  _order.update('carNumber', (value) => order.data!.carNumber);
+                  _order.update('carRegion', (value) => order.data!.carRegion);
+                  _order.update('carBrandId', (value) => order.data!.carBrandid);
+                  _order.update('carModelId', (value) => order.data!.carModelid);
+                  _order.update('color', (value) => order.data!.color);
+                  _order.update('clientPhone', (value) => order.data!.clientPhone);
+                  _order.update('clientFullname', (value) => order.data!.clientFullname);
+                  _order.update('totalPrice', (value) => order.data!.totalPrice);
+                  _order.update('sale', (value) => order.data!.sale);
+                  _order.update('workTime', (value) => order.data!.workTime);
+                  _order.update('status', (value) => order.data!.status);
+                  _order.update('adminComment', (value) => order.data!.adminComment);
+                  _order.update('clientComment', (value) => order.data!.clientComment);
+                  _order.update('ComplexesList', (value) => order.data!.complexes);
+                  _order.update('ServicesList', (value) => order.data!.services);
                   _idOrder=order.data!.id;
                   _idComplexList=order.data!.complexes;
                    _idServiceList=order.data!.services;
+                  if(order.data!.clientFullname.split(' ').length==3){
+                    _surName=order.data!.clientFullname.split(' ')[1];
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                   _patronymicName=order.data!.clientFullname.split(' ')[2];
+                  }else if(order.data!.clientFullname.split(' ').length==2){
+                    _surName=order.data!.clientFullname.split(' ')[1];
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                  }else if(order.data!.clientFullname.split(' ').length==1){
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                  }
                   return Column(
                     children: [
-                      ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
-                      ItemCar.editOrder(modelOrderShow: order.data),
-                      ItemClient(modelOrderShow: order.data),
+                      ItemDate.editOrder(
+                        callback: (hide){
+                           if(hide!){
+                             _fabNotifi!.value=hide;
+                           }
+                        },
+                          timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
+                      ItemCar.editOrder(callback:(hide){
+                        if(hide!){
+                          _fabNotifi!.value=hide;
+                        }
+                      },modelOrderShow: order.data),
+                      ItemClient.editOrder(callback:(hide){
+                        if(hide!){
+                          _fabNotifi!.value=hide;
+                        }
+                      },modelOrderShow: order.data),
                       FutureBuilder<ModelCalculatePrice?>(
                           future:RepositoryModule.userRepository().getPrice(context: context, carType:order.data!.carType, servicesIds:_idServiceList, complexesIds:_idComplexList),
                           builder: (context,price){
@@ -242,13 +300,25 @@ class PageAddOrder extends StatefulWidget{
 
                             return Column(
                               children: [
-                                ItemListWork(),
-                                ItemPrice(),
+                                ItemListWork.editOrder(callback: (hide){
+                                  if(hide!){
+                                    _fabNotifi!.value=hide;
+                                  }
+                                }),
+                                ItemPrice.editOrder(callback:(hide){
+                                  if(hide!){
+                                    _fabNotifi!.value=hide;
+                                  }
+                                }),
                               ],
                             );
 
                       }),
-                      ItemComment.editOrder(modelOrderShow: order.data),
+                      ItemComment.editOrder(callback:(hide){
+                        if(hide!){
+                          _fabNotifi!.value=hide;
+                        }
+                      },modelOrderShow: order.data),
                       ItemReview.editOrder(modelOrderShow: order.data,)
                     ],
                   );
@@ -328,18 +398,24 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-    _order.update('post', (value) => widget.post);
-    _order.update('date', (value) => widget.date);
-    _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
-    _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
     if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
+      _isEdit=false;
+      _order.update('post', (value) => widget.post);
+      _order.update('date', (value) => widget.date);
+      _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
+      _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
       _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
           .onError((error, stackTrace){
         setState(() {
           _isLoading=false;
         });
       });
-
+    }
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+      _isEdit=true;
+      _fabNotifi=ValueNotifier<bool>(false);
+    }else if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
+      _fabNotifi=ValueNotifier<bool>(true);
     }
     _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
@@ -348,6 +424,7 @@ class PageAddOrder extends StatefulWidget{
   void dispose() {
     super.dispose();
     _notifier.dispose();
+    _fabNotifi!.dispose();
   }
 
   Future<bool?> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
@@ -376,6 +453,7 @@ class PageAddOrder extends StatefulWidget{
            _order.update('ComplexesList', (value) => _idComplexList);
            _order.update('ServicesList', (value) => _idServiceList);
            _addOrder(map: map, context: context);
+
          }else{
            setState(() {
              widget.isClose=true;
@@ -385,6 +463,68 @@ class PageAddOrder extends StatefulWidget{
 
      return result;
   }
+
+    Future<bool> _editOrder({required Map<String,dynamic> map,required BuildContext context,required int id}) async{
+      final result= await RepositoryModule.userRepository().editOrder(map: map, context: context,idOrder: id)
+          .catchError((error){
+            print('Error ${error.toString()}');
+        setState(() {
+          widget.isClose=true;
+        });
+        Fluttertoast.showToast(
+            msg: "Ошибка редактирования заказа....",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+
+      });
+
+      if(result==null){
+        setState(() {
+          widget.isClose=true;
+        });
+      }
+      if(result!){
+        setState(() {
+          widget.isClose=true;
+          widget.isVisibleFAB=false;
+        });
+        Fluttertoast.showToast(
+            msg: "Заказ успешно отредактирован",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+
+      }else{
+        setState(() {
+          widget.isClose=true;
+        });
+        Fluttertoast.showToast(
+            msg: "Заказ не отредактирован",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+            fontSize: 16.0
+        );
+      }
+      return result;
+
+    }
+
+
+
+
+
 
 
   Future<bool> _addOrder({required Map<String,dynamic> map,required BuildContext context}) async{
@@ -446,6 +586,8 @@ class PageAddOrder extends StatefulWidget{
 
 
   }
+
+
 
   showLoaderDialog(BuildContext context){
     AlertDialog alert=AlertDialog(
@@ -562,9 +704,10 @@ class PageAddOrder extends StatefulWidget{
   class ItemComment extends StatefulWidget{
 
     ModelOrderShow? modelOrderShow;
+    var callback=(bool? hide)=>hide;
 
 
-    ItemComment.editOrder({this.modelOrderShow});
+    ItemComment.editOrder({required this.callback,this.modelOrderShow});
     ItemComment({this.modelOrderShow});
 
   @override
@@ -680,6 +823,7 @@ class _ItemCommentState extends State<ItemComment> {
                                           border: InputBorder.none),
                                       onChanged: (text) {
                                         if(text.isNotEmpty){
+                                          widget.callback(true);
                                           _order.update('adminComment', (value) => text);
                                         }
                                       }
@@ -727,15 +871,19 @@ class _ItemCommentState extends State<ItemComment> {
 
   class ItemPrice extends StatefulWidget{
 
-
+    var callback=(bool? hide)=>hide;
 
   @override
   State<ItemPrice> createState() => _ItemPriceState();
+
+  ItemPrice.editOrder({required this.callback});
+  ItemPrice();
 }
 
 class _ItemPriceState extends State<ItemPrice> {
 
     String? _selWorkerString='....';
+    bool _isEdit=false;
     ModelWorker? _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
 
 
@@ -928,7 +1076,6 @@ class _ItemPriceState extends State<ItemPrice> {
                            future: RepositoryModule.userRepository().getWorkers(context: context),
                            builder: (context,value){
                                   if (value.hasData) {
-
                                     return Expanded(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
@@ -953,6 +1100,7 @@ class _ItemPriceState extends State<ItemPrice> {
                                                         PageListWorkers(
                                                       onWorker: (data) {
                                                         setState(() {
+                                                          _isEdit=true;
                                                           if(data==null){
                                                             _selWorkerString='....';
                                                             _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
@@ -960,7 +1108,6 @@ class _ItemPriceState extends State<ItemPrice> {
                                                             _modelWorker = data;
                                                             _selWorkerString ='${data.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
                                                           }
-
                                                         });
                                                       },
                                                       list: value.data,
@@ -1023,6 +1170,9 @@ class _ItemPriceState extends State<ItemPrice> {
   @override
   void initState() {
     super.initState();
+    if(_isEdit){
+      widget.callback(true);
+    }
   }
 
 
@@ -1031,11 +1181,14 @@ class _ItemPriceState extends State<ItemPrice> {
    class ItemListWork extends StatefulWidget{
 
      ModelCalculatePrice? modelCalculatePrice;
+     var callback=(bool? hide)=>hide;
 
 
   @override
   State<ItemListWork> createState() => _ItemListWorkState();
 
+     ItemListWork.editOrder({required this.callback});
+     ItemListWork();
 }
 
   class _ItemListWorkState extends State<ItemListWork> {
@@ -1143,7 +1296,7 @@ class _ItemPriceState extends State<ItemPrice> {
                                      }
 
                                    });
-
+                                   widget.callback(true);
                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
 
@@ -1222,7 +1375,6 @@ class _ItemPriceState extends State<ItemPrice> {
                                     }
                                   }
                                 }
-
                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                 if(_calculateList.length==2){
                                   _isEdit=false;
@@ -1248,7 +1400,9 @@ class _ItemPriceState extends State<ItemPrice> {
   @override
   void initState() {
     super.initState();
-
+    if(_isEdit){
+      widget.callback(true);
+    }
 
   }
 
@@ -1258,13 +1412,14 @@ class _ItemPriceState extends State<ItemPrice> {
   class ItemClient extends StatefulWidget{
 
   final ModelOrderShow? modelOrderShow;
+  var callback=(bool? hide)=>hide;
 
 
 
   @override
   State<ItemClient> createState() => _ItemClientState();
 
-  ItemClient.editOrder({required this.modelOrderShow});
+  ItemClient.editOrder({required this.callback,required this.modelOrderShow});
 
     ItemClient({this.modelOrderShow});
 }
@@ -1406,6 +1561,7 @@ class _ItemClientState extends State<ItemClient> {
                                   border: InputBorder.none),
                               onChanged: (text) {
                                    if(text.isNotEmpty){
+                                     widget.callback(true);
                                      _order.update('clientPhone', (value) => text);
                                    }
                                 }
@@ -1476,6 +1632,7 @@ class _ItemClientState extends State<ItemClient> {
                                     border: InputBorder.none),
                                 onChanged: (text) {
                                       if(text.isNotEmpty){
+                                        widget.callback(true);
                                         _lastName=text;
                                       }
                                 }
@@ -1541,6 +1698,7 @@ class _ItemClientState extends State<ItemClient> {
                                     border: InputBorder.none),
                                 onChanged: (text) {
                                     if(text.isNotEmpty){
+                                      widget.callback(true);
                                       _surName=text;
                                     }
                                 }
@@ -1606,6 +1764,7 @@ class _ItemClientState extends State<ItemClient> {
                                     border: InputBorder.none),
                                 onChanged: (text) {
                                      if(text.isNotEmpty){
+                                       widget.callback(true);
                                        _patronymicName=text;
                                      }
                                 }
@@ -1696,11 +1855,12 @@ class _ItemClientState extends State<ItemClient> {
    class ItemCar extends StatefulWidget{
 
   ModelOrderShow? modelOrderShow;
+  var callback=(bool? hide)=>hide;
 
   @override
   State<ItemCar> createState() => _ItemCarState();
 
-  ItemCar.editOrder({required this.modelOrderShow});
+  ItemCar.editOrder({required this.callback,required this.modelOrderShow});
   ItemCar();
 }
 
@@ -1714,12 +1874,18 @@ class _ItemCarState extends State<ItemCar> {
      Color _colorCar=Color.fromRGBO(77,77,77, 1.0);
      int? _index;
      int? _idBrand;
+     bool _isFirstData=true;
      late FocusNode focusEditColor;
      late TextEditingController editingControllerColor;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    if(_editStatusMain==GlobalData.EDIT_MODE&&_isFirstData){
+      _typeCar= _getType(widget.modelOrderShow!.carType);
+      _isFirstData=false;
+    }
+
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
      child: Column(
@@ -1767,7 +1933,7 @@ class _ItemCarState extends State<ItemCar> {
                          child:Align(
                            alignment: Alignment.centerRight,
                            child: _editStatusMain!=GlobalData.VIEW_MODE?DropdownButton<String>(
-                             value: _editStatusMain==GlobalData.EDIT_MODE?_getType(widget.modelOrderShow!.carType):_typeCar,
+                             value: _typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
                              iconSize: 24,
@@ -1794,6 +1960,7 @@ class _ItemCarState extends State<ItemCar> {
                                  }else if(_typeCar=='Иное'){
                                    _typeCarInt=5;
                                  }
+                                   widget.callback(true);
                                  _order.update('carType', (value) => _typeCarInt);
                                  _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                });
@@ -1853,6 +2020,7 @@ class _ItemCarState extends State<ItemCar> {
                                    ),
                                    onChanged: (text){
                                      if(text.isNotEmpty){
+                                       widget.callback(true);
                                        _order.update('carNumber', (value) => text);
                                      }
                                    },
@@ -1875,6 +2043,7 @@ class _ItemCarState extends State<ItemCar> {
                                    controller: regionCarController,
                                    onChanged: (text){
                                      if(text.isNotEmpty){
+                                       widget.callback(true);
                                        _order.update('carRegion', (value) => text);
                                      }
                                    },
@@ -1955,6 +2124,7 @@ class _ItemCarState extends State<ItemCar> {
                                  setState(() {
                                    _idBrand=id;
                                    _brandCar=brand;
+                                   widget.callback(true);
                                    _order.update('carBrandId', (value) => _idBrand);
                                  });
                             },)));
@@ -2003,6 +2173,7 @@ class _ItemCarState extends State<ItemCar> {
                                  id:_idBrand!,onSelected: (id,model){
                                setState(() {
                                  _modelCar=model;
+                                 widget.callback(true);
                                  _order.update('carModelId', (value) => id);
                                });
                              })));
@@ -2119,7 +2290,7 @@ class _ItemCarState extends State<ItemCar> {
                                       }else if(_index==9){
                                         _order.update('color', (value) => 'Оранжевый');
                                       }
-
+                                      widget.callback(true);
                                     });
                                },));
                          },
@@ -2193,8 +2364,10 @@ class _ItemCarState extends State<ItemCar> {
       int? post;
       int timeStartWash;
       int timeEndWash;
+      var callback=(bool? hide)=>hide;
 
       ItemDate({required this.timeEndWash,required this.timeStartWash,required this.date,required this.post, required this.time});
+      ItemDate.editOrder({required this.callback,required this.timeEndWash,required this.timeStartWash,required this.date,required this.post, required this.time});
 
   @override
   State<ItemDate> createState() => _ItemDateState();
@@ -2258,10 +2431,13 @@ class _ItemDateState extends State<ItemDate> {
                          (context)=>ContainerBottomSheetEditTime(
                            onTimeSelect: (tStart,tEnd){
                              setState(() {
-                               _timeStart=tStart;
-                               _timeEnd=tEnd;
-                               _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
-                               _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
+                               if(_timeStart!=tStart||_timeEnd!=tEnd){
+                                 _timeStart=tStart;
+                                 _timeEnd=tEnd;
+                                 _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
+                                 _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
+                                 widget.callback(true);
+                               }
                              });
                            },
                            time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));

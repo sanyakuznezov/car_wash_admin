@@ -11,6 +11,7 @@ class ContainerAddOrder extends StatefulWidget{
 
 
   var onAccept=(int? i)=>i;
+  bool isEdit;
 
 
 
@@ -21,7 +22,7 @@ class ContainerAddOrder extends StatefulWidget{
     return StateContainerAddOrder();
   }
 
-  ContainerAddOrder({required this.onAccept});
+  ContainerAddOrder({required this.isEdit,required this.onAccept});
 }
 
    class StateContainerAddOrder extends State<ContainerAddOrder>{
@@ -41,7 +42,7 @@ class ContainerAddOrder extends StatefulWidget{
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Опубликовать заказ?',
+          Text(!widget.isEdit?'Опубликовать заказ?':'Редактировать заказ?',
             textAlign: TextAlign.left,
             style: TextStyle(
                 fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),

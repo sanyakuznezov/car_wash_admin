@@ -37,7 +37,7 @@ import '../../global_data.dart';
        result=i;
      }
    });
-
+   print('getTHS $result');
    return result;
   }
 

@@ -223,15 +223,15 @@ class TimeParser{
     int i=-1;
     await Future.forEach(GlobalData.timeSelect, (Map item) async {
       i++;
-      if(now){
-        if(currentTime<i){
-          hours.add(item['time']);
-        }
-      }else{
-        hours.add(item['time']);
-      }
+      // if(now){
+      //   if(currentTime<i){
+      //     hours.add(item['time']);
+      //   }
+      // }else{
+      //   hours.add(item['time']);
+      // }
 
-
+      hours.add(item['time']);
     });
     return hours;
 

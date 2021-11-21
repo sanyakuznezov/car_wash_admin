@@ -1068,4 +1068,133 @@ class MainServiseApi {
     return null;
   }
 
+
+
+  //редактирование заказа
+  Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context,required int idOrder}) async {
+    if (await StateNetwork.initConnectivity() == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    } else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      final value = {
+        'id':idOrder,
+        'cwId': data['cwid'],
+        'pId': data['pid'],
+        'token': data['token'],
+        'date': map['date'],
+        'post': map['post'],
+        'startTime': map['startTime'],
+        'endTime': map['endTime'],
+        'carType': map['carType'],
+        'carNumber': map['carNumber'],
+        'carRegion': map['carRegion'],
+        'color': map['color'],
+        'carBrandId': map['carBrandId'],
+        'carModelId': map['carModelId'],
+        'clientFullname': map['clientFullname'],
+        'clientPhone': map['clientPhone'],
+        'totalPrice': map['totalPrice'],
+        'sale': map['sale'],
+        'workTime': map['workTime'],
+        'status': map['status'],
+        'adminComment': map['adminComment'],
+        'clientComment': map['clientComment'],
+        'ComplexesList': map['ComplexesList'].join(','),
+        'ServicesList': map['ServicesList'].join(',')
+      };
+
+      try {
+        final result = await _dio
+            .post('orders/edit',
+            data: value,
+            options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 10000,
+              contentType: 'application/x-www-form-urlencoded',
+            ));
+        return result.data['result'];
+      } on DioError catch (e) {
+        if (e.type == DioErrorType.receiveTimeout ||
+            e.type == DioErrorType.sendTimeout) {
+          Fluttertoast.showToast(
+              msg: "Сервер не отвечает, повторите попытку",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response != null) {
+          Fluttertoast.showToast(
+              msg: "${e.response!.data['errors']['startTime'] == null ? e
+                  .response!.data['errors']['post'] : e.response!
+                  .data['errors']['startTime']}",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+
+
+        if (e.response!.statusCode == 400) {
+          Fluttertoast.showToast(
+              msg: "Неверные параметры",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 404) {
+          Fluttertoast.showToast(
+              msg: "Не найдены требуемые модели / сотрудник / автомойка / заказ",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 420) {
+          Fluttertoast.showToast(
+              msg: "Токен доступа не совпал",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 500) {
+          Fluttertoast.showToast(
+              msg: "Ошибка сервера",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+
+
 }
