@@ -3,6 +3,7 @@
   import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../global_data.dart';
@@ -130,7 +131,7 @@ class LayerController extends StatefulWidget{
                    maxSimultaneousDrags:1,
                   data: widget.dataOrder['id'],
                   affinity: Axis.horizontal,
-                  axis: null,
+                  axis: widget.dataOrder['status']==11?Axis.horizontal:null,
                   onDragStarted: (){
                     AppModule.blocTable.streamSinkDrag.add({'action':1,'index':widget.dataOrder['id']});
                   },
@@ -178,10 +179,12 @@ class LayerController extends StatefulWidget{
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text('- ${widget.dataOrder['orderBody'].carType}',
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
                                             ),
                                             Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
                                             ),
@@ -310,13 +313,25 @@ class LayerController extends StatefulWidget{
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('- ${dataOrder['orderBody'].carType}',
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
+                                        Container(
+                                          width: 120.0,
+                                          child: Flexible(
+                                            child: Text('- ${dataOrder['orderBody'].carType}',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 16, color: Colors.white),
+                                            ),
+                                          ),
                                         ),
-                                        Text('- ${dataOrder['orderBody'].brandTitle}',
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
+                                        Container(
+                                          width: 120.0,
+                                          child: Flexible(
+                                            child: Text('- ${dataOrder['orderBody'].brandTitle}',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 16, color: Colors.white),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     )):Container()

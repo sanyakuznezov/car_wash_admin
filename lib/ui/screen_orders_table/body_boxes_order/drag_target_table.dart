@@ -42,7 +42,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   bool isCollision=false;
   int? _editState;
   int? _statusCode;
-  final double c1=108;
+  final double c1=114;
   final double c2=15;
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
@@ -59,7 +59,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
           _editState=0;
           _timeParse=TimeParser.parseHourForTimeLine(widget.time);
           return Container(
-              width: 140,
+              width: 150,
               height: widget.bodyHeaght,
               child: Stack(
                 children: [
@@ -262,7 +262,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         },
         //слушает карточку во время перетягивания
         onMove: (e) {
-          _y = e.offset.dy-35;
+          _y = e.offset.dy-120;
           AppModule.blocTable.streamSinkFeedback.add(_y);
           if (_leave != 2) {
             setState(() {
@@ -320,9 +320,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
        }
 
        //проверка для линии времени
-       // if(b1<_timeParse!||b2<_timeParse!){
-       //   return true;
-       // }
+       if(b1<_timeParse!||b2<_timeParse!){
+         return true;
+       }
 
      }
 

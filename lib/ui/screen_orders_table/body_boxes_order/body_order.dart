@@ -88,7 +88,7 @@ class StateBodyCard extends State<BodyCard>{
              },
 
               onLongPress: () {
-                if(isTime(widget.timePosition!,widget.dataOrder['expiration_date'])){
+                if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
                   if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
                     setState(() {
                       widget.stateDrag = 1;
@@ -164,10 +164,12 @@ class StateBodyCard extends State<BodyCard>{
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text('- ${widget.dataOrder['orderBody'].carType}',
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                     fontSize: 16, color: Colors.grey),
                                               ),
                                               Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                     fontSize: 16, color: Colors.grey),
                                               ),
@@ -221,7 +223,7 @@ class StateBodyCard extends State<BodyCard>{
   @override
   void dispose() {
     super.dispose();
-  // AppModule.blocTable.diponseEditStream();
+  //AppModule.blocTable.diponseEditStream();
   }
 }
 

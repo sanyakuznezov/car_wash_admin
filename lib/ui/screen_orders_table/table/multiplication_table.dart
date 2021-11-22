@@ -198,12 +198,10 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                 height: MediaQuery.of(context).size.height,
                                 color: Colors.white,
                                 child: TableBody(
-                                  orderList: MapperDataOrderForTable.fromApi(
-                                      list: orders.requireData!),
+                                  orderList: MapperDataOrderForTable.fromApi(list: orders.requireData!),
                                   modelDataTable: data.requireData!,
                                   scrollController: _bodyController,
                                   scrollControllertop: _bodyControllertop,
-                                 // scrollController: _bodyController,
                                 ),
                               )),
                           Container(

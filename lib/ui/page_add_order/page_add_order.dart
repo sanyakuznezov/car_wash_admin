@@ -465,6 +465,7 @@ class PageAddOrder extends StatefulWidget{
   }
 
     Future<bool> _editOrder({required Map<String,dynamic> map,required BuildContext context,required int id}) async{
+      showLoaderDialog(context);
       final result= await RepositoryModule.userRepository().editOrder(map: map, context: context,idOrder: id)
           .catchError((error){
             print('Error ${error.toString()}');
