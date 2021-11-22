@@ -88,23 +88,36 @@ class StateBodyCard extends State<BodyCard>{
              },
 
               onLongPress: () {
-                if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
-                  if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
-                    setState(() {
-                      widget.stateDrag = 1;
-                      AppModule.blocTable.streamSinkEdit.add(0);
-                      GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
-                      GlobalData.edit_mode = true;
-                      GlobalData.accept=false;
-                      GlobalData.timeEnd='';
-                      widget.onTimeStart(widget.dataOrder['start_date']);
-                      widget.onPost(widget.dataOrder['post']);
-                      widget.onId(widget.dataOrder['id']);
-                    });
-                  }
-                }else{
-                  widget.onMsgError('');
+                if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
+                  setState(() {
+                    widget.stateDrag = 1;
+                    AppModule.blocTable.streamSinkEdit.add(0);
+                    GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
+                    GlobalData.edit_mode = true;
+                    GlobalData.accept=false;
+                    GlobalData.timeEnd='';
+                    widget.onTimeStart(widget.dataOrder['start_date']);
+                    widget.onPost(widget.dataOrder['post']);
+                    widget.onId(widget.dataOrder['id']);
+                  });
                 }
+                // if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
+                //   if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
+                //     setState(() {
+                //       widget.stateDrag = 1;
+                //       AppModule.blocTable.streamSinkEdit.add(0);
+                //       GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
+                //       GlobalData.edit_mode = true;
+                //       GlobalData.accept=false;
+                //       GlobalData.timeEnd='';
+                //       widget.onTimeStart(widget.dataOrder['start_date']);
+                //       widget.onPost(widget.dataOrder['post']);
+                //       widget.onId(widget.dataOrder['id']);
+                //     });
+                //   }
+                // }else{
+                //   widget.onMsgError('');
+                // }
               },
 
               child: StreamBuilder<dynamic>(
@@ -122,7 +135,7 @@ class StateBodyCard extends State<BodyCard>{
                       Container(
                           alignment: Alignment.center,
                           margin: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                          width: 130,
+                          width: 140,
                           height: widget.bodyHeight,
                           decoration: BoxDecoration(
                               color: colorBody(widget.dataOrder['orderBody'].status),

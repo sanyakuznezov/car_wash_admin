@@ -33,7 +33,7 @@ class LayerController extends StatefulWidget{
 
    class StateLayerController extends State<LayerController>{
 
-          double _wight=130;
+          double _wight=140;
           bool visibleTime=false;
           int stateDrag=0;
           bool isDragEnd=false;
@@ -272,11 +272,12 @@ class LayerController extends StatefulWidget{
     Map dataOrder;
     FeedBackWidget(this.bodyHeaght,this.color,this.dataOrder);
 
+
   @override
     Widget build(BuildContext context) {
       return Material(
           child: Container(
-            width: 130,
+            width: 140,
             height: bodyHeaght,
             child:  Stack(
               children: [

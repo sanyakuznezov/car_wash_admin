@@ -10,6 +10,7 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import '../body_boxes_order/body_order.dart';
@@ -327,13 +328,28 @@ class _TableBodyState extends State<TableBody> {
                         width: MediaQuery.of(context).size.width,
                         height: 50,
                         child: DragTarget<int>(
+                          onAccept: (value){
+                            Fluttertoast.showToast(
+                                msg: "Заказ вернулся в исходное состояние",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0
+                            );
+                            GlobalData.edit_mode=false;
+                            AppModule.blocTable.streamSinkEdit.add(1);
+                            AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                          },
                             onLeave: (value) {
                               leave = 0;
                               _centerColumnsController.animateTo(
                                   _centerColumnsController.offset,
                                   duration: Duration(seconds: 10),
                                   curve: Curves.easeOut);
-                            }, onMove: (e) {
+                            },
+                            onMove: (e) {
                           leave++;
                           if (leave == 1) {
                             _centerColumnsController.animateTo(
@@ -380,7 +396,22 @@ class _TableBodyState extends State<TableBody> {
                     child: Container(
                         width: 50,
                         height: MediaQuery.of(context).size.height,
-                        child: DragTarget<int>(onLeave: (value) {
+                        child: DragTarget<int>(
+                            onAccept: (value){
+                              Fluttertoast.showToast(
+                                  msg: "Заказ вернулся в исходное состояние",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                              GlobalData.edit_mode=false;
+                              AppModule.blocTable.streamSinkEdit.add(1);
+                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                            },
+                            onLeave: (value) {
                           leave = 0;
                           widget.scrollControllertop.animateTo(
                               widget.scrollControllertop.offset,
@@ -405,7 +436,22 @@ class _TableBodyState extends State<TableBody> {
                     child: Container(
                         width: 100,
                         height: MediaQuery.of(context).size.height,
-                        child: DragTarget<int>(onLeave: (value) {
+                        child: DragTarget<int>(
+                            onAccept: (value){
+                              Fluttertoast.showToast(
+                                  msg: "Заказ вернулся в исходное состояние",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                              GlobalData.edit_mode=false;
+                              AppModule.blocTable.streamSinkEdit.add(1);
+                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                            },
+                            onLeave: (value) {
                           leave = 0;
                           widget.scrollControllertop.animateTo(
                               widget.scrollControllertop.offset,

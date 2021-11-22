@@ -59,6 +59,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
           _editState=0;
           _timeParse=TimeParser.parseHourForTimeLine(widget.time);
           return Container(
+              alignment: Alignment.center,
               width: 150,
               height: widget.bodyHeaght,
               child: Stack(
@@ -134,7 +135,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                              _statusCode=1;
                            }
                            showMaterialModalBottomSheet(
-                             backgroundColor: Colors.transparent,
+                             backgroundColor: Colors.white,
                              context: context,
                              builder: (context) => ContainerBottomSheet(
                                statusCode: _statusCode!,

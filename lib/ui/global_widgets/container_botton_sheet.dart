@@ -84,7 +84,7 @@ class ContainerBottomSheet extends StatefulWidget{
               GestureDetector(
                 onTap: (){
                   Navigator.pop(context);
-                  GlobalData.edit_mode = false;
+                  GlobalData.edit_mode=false;
                   AppModule.blocTable.streamSinkEdit.add(1);
                   widget.onCancellation(1);
                   Fluttertoast.showToast(
