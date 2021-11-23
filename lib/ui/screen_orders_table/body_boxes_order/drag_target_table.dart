@@ -59,8 +59,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
           _editState=0;
           _timeParse=TimeParser.parseHourForTimeLine(widget.time);
           return Container(
+            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
               alignment: Alignment.center,
-              width: 150,
+              width: GlobalData.numBoxes!>1?150:300,
               height: widget.bodyHeaght,
               child: Stack(
                 children: [
@@ -224,7 +225,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   return y.data != null ? Positioned(
                                       top: y.data + _scrollY+20,
                                       child: Container(
-                                        width: 140,
+                                        width: GlobalData.numBoxes!>1?140:280,
                                         height: GlobalData.bodyHeightFeedBackWidget + c3,
                                         decoration: BoxDecoration(
                                             color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
@@ -294,8 +295,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
   @override
   void dispose() {
     super.dispose();
-    AppModule.blocTable.diponseScrollStream();
-    AppModule.blocTable.disponseFeedBackStream();
+   // AppModule.blocTable.diponseScrollStream();
+   // AppModule.blocTable.disponseFeedBackStream();
   }
 
   double _sizeBody(int start,int end,int timeStep){

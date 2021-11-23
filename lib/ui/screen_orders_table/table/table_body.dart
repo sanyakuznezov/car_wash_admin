@@ -56,6 +56,7 @@ class _TableBodyState extends State<TableBody> {
 
 
 
+
   @override
   void initState() {
     super.initState();
@@ -106,7 +107,7 @@ class _TableBodyState extends State<TableBody> {
     _centerColumnsController.dispose();
     _timeColumnsController.dispose();
     _timeLineColumnsController.dispose();
-    AppModule.blocTable.disponseDragStream();
+    //AppModule.blocTable.disponseDragStream();
   }
 
   @override
@@ -203,7 +204,7 @@ class _TableBodyState extends State<TableBody> {
                                       physics: const AlwaysScrollableScrollPhysics(
                                           parent: BouncingScrollPhysics()),
                                       child: SizedBox(
-                                          width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
+                                          width: GlobalData.numBoxes!>1?_getWight(widget.modelDataTable.posts) *widget.modelDataTable.posts.toDouble():390,
                                           height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
                                           child: Stack(
                                             children: [
@@ -212,6 +213,7 @@ class _TableBodyState extends State<TableBody> {
                                                   child: Container(
                                                     margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
                                                     color: Colors.indigo,
+                                                    //widget.modelDataTable.posts.toDouble()
                                                     width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
                                                     height: 2,
                                                   ))
@@ -289,6 +291,7 @@ class _TableBodyState extends State<TableBody> {
                                     physics: const AlwaysScrollableScrollPhysics(
                                         parent: BouncingScrollPhysics()),
                                     child: SizedBox(
+                                      // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
                                       width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
                                       height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
                                       child: SingleChildScrollView(
@@ -299,7 +302,7 @@ class _TableBodyState extends State<TableBody> {
                                           child: Row(
                                             children: List.generate(widget.modelDataTable.posts, (i) {
                                               return Container(
-                                                  width: 150,
+                                                  width: GlobalData.numBoxes!>1?150:300,
                                                   child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
                                                     post:i,
                                                     time: _time!,
@@ -322,7 +325,17 @@ class _TableBodyState extends State<TableBody> {
                       }),
 
                   //Датчики для скроллов таблицы
-                  Align(
+
+            // StreamBuilder<dynamic>(
+            //     stream: AppModule.blocTable.stateDYFeedback,
+            //     builder: (context, y) {
+            //       if(y.data!=null){
+            //         _centerColumnsController.jumpTo(y.data);
+            //       }
+            //       return Container();
+            //     }),
+
+            Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
                         width: MediaQuery.of(context).size.width,
@@ -366,9 +379,9 @@ class _TableBodyState extends State<TableBody> {
                   Align(
                     alignment: Alignment.topCenter,
                     child: Container(
-                      margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                         width: MediaQuery.of(context).size.width,
-                        height: 100,
+                        height: 50,
                         child: DragTarget<int>(
                             onLeave: (value) {
                               leave = 0;
@@ -417,6 +430,7 @@ class _TableBodyState extends State<TableBody> {
                               widget.scrollControllertop.offset,
                               duration: Duration(seconds: 5),
                               curve: Curves.easeOut);
+
                         }, onMove: (e) {
                           leave++;
                           if (leave == 1) {
@@ -425,6 +439,7 @@ class _TableBodyState extends State<TableBody> {
                                     .position.maxScrollExtent,
                                 duration: Duration(seconds: 5),
                                 curve: Curves.easeOut);
+
                           }
                         }, builder: (BuildContext context,
                             List<dynamic> accepted, List<dynamic> rejected) {
@@ -457,7 +472,8 @@ class _TableBodyState extends State<TableBody> {
                               widget.scrollControllertop.offset,
                               duration: Duration(seconds: 5),
                               curve: Curves.easeOut);
-                        }, onMove: (e) {
+                        },
+                            onMove: (e) {
                           leave++;
                           if (leave == 1) {
                             widget.scrollControllertop.animateTo(
@@ -465,6 +481,7 @@ class _TableBodyState extends State<TableBody> {
                                     .position.minScrollExtent,
                                 duration: Duration(seconds: 5),
                                 curve: Curves.easeOut);
+
                           }
                         }, builder: (BuildContext context,
                             List<dynamic> accepted, List<dynamic> rejected) {

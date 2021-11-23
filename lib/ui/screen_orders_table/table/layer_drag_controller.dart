@@ -33,7 +33,7 @@ class LayerController extends StatefulWidget{
 
    class StateLayerController extends State<LayerController>{
 
-          double _wight=140;
+          double _wight=GlobalData.numBoxes!>1?130:260;
           bool visibleTime=false;
           int stateDrag=0;
           bool isDragEnd=false;
@@ -131,20 +131,12 @@ class LayerController extends StatefulWidget{
                    maxSimultaneousDrags:1,
                   data: widget.dataOrder['id'],
                   affinity: Axis.horizontal,
-                  axis: widget.dataOrder['status']==11?Axis.horizontal:null,
+                  axis: widget.dataOrder['orderBody'].status==11?Axis.horizontal:null,
                   onDragStarted: (){
                     AppModule.blocTable.streamSinkDrag.add({'action':1,'index':widget.dataOrder['id']});
                   },
                   onDragEnd: (r) {
-                     print('onDragEnd $r');
-                    // setState(() {
-                    //   if (GlobalData.accept) {
-                    //     stateDrag = 3;
-                    //     GlobalData.accept = false;
-                    //   } else {
-                    //     stateDrag = 2;
-                    //   }
-                    // });
+
                   },
                   child: Stack(
                     children: [
@@ -277,7 +269,7 @@ class LayerController extends StatefulWidget{
     Widget build(BuildContext context) {
       return Material(
           child: Container(
-            width: 140,
+            width: GlobalData.numBoxes!>1?130:260,
             height: bodyHeaght,
             child:  Stack(
               children: [
@@ -286,7 +278,7 @@ class LayerController extends StatefulWidget{
                     child:
                     Container(
                         margin: EdgeInsets.fromLTRB(0, 1, 0, 3),
-                        width: 130,
+                        width: GlobalData.numBoxes!>1?130:260,
                         height: bodyHeaght,
                         decoration: BoxDecoration(
                             color: color,

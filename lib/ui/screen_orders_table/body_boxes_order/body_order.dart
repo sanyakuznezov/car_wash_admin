@@ -134,8 +134,8 @@ class StateBodyCard extends State<BodyCard>{
                     children: [
                       Container(
                           alignment: Alignment.center,
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                          width: 140,
+                         // margin: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                          width:GlobalData.numBoxes!>1?130:260,
                           height: widget.bodyHeight,
                           decoration: BoxDecoration(
                               color: colorBody(widget.dataOrder['orderBody'].status),

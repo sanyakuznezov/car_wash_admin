@@ -4,7 +4,7 @@
 
 
    static bool edit_mode=false;
-   static int numBoxes=20;
+   static int? numBoxes;
    static bool accept=false;
    static int stateTime=0;
    static double? sizeScreen;

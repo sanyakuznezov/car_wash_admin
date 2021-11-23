@@ -155,6 +155,9 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                       )
                   );
                 }
+                if(data.hasData){
+                 GlobalData.numBoxes=data.data!.posts;
+                }
 
                 return FutureBuilder<List<ModelOrder>?>(
                     future: RepositoryModule.userRepository().getListOrder(context: context, date:GlobalData.date!),
@@ -186,24 +189,22 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                       //тело таблицы
                       return Stack(
                         children: [
-                          Expanded(
-                              child: Container(
-                                margin: EdgeInsets.fromLTRB(
-                                    0,
-                                    SizeUtil.getSize(
-                                        12, GlobalData.sizeScreen!),
-                                    0,
-                                    0),
-                                // width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                color: Colors.white,
-                                child: TableBody(
-                                  orderList: MapperDataOrderForTable.fromApi(list: orders.requireData!),
-                                  modelDataTable: data.requireData!,
-                                  scrollController: _bodyController,
-                                  scrollControllertop: _bodyControllertop,
-                                ),
-                              )),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0,
+                                SizeUtil.getSize(
+                                    12, GlobalData.sizeScreen!),
+                                0,
+                                0),
+                            height: MediaQuery.of(context).size.height,
+                            color: Colors.white,
+                            child: TableBody(
+                              orderList: MapperDataOrderForTable.fromApi(list: orders.requireData!),
+                              modelDataTable: data.requireData!,
+                              scrollController: _bodyController,
+                              scrollControllertop: _bodyControllertop,
+                            ),
+                          ),
                           Container(
                             padding: EdgeInsets.fromLTRB(
                                 0,
@@ -229,16 +230,20 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                 }else{
                                   _controller.animateBack(1.0);
                                 }
-                                return FadeTransition(
-                                  opacity: Tween(
-                                    begin: 1.0,
-                                    end: 0.0,
-                                  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
-                                  child: TableHead(
-                                    posts: data.requireData!.posts,
-                                    scrollController: _headController,
-                                  ),
+                                return TableHead(
+                                  posts: data.requireData!.posts,
+                                  scrollController: _headController,
                                 );
+                                // return FadeTransition(
+                                //   opacity: Tween(
+                                //     begin: 1.0,
+                                //     end: 0.0,
+                                //   ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
+                                //   child: TableHead(
+                                //     posts: data.requireData!.posts,
+                                //     scrollController: _headController,
+                                //   ),
+                                // );
                               }
                             ),
                           ),
