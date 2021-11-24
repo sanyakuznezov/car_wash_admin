@@ -878,7 +878,6 @@ class MainServiseApi {
               contentType: 'application/x-www-form-urlencoded',
             )
         );
-
         return ModelDataTableApi.fromApi(map: result.data['settings']);
 
       } on DioError catch (e) {
@@ -1180,6 +1179,101 @@ class MainServiseApi {
         if (e.response!.statusCode == 500) {
           Fluttertoast.showToast(
               msg: "Ошибка сервера",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  //редактирование заказа
+  Future<bool?> editOrderJournal({required String endAt,required String startAt,required BuildContext context,required int idOrder,required int post}) async {
+    if (await StateNetwork.initConnectivity() == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    } else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      final value = {
+        'orderId':idOrder,
+        'cwId': data['cwid'],
+        'pId': data['pid'],
+        'token': data['token'],
+        'startAt': startAt,
+        'endAt': endAt,
+        'post': post,
+
+      };
+
+      try {
+        final result = await _dio
+            .post('journal/update-order',
+            data: value,
+            options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 10000,
+              contentType: 'application/x-www-form-urlencoded',
+            ));
+        return result.data['result'];
+      } on DioError catch (e) {
+        if (e.type == DioErrorType.receiveTimeout ||
+            e.type == DioErrorType.sendTimeout) {
+          Fluttertoast.showToast(
+              msg: "Сервер не отвечает, повторите попытку",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+
+        if (e.response!.statusCode == 400) {
+          Fluttertoast.showToast(
+              msg: "Неверные параметры",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 404) {
+          Fluttertoast.showToast(
+              msg: "Сотрудник не найден | Заказ не найден на данной автомойке | Не удалось найти настройки автомойки",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 420) {
+          Fluttertoast.showToast(
+              msg: "Токен доступа не совпал",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 500) {
+          Fluttertoast.showToast(
+              msg: "Произошла ошибка при записи изменений заказа",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 3,

@@ -110,15 +110,6 @@ class ContainerBottomSheet extends StatefulWidget{
                     onTap: (){
                       Navigator.pop(context);
                       if(widget.statusCode!=2){
-                        Fluttertoast.showToast(
-                            msg: "Запрос на сервер",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            fontSize: 16.0
-                        );
                         widget.onAccept(1);
                         GlobalData.edit_mode = false;
                         AppModule.blocTable.streamSinkEdit.add(1);

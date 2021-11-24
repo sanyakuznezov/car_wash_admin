@@ -3,11 +3,14 @@ import 'package:car_wash_admin/data/mapper/mapper_data_order_for_table.dart';
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/domain/state/table_state.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import '../../../global_data.dart';
@@ -27,10 +30,14 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   late String dateValue;
   late ValueNotifier<String> _notifierDropdownButton;
   late AnimationController _controller;
+  TableState? _tableState;
 
   @override
   void initState() {
     super.initState();
+    print('initState');
+    _tableState=TableState();
+    _tableState!.settingsRequest(context: context,date:GlobalData.date!);
     _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     _notifierDropdownButton=ValueNotifier('1 час');
     _controllers = LinkedScrollControllerGroup();
@@ -42,11 +49,13 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
   @override
   void dispose() {
+    super.dispose();
+    _tableState!.dispose();
     _headController.dispose();
     _bodyController.dispose();
     _controller.dispose();
     _bodyControllertop.dispose();
-    super.dispose();
+
   }
 
   getDate(){
@@ -128,10 +137,10 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
       color: Colors.white,
       child: Stack(
         children: [
-          FutureBuilder<ModelDataTable?>(
-              future: RepositoryModule.userRepository().getDataSetting(context: context, date: GlobalData.date!),
-              builder: (context,data){
-                if (data.connectionState.index!=3) {
+          Observer(
+              builder: (_){
+                print('${_tableState!.isLoading} ${_tableState!.isError}');
+                if (_tableState!.isLoading) {
                   return Container(
                     alignment: Alignment.center,
                     child: CircularProgressIndicator(
@@ -139,14 +148,15 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                     ),
                   );
                 }
-                if (data.data == null||data.hasError) {
+                if (_tableState!.isError) {
                   return Container(
                       alignment: Alignment.center,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.error,color: Colors.redAccent,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
-                          Text('Ошибка получения данных',style:
+                          Text('${_tableState!.msgError}',
+                            style:
                           TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.redAccent
@@ -155,10 +165,26 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                       )
                   );
                 }
-                if(data.hasData){
-                 GlobalData.numBoxes=data.data!.posts;
-                }
 
+                GlobalData.numBoxes=_tableState!.modelDataTable!.posts;
+                if(!_tableState!.modelDataTable!.isWorkDay){
+                  return Container(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                        Icons.weekend_outlined,color: AppColors.textColorHint,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
+                          Text('Выходной день',style:
+                          TextStyle(
+                              fontSize: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textColorHint
+                          ),),
+                        ],
+                      )
+                  );
+                }
                 return FutureBuilder<List<ModelOrder>?>(
                     future: RepositoryModule.userRepository().getListOrder(context: context, date:GlobalData.date!),
                     builder: (context,orders){
@@ -177,7 +203,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.error,color: Colors.redAccent,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
-                                Text('Ошибка получения данных',style:
+                                Text('${_tableState!.msgError}',style:
                                 TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.redAccent
@@ -199,8 +225,9 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                             height: MediaQuery.of(context).size.height,
                             color: Colors.white,
                             child: TableBody(
+                              tableState:_tableState!,
                               orderList: MapperDataOrderForTable.fromApi(list: orders.requireData!),
-                              modelDataTable: data.requireData!,
+                              modelDataTable: _tableState!.modelDataTable!,
                               scrollController: _bodyController,
                               scrollControllertop: _bodyControllertop,
                             ),
@@ -231,7 +258,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                   _controller.animateBack(1.0);
                                 }
                                 return TableHead(
-                                  posts: data.requireData!.posts,
+                                  posts: _tableState!.modelDataTable!.posts,
                                   scrollController: _headController,
                                 );
                                 // return FadeTransition(
@@ -365,16 +392,16 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
                             child: TextButton(
                                   onPressed: () {
-                                    // DatePicker.showDatePicker(context,
-                                    //     showTitleActions: true,
-                                    //     minTime: DateTime(2021, 6, 7),
-                                    //     maxTime: DateTime(2025, 6, 7),
-                                    //     onChanged: (date) {}, onConfirm: (date) {
-                                    //   setState(() {
-                                    //     GlobalData.date = date.toString().split(' ')[0];
-                                    //     dateValue =dateFormat(date.weekday, date.month, date.day);
-                                    //   });
-                                    // }, currentTime: DateTime.now(), locale: LocaleType.ru);
+                                    DatePicker.showDatePicker(context,
+                                        showTitleActions: true,
+                                        minTime: DateTime(2021, 6, 7),
+                                        maxTime: DateTime(2025, 6, 7),
+                                        onChanged: (date) {}, onConfirm: (date) {
+                                      setState(() {
+                                        GlobalData.date = date.toString().split(' ')[0];
+                                        dateValue =dateFormat(date.weekday, date.month, date.day);
+                                      });
+                                    }, currentTime: DateTime.now(), locale: LocaleType.ru);
                                   },
                                   child: Text(
                                     dateValue,

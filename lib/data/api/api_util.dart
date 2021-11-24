@@ -153,4 +153,10 @@ class ApiUtil{
       final result=await _mainServiseApi.editOrder(map: map, context: context, idOrder: idOrder);
       return result;
     }
+
+    Future<bool?> editOrderJournal({required String endAt,required String startAt,required BuildContext context,required int idOrder,required int post})async{
+      final result=await _mainServiseApi.editOrderJournal(endAt: endAt, startAt: startAt, context: context, idOrder: idOrder, post: post
+      );
+      return result;
+    }
 }

@@ -154,6 +154,11 @@ class UserDataRepository extends UserRepository{
    return _apiUtil.editOrder(map: map, context: context, idOrder: idOrder);
   }
 
+  @override
+  Future<bool?> editOrderJournal({required String endAt, required String startAt, required BuildContext context, required int idOrder, required int post}) {
+   return _apiUtil.editOrderJournal(endAt: endAt, startAt: startAt, context: context, idOrder: idOrder, post: post);
+  }
+
 
 
 

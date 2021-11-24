@@ -38,4 +38,5 @@ abstract class UserRepository{
   Future<ModelOrderShow?> getOrderShow({required BuildContext context,required int id});
   Future<bool?> deleteOrder({required BuildContext context,required int id});
   Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context,required int idOrder});
+  Future<bool?> editOrderJournal({required String endAt,required String startAt,required BuildContext context,required int idOrder,required int post});
   }

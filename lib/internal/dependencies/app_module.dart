@@ -5,7 +5,7 @@
 
 import 'dart:io';
 
-import 'package:car_wash_admin/domain/state/bloc_table_order.dart';
+import 'package:car_wash_admin/domain/state/strem_controllers.dart';
 import 'package:car_wash_admin/global_data.dart';
 
 class AppModule{

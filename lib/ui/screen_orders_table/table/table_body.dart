@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/model/model_order.dart';
-import 'package:car_wash_admin/domain/state/bloc_table_order.dart';
+import 'package:car_wash_admin/domain/state/strem_controllers.dart';
+import 'package:car_wash_admin/domain/state/table_state.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
@@ -26,9 +27,10 @@ class TableBody extends StatefulWidget {
  final ScrollController scrollControllertop;
   final List<Map> orderList;
   final ModelDataTable modelDataTable;
+  final TableState tableState;
 
 
-  TableBody({required this.scrollController,required this.orderList,required this.modelDataTable, required this.scrollControllertop});
+  TableBody({required this.tableState,required this.scrollController,required this.orderList,required this.modelDataTable, required this.scrollControllertop});
 
   @override
   _TableBodyState createState() => _TableBodyState();
@@ -53,6 +55,7 @@ class _TableBodyState extends State<TableBody> {
   String? _time;
   final double c1=108;
   double? startY;
+
 
 
 
@@ -305,6 +308,7 @@ class _TableBodyState extends State<TableBody> {
                                                   width: GlobalData.numBoxes!>1?150:300,
                                                   child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
                                                     post:i,
+                                                    tableState: widget.tableState,
                                                     time: _time!,
                                                     orderList: widget.orderList,
                                                     timeStep: snapshot.data,
