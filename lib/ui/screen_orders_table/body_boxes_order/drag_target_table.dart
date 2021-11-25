@@ -44,7 +44,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   bool isCollision=false;
   int? _editState;
   int? _statusCode;
-  final double c1=114;
+ // final double c1=110;
   final double c2=15;
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
@@ -169,10 +169,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
                       }
 
                   }),
-                  Stack(children: List.generate(widget.orderList.length, (a) {
+                  Stack(
+                      children: List.generate(widget.orderList.length, (a) {
                         if(widget.orderList[a]['post'] == widget.post + 1){
-                            startY=c1+TimeParser.shiftTime(
-                                time_start: TimeParser.parseHour(widget.orderList[a]['start_date']),
+                            //проверяем перехящий заказ с предыдущего дня если да то наало заказа с 00:00
+                            startY=getY()+TimeParser.shiftTime(time_start: TimeParser.parseHour(widget.orderList[a]['start_date']),
                                 timeStep: widget.timeStep);
                             sizeBody=_sizeBody(TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
@@ -340,12 +341,25 @@ class StateDragTargetTable extends State<DragTargetTable> {
   double _sizeBody(int start,int end,int timeStep){
     double? result;
     if(start>end){
+      //делаем проверку даты начала и кона заказа с выбранной
       result=1800-start.toDouble();
     }else{
       result=end.toDouble()-start.toDouble();
     }
 
     return result*GlobalData.timeStepsConstant[timeStep]['coof'];
+  }
+
+  //сдвиг координаты для позииии заказв в звисимости от размера экрана
+  getY(){
+    int s=110;
+    if(GlobalData.sizeScreen!<700){
+      return s-4;
+    }else if(GlobalData.sizeScreen!>700&&GlobalData.sizeScreen!<800){
+      return s+4;
+    }else{
+      return s;
+    }
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени

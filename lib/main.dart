@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
         GlobalData.sizeScreen=constraints.maxHeight;
+        print('GlobalData.sizeScreen ${GlobalData.sizeScreen}');
             return  MaterialApp(
               title: 'Flutter Demo',
               theme: ThemeData(
