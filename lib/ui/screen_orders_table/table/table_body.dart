@@ -36,7 +36,7 @@ class TableBody extends StatefulWidget {
   _TableBodyState createState() => _TableBodyState();
 }
 
-class _TableBodyState extends State<TableBody> {
+class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMixin{
   late LinkedScrollControllerGroup _controllers;
   late ScrollController _restColumnsController;
   late ScrollController _centerColumnsController;
@@ -55,6 +55,8 @@ class _TableBodyState extends State<TableBody> {
   String? _time;
   final double c1=108;
   double? startY;
+  double paddingLeft=50.0;
+  late AnimationController _controller;
 
 
 
@@ -64,6 +66,8 @@ class _TableBodyState extends State<TableBody> {
   void initState() {
     super.initState();
     getTime();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     _controllers = LinkedScrollControllerGroup();
     _restColumnsController = _controllers.addAndGet();
     _centerColumnsController=_controllers.addAndGet();
@@ -106,6 +110,7 @@ class _TableBodyState extends State<TableBody> {
   void dispose() {
     super.dispose();
     _timer.cancel();
+    _controller.dispose();
     _restColumnsController.dispose();
     _centerColumnsController.dispose();
     _timeColumnsController.dispose();
@@ -131,19 +136,19 @@ class _TableBodyState extends State<TableBody> {
                   Row(
                     children: [
                       // Сетка талицы с нумерацией постов и временной шкалой
-                      SizedBox(
-                        width: 50,
-                        child:
-                        ListView(
-                          controller: _timeColumnsController,
-                          physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics(),
-                          ),
-                          children: List.generate(GlobalData.times[snapshot.data].length, (index) {
-                            return BoxTime(time: GlobalData.times[snapshot.data][index]);
-                          }),
-                        ),
-                      ),
+                     SizedBox(
+                              width: 50,
+                              child:
+                              ListView(
+                                controller: _timeColumnsController,
+                                physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics(),
+                                ),
+                                children: List.generate(GlobalData.times[snapshot.data].length, (index) {
+                                  return BoxTime(time: GlobalData.times[snapshot.data][index]);
+                                }),
+                              ),
+                            ),
 
                       Expanded(
                         child: Container(
@@ -283,8 +288,9 @@ class _TableBodyState extends State<TableBody> {
 
                           }
                         }
+
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(paddingLeft, 0, 0, 0),
                           child: Expanded(
                               child: Container(
                                   margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
@@ -330,14 +336,14 @@ class _TableBodyState extends State<TableBody> {
 
                   //Датчики для скроллов таблицы
 
-            // StreamBuilder<dynamic>(
-            //     stream: AppModule.blocTable.stateDYFeedback,
-            //     builder: (context, y) {
-            //       if(y.data!=null){
-            //         _centerColumnsController.jumpTo(y.data);
-            //       }
-            //       return Container();
-            //     }),
+            StreamBuilder<dynamic>(
+                stream: AppModule.blocTable.stateDYFeedback,
+                builder: (context, y) {
+                  if(y.data!=null){
+                    _centerColumnsController.jumpTo(y.data);
+                  }
+                  return Container();
+                }),
 
             Align(
                     alignment: Alignment.bottomCenter,

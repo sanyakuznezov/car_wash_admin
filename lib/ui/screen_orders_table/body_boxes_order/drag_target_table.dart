@@ -173,9 +173,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                       children: List.generate(widget.orderList.length, (a) {
                         if(widget.orderList[a]['post'] == widget.post + 1){
                             //проверяем перехящий заказ с предыдущего дня если да то наало заказа с 00:00
-                            startY=getY()+TimeParser.shiftTime(time_start: TimeParser.parseHour(widget.orderList[a]['start_date']),
-                                timeStep: widget.timeStep);
-                            sizeBody=_sizeBody(TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
+                            startY=getY(a,TimeParser.parseHour(widget.orderList[a]['start_date']),TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
+                            sizeBody=_sizeBody(a,TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
                             startCollision=TimeParser.parseHourStartCollision(widget.orderList[a]['start_date']);
                             if(widget.orderList[a]['enable']==1){
@@ -338,11 +337,15 @@ class StateDragTargetTable extends State<DragTargetTable> {
    // AppModule.blocTable.disponseFeedBackStream();
   }
 
-  double _sizeBody(int start,int end,int timeStep){
+  double _sizeBody(int index,int start,int end,int timeStep){
     double? result;
     if(start>end){
-      //делаем проверку даты начала и кона заказа с выбранной
-      result=1800-start.toDouble();
+      //делаем проверку даты начала и конца заказа с выбранной
+      if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
+       result=end.toDouble()+GlobalData.timeStepsConstant[timeStep]['shift'];
+      }else{
+        result=1800-start.toDouble();
+      }
     }else{
       result=end.toDouble()-start.toDouble();
     }
@@ -350,9 +353,14 @@ class StateDragTargetTable extends State<DragTargetTable> {
     return result*GlobalData.timeStepsConstant[timeStep]['coof'];
   }
 
-  //сдвиг координаты для позииии заказв в звисимости от размера экрана
-  getY(){
-    int s=110;
+  //сдвиг координаты для позииии заказов в звисимости от размера экрана
+  getY(int index,int start,int end,int timeStep){
+    double s=110+TimeParser.shiftTime(time_start: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
+    if(start>end){
+      if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
+          s=-110;
+      }
+    }
     if(GlobalData.sizeScreen!<700){
       return s-4;
     }else if(GlobalData.sizeScreen!>700&&GlobalData.sizeScreen!<800){

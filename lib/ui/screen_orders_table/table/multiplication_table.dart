@@ -139,7 +139,6 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
         children: [
           Observer(
               builder: (_){
-                print('${_tableState!.isLoading} ${_tableState!.isError}');
                 if (_tableState!.isLoading) {
                   return Container(
                     alignment: Alignment.center,
@@ -216,8 +215,6 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                       return Stack(
                         children: [
                           Container(
-                            //SizeUtil.getSize(
-                            //                    12, GlobalData.sizeScreen!),
                             margin: EdgeInsets.fromLTRB(
                                 0, SizeUtil.getSize(12, GlobalData.sizeScreen!),
                                 0,
@@ -257,20 +254,17 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                 }else{
                                   _controller.animateBack(1.0);
                                 }
-                                return TableHead(
-                                  posts: _tableState!.modelDataTable!.posts,
-                                  scrollController: _headController,
+
+                                return FadeTransition(
+                                  opacity: Tween(
+                                    begin: 1.0,
+                                    end: 0.0,
+                                  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
+                                  child: TableHead(
+                                    posts: _tableState!.modelDataTable!.posts,
+                                    scrollController: _headController,
+                                  ),
                                 );
-                                // return FadeTransition(
-                                //   opacity: Tween(
-                                //     begin: 1.0,
-                                //     end: 0.0,
-                                //   ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
-                                //   child: TableHead(
-                                //     posts: data.requireData!.posts,
-                                //     scrollController: _headController,
-                                //   ),
-                                // );
                               }
                             ),
                           ),

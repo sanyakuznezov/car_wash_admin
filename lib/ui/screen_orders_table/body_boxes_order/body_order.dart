@@ -58,10 +58,16 @@ class StateBodyCard extends State<BodyCard>{
 
 
    int? editStatus;
+   bool rollingOrder=false;
 
   @override
   void initState() {
     super.initState();
+    if(TimeParser.parseHour(widget.dataOrder['start_date'])>TimeParser.parseHour(widget.dataOrder['expiration_date'])){
+      if(widget.dataOrder['start_date'].split(' ')[0]!=GlobalData.date){
+        rollingOrder=true;
+      }
+    }
   }
 
   @override
@@ -156,8 +162,8 @@ class StateBodyCard extends State<BodyCard>{
                                     BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))
                                 ),
                               ),
-                              Expanded(child:
-                              Padding(
+                              //проверка на перехоной заказ
+                              !rollingOrder?Expanded(child:Padding(
                                   padding: EdgeInsets.all(5),
                                   child: Column(
                                     children: [
@@ -191,7 +197,7 @@ class StateBodyCard extends State<BodyCard>{
                                             ],
                                           )):Container()
                                     ],
-                                  )))
+                                  ))):Container()
                             ],
                           ):Container()),
 
