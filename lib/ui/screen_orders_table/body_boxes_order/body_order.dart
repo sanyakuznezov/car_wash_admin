@@ -94,38 +94,38 @@ class StateBodyCard extends State<BodyCard>{
              },
 
               onLongPress: () {
-                if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
-                  setState(() {
-                    widget.stateDrag = 1;
-                    AppModule.blocTable.streamSinkEdit.add(0);
-                    GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
-                    GlobalData.edit_mode = true;
-                    GlobalData.accept=false;
-                    GlobalData.idOrder=widget.dataOrder['orderBody'].id;
-                    GlobalData.timeEnd='';
-                    widget.onTimeStart(widget.dataOrder['start_date']);
-                    widget.onPost(widget.dataOrder['post']);
-                    widget.onId(widget.dataOrder['id']);
-                  });
-                }
-                // if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
-                //   if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
-                //     setState(() {
-                //       widget.stateDrag = 1;
-                //       AppModule.blocTable.streamSinkEdit.add(0);
-                //       GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
-                //       GlobalData.edit_mode = true;
-                //       GlobalData.accept=false;
-                //GlobalData.idOrder=widget.dataOrder['orderBody'].id;
-                //       GlobalData.timeEnd='';
-                //       widget.onTimeStart(widget.dataOrder['start_date']);
-                //       widget.onPost(widget.dataOrder['post']);
-                //       widget.onId(widget.dataOrder['id']);
-                //     });
-                //   }
-                // }else{
-                //   widget.onMsgError('');
+                // if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
+                //   setState(() {
+                //     widget.stateDrag = 1;
+                //     AppModule.blocTable.streamSinkEdit.add(0);
+                //     GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
+                //     GlobalData.edit_mode = true;
+                //     GlobalData.accept=false;
+                //     GlobalData.idOrder=widget.dataOrder['orderBody'].id;
+                //     GlobalData.timeEnd='';
+                //     widget.onTimeStart(widget.dataOrder['start_date']);
+                //     widget.onPost(widget.dataOrder['post']);
+                //     widget.onId(widget.dataOrder['id']);
+                //   });
                 // }
+                if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
+                  if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
+                    setState(() {
+                      widget.stateDrag = 1;
+                      AppModule.blocTable.streamSinkEdit.add(0);
+                      GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
+                      GlobalData.edit_mode = true;
+                      GlobalData.accept=false;
+                GlobalData.idOrder=widget.dataOrder['orderBody'].id;
+                      GlobalData.timeEnd='';
+                      widget.onTimeStart(widget.dataOrder['start_date']);
+                      widget.onPost(widget.dataOrder['post']);
+                      widget.onId(widget.dataOrder['id']);
+                    });
+                  }
+                }else{
+                  widget.onMsgError('');
+                }
               },
 
               child: StreamBuilder<dynamic>(

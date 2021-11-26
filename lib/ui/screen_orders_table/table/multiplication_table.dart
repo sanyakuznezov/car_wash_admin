@@ -411,7 +411,8 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                 ),
               );
             }
-          )
+          ),
+
         ],
       ),
     );

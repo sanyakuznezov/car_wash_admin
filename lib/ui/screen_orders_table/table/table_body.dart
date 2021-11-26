@@ -336,14 +336,14 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                   //Датчики для скроллов таблицы
 
-            StreamBuilder<dynamic>(
-                stream: AppModule.blocTable.stateDYFeedback,
-                builder: (context, y) {
-                  if(y.data!=null){
-                    _centerColumnsController.jumpTo(y.data);
-                  }
-                  return Container();
-                }),
+            // StreamBuilder<dynamic>(
+            //     stream: AppModule.blocTable.stateDYFeedback,
+            //     builder: (context, y) {
+            //       if(y.data!=null){
+            //         _centerColumnsController.jumpTo(y.data);
+            //       }
+            //       return Container();
+            //     }),
 
             Align(
                     alignment: Alignment.bottomCenter,
@@ -369,7 +369,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               leave = 0;
                               _centerColumnsController.animateTo(
                                   _centerColumnsController.offset,
-                                  duration: Duration(seconds: 10),
+                                  duration: Duration(seconds: 3),
                                   curve: Curves.easeOut);
                             },
                             onMove: (e) {
@@ -378,7 +378,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             _centerColumnsController.animateTo(
                                 _centerColumnsController
                                     .position.maxScrollExtent,
-                                duration: Duration(seconds: 10),
+                                duration: Duration(seconds: 3),
                                 curve: Curves.easeOut);
                           }
                         }, builder: (BuildContext context,
@@ -389,15 +389,28 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                   Align(
                     alignment: Alignment.topCenter,
                     child: Container(
-                      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                         width: MediaQuery.of(context).size.width,
-                        height: 50,
+                        height: 100,
                         child: DragTarget<int>(
+                            onAccept: (value){
+                              Fluttertoast.showToast(
+                                  msg: "Заказ вернулся в исходное состояние",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                              GlobalData.edit_mode=false;
+                              AppModule.blocTable.streamSinkEdit.add(1);
+                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                            },
                             onLeave: (value) {
                               leave = 0;
                               _centerColumnsController.animateTo(
                                   _centerColumnsController.offset,
-                                  duration: Duration(seconds: 10),
+                                  duration: Duration(seconds: 3),
                                   curve: Curves.easeOut);
                             }, onMove: (e) {
                           leave++;
@@ -406,7 +419,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             _centerColumnsController.animateTo(
                                 _centerColumnsController
                                     .position.minScrollExtent,
-                                duration: Duration(seconds: 10),
+                                duration: Duration(seconds: 3),
                                 curve: Curves.easeOut);
                           }
                         }, builder: (BuildContext context,
@@ -438,7 +451,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                           leave = 0;
                           widget.scrollControllertop.animateTo(
                               widget.scrollControllertop.offset,
-                              duration: Duration(seconds: 5),
+                              duration: Duration(seconds:3),
                               curve: Curves.easeOut);
 
                         }, onMove: (e) {
@@ -447,7 +460,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.scrollControllertop.animateTo(
                                 widget.scrollControllertop
                                     .position.maxScrollExtent,
-                                duration: Duration(seconds: 5),
+                                duration: Duration(seconds: 3),
                                 curve: Curves.easeOut);
 
                           }
@@ -480,7 +493,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                           leave = 0;
                           widget.scrollControllertop.animateTo(
                               widget.scrollControllertop.offset,
-                              duration: Duration(seconds: 5),
+                              duration: Duration(seconds: 3),
                               curve: Curves.easeOut);
                         },
                             onMove: (e) {
@@ -489,7 +502,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.scrollControllertop.animateTo(
                                 widget.scrollControllertop
                                     .position.minScrollExtent,
-                                duration: Duration(seconds: 5),
+                                duration: Duration(seconds: 3),
                                 curve: Curves.easeOut);
 
                           }

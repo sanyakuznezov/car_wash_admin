@@ -230,10 +230,22 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                                   //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY-7,
+                                      top: y.data + _scrollY-35,
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
+                                          Container(
+                                            margin:EdgeInsets.all(3.0),
+                                            padding: EdgeInsets.all(3.0),
+                                            decoration: BoxDecoration(
+                                                color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
+                                                borderRadius: BorderRadius.circular(10)
+                                            ),
+                                            child: Text('${widget.post}',
+                                              style: TextStyle(
+                                                  color: Colors.white
+                                              ),),
+                                          ),
                                           Container(
                                             margin:EdgeInsets.all(3.0),
                                             padding: EdgeInsets.all(3.0),
