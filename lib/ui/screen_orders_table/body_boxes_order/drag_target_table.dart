@@ -36,7 +36,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   int _leave = 0;
   double _y=0;
   double _scrollY = 0;
-  List<Map> _offsetsOrder = [];
+ List<Map> _offsetsOrder = [];
   double? startY;
   int? endCollision;
   int? startCollision;
@@ -72,7 +72,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                     },
                       onDoubleTapDown:(y){
-                        _date=DateTime.now().toString().split(' ')[0];
+
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
                           if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy))){
@@ -241,7 +241,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
-                                            child: Text('${widget.post}',
+                                            child: Text('${widget.post+1}',
                                               style: TextStyle(
                                                   color: Colors.white
                                               ),),
@@ -316,6 +316,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         onMove: (e) {
           _y = e.offset.dy-120;
           AppModule.blocTable.streamSinkFeedback.add(_y);
+          AppModule.blocTable.streamSinkDYX.add(e);
           if (_leave != 2) {
             setState(() {
               _leave = 2;
@@ -341,6 +342,12 @@ class StateDragTargetTable extends State<DragTargetTable> {
     );
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    _date=DateTime.now().toString().split(' ')[0];
+  }
 
   @override
   void dispose() {
@@ -384,21 +391,31 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
   //проверяем пересечение с границами соседних заказов а так же линии времени
   _isColision(List<Map> orders,int b1,int b2){
+      for(int i=0;orders.length>i;i++){
+        if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
+          return true;
+        }
 
-     for(int i=0;orders.length>i;i++){
-       if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
-         return true;
-       }
-       if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
-         return true;
-       }
+        if(orders[i]['start']>orders[i]['end']){
+         if( b1<=orders[i]['end']){
+           return true;
+         }
+        }
+        // if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
+        //   return true;
+        // }
 
-       //проверка для линии времени
-       if(b1<_timeParse!||b2<_timeParse!){
-         return true;
-       }
+        //проверка для линии времени
+        if(_date==GlobalData.date){
+          if(b1<_timeParse!||b2<_timeParse!){
+            return true;
+          }
+        }
 
-     }
+
+      }
+
+
 
     return false;
   }

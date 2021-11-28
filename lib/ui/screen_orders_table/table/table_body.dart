@@ -62,6 +62,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
 
 
+
   @override
   void initState() {
     super.initState();
@@ -274,17 +275,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
-
                           }else if(value.data!['action']==5){
                             int i=getIndex(value.data!['id'],widget.orderList);
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==6){
-                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                            widget.orderList[i].update('enable', (value) =>0);
-                            _mapOld!.update('id', (value) =>widget.orderList.length);
-                            widget.orderList.add(_mapOld!);
+                            if(widget.orderList.length>value.data!['index']){
+                              int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                              widget.orderList[i].update('enable', (value) =>0);
+                              _mapOld!.update('id', (value) =>widget.orderList.length);
+                               widget.orderList.add(_mapOld!);
+                            }
 
                           }
                         }
@@ -336,12 +338,15 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                   //Датчики для скроллов таблицы
 
-            // StreamBuilder<dynamic>(
-            //     stream: AppModule.blocTable.stateDYFeedback,
-            //     builder: (context, y) {
-            //       if(y.data!=null){
-            //         _centerColumnsController.jumpTo(y.data);
-            //       }
+            // StreamBuilder<DragTargetDetails>(
+            //     stream: AppModule.blocTable.getDYXScroll,
+            //     builder: (context, offset) {
+            //       if(offset.data!=null){
+            //         _centerColumnsController.jumpTo(offset.data!.offset.dy);
+            //         widget.scrollControllertop.jumpTo(offset.data!.offset.dx);
+            //        // print('Go to top ${directionOfTravel(offset.data!.offset.dy, offset.data!.offset.dx,yl,xl)}');
+            //    //directionOfTravel(offset.data!.offset.dy, offset.data!.offset.dx,yl,xl,_centerColumnsController);
+            //        }
             //       return Container();
             //     }),
 
@@ -519,7 +524,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   }
 }
-
 
 
 

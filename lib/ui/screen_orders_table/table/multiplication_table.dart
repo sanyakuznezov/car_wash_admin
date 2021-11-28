@@ -35,7 +35,6 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   @override
   void initState() {
     super.initState();
-    print('initState');
     _tableState=TableState();
     _tableState!.settingsRequest(context: context,date:GlobalData.date!);
     _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
@@ -202,7 +201,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.error,color: Colors.redAccent,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
-                                Text('${_tableState!.msgError}',style:
+                                Text('${orders.hasError.toString()}',style:
                                 TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.redAccent
