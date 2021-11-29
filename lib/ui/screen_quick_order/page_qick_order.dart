@@ -113,6 +113,11 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                  onPressed: (){
                    if(_isEndAddOrder){
                      Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
+                       onSuccesAdd: (add){
+                         if(add!){
+                           Navigator.pop(context);
+                         }
+                       },
                          totalPriceFinalOfListService:_totalPriceFinalOfListService,
                          order:_order,
                          list:_calculateList)));

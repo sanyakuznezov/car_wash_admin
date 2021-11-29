@@ -316,7 +316,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
         onMove: (e) {
           _y = e.offset.dy-120;
           AppModule.blocTable.streamSinkFeedback.add(_y);
-          AppModule.blocTable.streamSinkDYX.add(e);
           if (_leave != 2) {
             setState(() {
               _leave = 2;

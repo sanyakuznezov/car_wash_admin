@@ -82,6 +82,7 @@ class StateBodyCard extends State<BodyCard>{
                }else{
                  editStatus=GlobalData.EDIT_MODE;
                }
+               print('Id order ${widget.dataOrder['orderBody'].id}');
                Navigator.push(context, SlideTransitionSize(
                    PageAddOrder(
                      editStatus:editStatus!,

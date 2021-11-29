@@ -83,6 +83,7 @@ class PageAddOrder extends StatefulWidget{
 
 
 
+
   @override
   StatePageAddOrder createState() {
     // TODO: implement createState
@@ -99,7 +100,8 @@ class PageAddOrder extends StatefulWidget{
 
   class StatePageAddOrder extends State<PageAddOrder>{
 
-    bool _isSuccesDeleteOrder=false;
+    bool _isSucces=false;
+    String? _msg;
     int? _idOrder=0;
     ValueNotifier<bool>? _fabNotifi;
     bool _isEdit=false;
@@ -108,6 +110,12 @@ class PageAddOrder extends StatefulWidget{
   Widget build(BuildContext context) {
     if(widget.isClose){
       Navigator.of(context, rootNavigator: true).pop('dialog');
+      if(_isSucces){
+        Timer.periodic(Duration(seconds: 2), (timer) {
+          Navigator.pop(context);
+          timer.cancel();
+        });
+      }
     }
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
@@ -162,12 +170,12 @@ class PageAddOrder extends StatefulWidget{
                           ),
                         ),
                         Expanded(
-                          child: Text('Просмотр записи',
+                          child: Text(widget.editStatus==GlobalData.ADD_ORDER_MODE?'Создать запись':'Просмотр записи',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
                                 fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
                         ),
-                        !_isSuccesDeleteOrder?GestureDetector(
+                        !_isSucces?GestureDetector(
                           onTap: () {
                               if(_editStatusMain==GlobalData.EDIT_MODE&&_idOrder!=0){
                                 showMaterialModalBottomSheet(
@@ -197,7 +205,7 @@ class PageAddOrder extends StatefulWidget{
                 )
               ],
             ),
-            _isSuccesDeleteOrder?Container(
+            _isSucces?Container(
               height: MediaQuery.of(context).size.height,
               child: Center(
                 child: Column(
@@ -206,7 +214,7 @@ class PageAddOrder extends StatefulWidget{
                 Icon(Icons.check_circle_outline_outlined,color: Colors.green,size: SizeUtil.getSize(10,GlobalData.sizeScreen!),),
               Padding(
                 padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
-                child: Text('Заказ удален!',
+                child: Text('$_msg',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
                     fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!))),
@@ -271,6 +279,11 @@ class PageAddOrder extends StatefulWidget{
                   }else if(order.data!.clientFullname.split(' ').length==1){
                     _lastName=order.data!.clientFullname.split(' ')[0];
                   }
+                  //вызов не работатет из-за массивов
+                  _getPrice(context: context, carType: order.data!.carType, servicesIds: [], complexesIds:[])
+                      .onError((error, stackTrace){
+                    print('Error Price ${error.toString()}');
+                  });
                   return Column(
                     children: [
                       ItemDate.editOrder(
@@ -351,6 +364,8 @@ class PageAddOrder extends StatefulWidget{
   }
 
 
+
+
   Future<void> _deleteOrder({required BuildContext context,required int id}) async{
     showLoaderDialog(context);
     final result = await RepositoryModule.userRepository().deleteOrder(context: context, id: id).catchError(
@@ -376,7 +391,9 @@ class PageAddOrder extends StatefulWidget{
     if(result!){
       setState(() {
         widget.isClose=true;
-        _isSuccesDeleteOrder=true;
+        _isSucces=true;
+        _msg='Заказ удален';
+        _fabNotifi!.value=false;
       });
     }else{
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -400,16 +417,16 @@ class PageAddOrder extends StatefulWidget{
     super.initState();
     if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
       _isEdit=false;
+      // _getPrice(context: context, carType: _order['carType'], servicesIds: _idServiceList, complexesIds: _idComplexList)
+      //     .onError((error, stackTrace){
+      //   setState(() {
+      //     _isLoading=false;
+      //   });
+      // });
       _order.update('post', (value) => widget.post);
       _order.update('date', (value) => widget.date);
       _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
       _order.update('endTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[1]));
-      _getPrice(context: context, carType: 1, servicesIds: _idServiceList, complexesIds: _idComplexList)
-          .onError((error, stackTrace){
-        setState(() {
-          _isLoading=false;
-        });
-      });
     }
     if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
       _isEdit=true;
@@ -468,7 +485,6 @@ class PageAddOrder extends StatefulWidget{
       showLoaderDialog(context);
       final result= await RepositoryModule.userRepository().editOrder(map: map, context: context,idOrder: id)
           .catchError((error){
-            print('Error ${error.toString()}');
         setState(() {
           widget.isClose=true;
         });
@@ -493,16 +509,11 @@ class PageAddOrder extends StatefulWidget{
         setState(() {
           widget.isClose=true;
           widget.isVisibleFAB=false;
+          _isSucces=true;
+          _fabNotifi!.value=false;
+          _msg='Заказ успешно отредактирован';
+
         });
-        Fluttertoast.showToast(
-            msg: "Заказ успешно отредактирован",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 16.0
-        );
 
       }else{
         setState(() {
@@ -555,16 +566,10 @@ class PageAddOrder extends StatefulWidget{
         setState(() {
           widget.isClose=true;
           widget.isVisibleFAB=false;
+          _isSucces=true;
+          _msg='Заказ успешно опубликован';
+          _fabNotifi!.value=false;
         });
-        Fluttertoast.showToast(
-            msg: "Заказ успешно опубликован",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 16.0
-        );
 
       }else{
         setState(() {
@@ -1535,7 +1540,7 @@ class _ItemClientState extends State<ItemClient> {
                               onSaved: (value){
 
                               },
-                                maxLength: 13,
+                                maxLength: 15,
                               textAlign: TextAlign.start,
                                 focusNode: myFocusNodeTel,
                                 inputFormatters: <TextInputFormatter>[
@@ -1614,9 +1619,11 @@ class _ItemClientState extends State<ItemClient> {
                           child: SizedBox(
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
-                            child: _editStatusMain!=GlobalData.VIEW_MODE?TextField(
+                            child: _editStatusMain!=GlobalData.VIEW_MODE?
+                            TextField(
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodeSurname,
+                                 textCapitalization: TextCapitalization.sentences,
                                 style: TextStyle(
                                     color: AppColors.textColorPhone,
                                     fontWeight: FontWeight.bold,
@@ -1681,6 +1688,7 @@ class _ItemClientState extends State<ItemClient> {
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
                             child:  _editStatusMain!=GlobalData.VIEW_MODE?TextField(
+                                textCapitalization: TextCapitalization.sentences,
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodeName,
                                 style: TextStyle(
@@ -1747,6 +1755,7 @@ class _ItemClientState extends State<ItemClient> {
                             height:
                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
                             child: _editStatusMain!=GlobalData.VIEW_MODE?TextField(
+                                textCapitalization: TextCapitalization.sentences,
                                 textAlign: TextAlign.end,
                                 focusNode: myFocusNodePatronymic,
                                 style: TextStyle(
@@ -1827,19 +1836,20 @@ class _ItemClientState extends State<ItemClient> {
         newText.write('(');
         if (newValue.selection.end >= 1) selectionIndex++;
       }
+
       if (newTextLength >= 4) {
         newText.write(newValue.text.substring(0, usedSubstringIndex = 3) + ') ');
         if (newValue.selection.end >= 3) selectionIndex += 2;
       }
-      // if (newTextLength >= 7) {
-      //   newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
-      //   if (newValue.selection.end >= 6) selectionIndex++;
-      // }
+      if (newTextLength >= 7) {
+        newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
+        if (newValue.selection.end >= 6) selectionIndex++;
+      }
 
-      // if (newTextLength >= 11) {
-      //   newText.write(newValue.text.substring(6, usedSubstringIndex = 10) + ' ');
-      //   if (newValue.selection.end >= 10) selectionIndex++;
-      // }
+      if (newTextLength >= 9) {
+        newText.write(newValue.text.substring(6, usedSubstringIndex = 8) + '-');
+        if (newValue.selection.end >= 8) selectionIndex++;
+      }
 // Dump the rest.
       if (newTextLength >= usedSubstringIndex) {
         newText.write(newValue.text.substring(usedSubstringIndex));
@@ -1933,7 +1943,8 @@ class _ItemCarState extends State<ItemCar> {
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                          child:Align(
                            alignment: Alignment.centerRight,
-                           child: _editStatusMain!=GlobalData.VIEW_MODE?DropdownButton<String>(
+                           child: _editStatusMain!=GlobalData.VIEW_MODE?
+                           DropdownButton<String>(
                              value: _typeCar,
                              icon: const Icon(Icons.arrow_drop_down,
                                color: Colors.black,),
@@ -2537,7 +2548,38 @@ class _ItemDateState extends State<ItemDate> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('${widget.post}',
+                          child: _editStatusMain!=GlobalData.VIEW_MODE?
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: DropdownButton<int>(
+                              value: widget.post,
+                              icon: const Icon(Icons.arrow_drop_down,
+                                color: Colors.black,),
+                              iconSize: 24,
+                              elevation: 16,
+                              alignment: Alignment.centerRight,
+                              style: TextStyle(color: AppColors.textColorPhone,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.transparent,
+                              ),
+                              onChanged: (int? newValue) {
+                                setState(() {
+                                  widget.post = newValue!;
+                                  _order.update('post', (value) => widget.post);
+                                  _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                });
+                              },
+                              items: _getListPosts().map<DropdownMenuItem<int>>((int value) {
+                                return DropdownMenuItem<int>(
+                                  value: value,
+                                  child: Text('$value'),
+                                );
+                              }).toList(),
+                            ),
+                          ):Text('${widget.post}',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.textColorPhone,
@@ -2557,8 +2599,17 @@ class _ItemDateState extends State<ItemDate> {
       ),
     );
 
-
   }
+
+   _getListPosts(){
+     List<int> posts=[];
+     int u=0;
+     for(int i=0;GlobalData.numBoxes!>i;i++){
+       u++;
+       posts.add(u);
+     }
+     return posts;
+   }
 }
 
     class Work extends StatefulWidget{

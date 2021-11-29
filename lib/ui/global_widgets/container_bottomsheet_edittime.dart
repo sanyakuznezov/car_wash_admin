@@ -79,9 +79,9 @@ import '../../global_data.dart';
 
 class ContainerBottomSheetEditTime extends StatefulWidget{
 
-  String time;
-  int timeStart;
-  int timeEnd;
+  final String time;
+  final int timeStart;
+  final int timeEnd;
   var onTimeSelect=(String? tStart,String tEnd)=>tStart,tEnd;
   
 
@@ -116,7 +116,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
       alignment: Alignment.center,
         padding: EdgeInsets.all(20),
     width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height/4.0,
+    height: SizeUtil.getSize(25.0,GlobalData.sizeScreen!),
     decoration: BoxDecoration(
     color: Colors.white,
     borderRadius: new BorderRadius.only(

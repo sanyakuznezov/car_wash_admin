@@ -6,14 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BlocTableOrder{
-  StreamController<DragTargetDetails> _streamControllerDYX=StreamController<DragTargetDetails>();
+
     StreamController<int> _streamController=StreamController<int>();
     StreamController<int> _streamControllerEdit=StreamController<int>();
     StreamController<double> _streamControllerScroll=StreamController<double>();
     StreamController<double> _streamControllerOffsetFeedback=StreamController<double>();
    StreamController<Map> _streamControllerDrag=StreamController<Map>();
     StreamController<String> _streamControllerTimer=StreamController<String>();
-    StreamSink get streamSinkDYX=>_streamControllerDYX.sink;
     StreamSink get streamSinkTime=>_streamControllerTimer.sink;
     StreamSink get streamSinkDrag=>_streamControllerDrag.sink;
     StreamSink get streamSinkFeedback=>_streamControllerOffsetFeedback.sink;
@@ -45,7 +44,6 @@ class BlocTableOrder{
 
 
     BlocTableOrder(){
-      _streamControllerDYX.stream.listen(sendDYX);
     _streamController.stream.listen(_stateTime);
     _streamControllerEdit.stream.listen(_stateEdit);
     _streamControllerScroll.stream.listen(_addScrollDy);
@@ -109,9 +107,6 @@ class BlocTableOrder{
       _streamControllerTimer.close();
       _timeSteram.close();
     }
-    void disponseDYX(){
-      _streamControllerDYX.close();
-      _dyx.close();
-    }
+
 
 }

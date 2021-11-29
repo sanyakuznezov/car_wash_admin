@@ -1,7 +1,9 @@
 
 
 
-  import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
+  import 'dart:async';
+
+import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_time.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
@@ -25,9 +27,10 @@ class PageQuickOrderNext extends StatefulWidget{
  final Map<String,dynamic> order;
  final int totalPriceFinalOfListService;
  bool isClose=false;
+ var onSuccesAdd=(bool? add)=>add;
 
 
-  PageQuickOrderNext({required this.totalPriceFinalOfListService,required this.order,required this.list});
+  PageQuickOrderNext({required this.onSuccesAdd,required this.totalPriceFinalOfListService,required this.order,required this.list});
 
   @override
   State<PageQuickOrderNext> createState() => _PageQuickOrderNextState();
@@ -40,10 +43,18 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
 
   @override
   Widget build(BuildContext context) {
+    if(_isSuccesSendOrder){
+      Timer.periodic(Duration(seconds: 2), (timer) {
+        Navigator.pop(context);
+        widget.onSuccesAdd(true);
+        timer.cancel();
+      });
+    }
+
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
       body: SingleChildScrollView(
-        child: Column(
+        child: !_isSuccesSendOrder?Column(
           children: [
             AppBar(
               backgroundColor: Colors.white,
@@ -91,10 +102,9 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
               padding:_isSuccesSendOrder?EdgeInsets.all(SizeUtil.getSize(3.0,GlobalData.sizeScreen!)):EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
-                child: !_isSuccesSendOrder?RaisedButton(
+                child: RaisedButton(
                     color: AppColors.colorIndigo,
                     onPressed: (){
-                      print('$_hour:$_min');
                       if(_hour.isNotEmpty&&_min.isNotEmpty){
                         widget.order.update('startTime', (val) => TimeParser.parseHourForTimeLine('$_hour:$_min'));
                         _sendOrder(context,widget.order);
@@ -102,23 +112,28 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
 
                     }, child: Text('Записать',style: TextStyle(
                     color: Colors.white
-                ),)):Center(child: Column(
-                  children: [
-                    Icon(Icons.check_circle_outline_outlined,color: Colors.green,size: SizeUtil.getSize(10,GlobalData.sizeScreen!),),
-                    Padding(
-                      padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
-                      child: Text('Заказ создан!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!))),
-                    ),
-
-                  ],
-                ))
-              ),
+                ),)) ),
             )
           ],
-        ),
+        ):Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+          Icon(Icons.check_circle_outline_outlined,color: Colors.green,size: SizeUtil.getSize(10,GlobalData.sizeScreen!),),
+          Padding(
+            padding: EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+            child: Text('Заказ создан!',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                    fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!))),
+          ),
+
+            ],
+          ),
+        )
+
       ),
     );
   }
@@ -143,15 +158,6 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
         setState(() {
           _isSuccesSendOrder=true;
           Navigator.of(context, rootNavigator: true).pop('dialog');
-          Fluttertoast.showToast(
-              msg: "Заказ успешно создан!",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 3,
-              backgroundColor: Colors.white,
-              textColor: Colors.black,
-              fontSize: 16.0
-          );
         });
 
       }

@@ -973,10 +973,10 @@ class _PageSaleState extends State<PageSale> {
                         ),),
                       Padding(
                         padding:EdgeInsets.all(SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
-                        child: Text('Акция продлиться с ${widget.modelSale.startAt} до ${widget.modelSale.endAt}',
+                        child: Text('Акция продлится с ${widget.modelSale.startAt} до ${widget.modelSale.endAt}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
+
                               color: AppColors.textColorHint
                           ),),
                       ),
