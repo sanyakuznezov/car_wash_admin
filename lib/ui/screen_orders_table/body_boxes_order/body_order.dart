@@ -82,7 +82,6 @@ class StateBodyCard extends State<BodyCard>{
                }else{
                  editStatus=GlobalData.EDIT_MODE;
                }
-               print('Id order ${widget.dataOrder['orderBody'].id}');
                Navigator.push(context, SlideTransitionSize(
                    PageAddOrder(
                      editStatus:editStatus!,
@@ -95,7 +94,7 @@ class StateBodyCard extends State<BodyCard>{
              },
 
               onLongPress: () {
-                if(isTime(widget.timePosition!,widget.dataOrder['start_date'])){
+                if(isTime(widget.timePosition!,widget.dataOrder['expiration_date'])){
                   if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
                     setState(() {
                       widget.stateDrag = 1;

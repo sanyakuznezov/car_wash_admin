@@ -197,7 +197,7 @@ class PageAddOrder extends StatefulWidget{
                                           Icons.delete_outline_outlined,
                                           color: Colors.red,
                                         )
-                                      : SvgPicture.asset('assets/flag_1.svg'))),
+                                      :_editStatusMain==GlobalData.VIEW_MODE?SvgPicture.asset('assets/flag_1.svg'):Container())),
                         ):Container()
                       ],
                     ),
@@ -267,8 +267,8 @@ class PageAddOrder extends StatefulWidget{
                   _order.update('ComplexesList', (value) => order.data!.complexes);
                   _order.update('ServicesList', (value) => order.data!.services);
                   _idOrder=order.data!.id;
-                  _idComplexList=order.data!.complexes;
-                   _idServiceList=order.data!.services;
+                  // _idComplexList=order.data!.complexes;
+                  //  _idServiceList=order.data!.services;
                   if(order.data!.clientFullname.split(' ').length==3){
                     _surName=order.data!.clientFullname.split(' ')[1];
                     _lastName=order.data!.clientFullname.split(' ')[0];
@@ -279,11 +279,14 @@ class PageAddOrder extends StatefulWidget{
                   }else if(order.data!.clientFullname.split(' ').length==1){
                     _lastName=order.data!.clientFullname.split(' ')[0];
                   }
-                  //вызов не работатет из-за массивов
-                  _getPrice(context: context, carType: order.data!.carType, servicesIds: [], complexesIds:[])
-                      .onError((error, stackTrace){
-                    print('Error Price ${error.toString()}');
+                  //вызов списка работ
+                  order.data!.services.forEach((element) {
+                    _idServiceList.add(element['id']);
                   });
+                  order.data!.complexes.forEach((element) {
+                    _idComplexList.add(element['id']);
+                  });
+                  _getPrice(context: context, carType: order.data!.carType, servicesIds: _idServiceList, complexesIds:_idComplexList);
                   return Column(
                     children: [
                       ItemDate.editOrder(
@@ -349,8 +352,11 @@ class PageAddOrder extends StatefulWidget{
                 ItemClient(),
                 ItemListWork(),
                 ItemPrice(),
-                ItemComment(),
-                ItemReview()
+                ItemComment(editStatus: widget.editStatus),
+                widget.editStatus!=GlobalData.ADD_ORDER_MODE?ItemReview():Container(),
+                widget.editStatus==GlobalData.ADD_ORDER_MODE?SizedBox(height:  SizeUtil.getSize(
+                    10.0,
+                    GlobalData.sizeScreen!),):Container()
 
               ],
             )
@@ -362,7 +368,6 @@ class PageAddOrder extends StatefulWidget{
     );
 
   }
-
 
 
 
@@ -711,10 +716,11 @@ class PageAddOrder extends StatefulWidget{
 
     ModelOrderShow? modelOrderShow;
     var callback=(bool? hide)=>hide;
+    int? editStatus;
 
 
     ItemComment.editOrder({required this.callback,this.modelOrderShow});
-    ItemComment({this.modelOrderShow});
+    ItemComment({required this.editStatus,this.modelOrderShow});
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -766,7 +772,7 @@ class _ItemCommentState extends State<ItemComment> {
               ],
             ),
           ),
-          Container(
+          widget.editStatus!=GlobalData.ADD_ORDER_MODE?Container(
               margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0, 0),
               color: AppColors.color120,
               child: Column(
@@ -789,7 +795,7 @@ class _ItemCommentState extends State<ItemComment> {
                     ),),
                 ),
                 Container(height: 1, color: AppColors.colorLine),
-              ])),
+              ])):Container(),
           Container(
             alignment: Alignment.centerLeft,
             width: MediaQuery.of(context).size.width,
@@ -2694,8 +2700,11 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
          value: controller.value,
          color: AppColors.colorIndigo,
        ):Container(),
-
-       widget.modelCalculatePrice.type=='complex'?Container(
+       widget.modelCalculatePrice.type=='complex'&&getTextDetails(widget.listServices,widget.modelCalculatePrice.id).isEmpty?Container(
+           margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
+           height: 1,
+           color: AppColors.colorLine):Container(),
+       widget.modelCalculatePrice.type=='complex'&&getTextDetails(widget.listServices,widget.modelCalculatePrice.id).isNotEmpty?Container(
          width: MediaQuery.of(context).size.width,
          color: AppColors.colorLine,
          child: Padding(

@@ -85,6 +85,9 @@ class TimeParser{
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
     var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
+    // if(result>1440){
+    //   result=result-1440;
+    // }
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
