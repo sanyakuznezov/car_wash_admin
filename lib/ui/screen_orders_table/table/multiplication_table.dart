@@ -201,7 +201,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.error,color: Colors.redAccent,size: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),),
-                                Text('${orders.hasError.toString()}',style:
+                                Text('Ошибка получения данных',style:
                                 TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.redAccent

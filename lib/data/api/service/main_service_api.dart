@@ -933,7 +933,6 @@ class MainServiseApi {
     } else {
       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
       Map data = await blocVerifyUser.checkDataValidUser();
-      print('Error $id ${data['pid']} ${data['token']}');
       final value = {
         'id': id,
         'pId': data['pid'],
@@ -949,6 +948,7 @@ class MainServiseApi {
              contentType: 'application/x-www-form-urlencoded',
             )
         );
+        print('ID $id');
         return ModelOrderShowApi.fromApi(map: result.data);
 
       } on DioError catch (e) {

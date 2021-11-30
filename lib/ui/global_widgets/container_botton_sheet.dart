@@ -2,6 +2,7 @@
 
   import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -55,7 +56,7 @@ class ContainerBottomSheet extends StatefulWidget{
                     color: Colors.black
                 ),),),
 
-              Expanded(child: Text('${parseHour(widget.timeStart)}-${parseHour(widget.timeEnd)}',
+              Expanded(child: Text('${parseHour(widget.timeStart)}-${TimeParser.passingTime(widget.timeEnd.split(' ')[1])}',
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),

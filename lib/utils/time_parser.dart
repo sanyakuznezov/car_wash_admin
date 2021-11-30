@@ -85,9 +85,6 @@ class TimeParser{
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
     var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
-    // if(result>1440){
-    //   result=result-1440;
-    // }
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -130,6 +127,15 @@ class TimeParser{
     int hour = int.parse(time.split(':')[0]);
     int minute = int.parse(time.split(':')[1]);
     return hour * 60 + minute;
+  }
+
+  //парсим время переходящее на другой день
+  static passingTime(String time){
+    int p=parseHourForTimeLine(time);
+    if(p>1440){
+      p=p-1440;
+    }
+    return parseIntToStringTime(p);
   }
 
   static parseTimeForApi(String time) {

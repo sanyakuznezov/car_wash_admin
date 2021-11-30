@@ -227,6 +227,7 @@ class PageAddOrder extends StatefulWidget{
               future: _getOrderShow(context: context,id: widget.idOrder!),
               builder: (context,order){
                 if(order.hasError){
+                  print('Error ${order.error}');
                    return Container(
                      height: MediaQuery.of(context).size.height,
                      child: Center(
