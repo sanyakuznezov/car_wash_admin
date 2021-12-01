@@ -155,7 +155,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                    //   'start':GlobalData.timeStart,
                                    //   'end':GlobalData.timeEnd,
                                    //   'post':GlobalData.post});
-                                   widget.tableState!.editOrderJournal(endAt: TimeParser.passingTime(GlobalData.timeEnd!.split(' ')[1]), startAt: GlobalData.timeStart!.split(' ')[1], context: context, idOrder: GlobalData.idOrder!, post: GlobalData.post!);
+                                   widget.tableState!.editOrderJournal(endAt: TimeParser.parsingTime(GlobalData.timeEnd!.split(' ')[1]), startAt: GlobalData.timeStart!.split(' ')[1], context: context, idOrder: GlobalData.idOrder!, post: GlobalData.post!);
 
                                  },
                                  post: GlobalData.post!,
@@ -172,7 +172,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                   Stack(
                       children: List.generate(widget.orderList.length, (a) {
                         if(widget.orderList[a]['post'] == widget.post + 1){
-                            //проверяем перехящий заказ с предыдущего дня если да то наало заказа с 00:00
+                            //проверяем переходящий заказ с предыдущего дня если да то начало заказа с 00:00
                             startY=getY(a,TimeParser.parseHour(widget.orderList[a]['start_date']),TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             sizeBody=_sizeBody(a,TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
@@ -302,7 +302,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
                 _y.toInt() + _scrollY.toInt(),
                 GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
             GlobalData.post=widget.post+1;
-            print('Time parsing ${TimeParser.passingTime(GlobalData.timeEnd!.split(' ')[1])}');
             widget.accept(GlobalData.timeStart,GlobalData.timeEnd,widget.post+1);
             _scrollY = 0;
           });

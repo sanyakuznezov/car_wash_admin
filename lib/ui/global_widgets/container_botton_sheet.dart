@@ -56,7 +56,7 @@ class ContainerBottomSheet extends StatefulWidget{
                     color: Colors.black
                 ),),),
 
-              Expanded(child: Text('${parseHour(widget.timeStart)}-${TimeParser.passingTime(widget.timeEnd.split(' ')[1])}',
+              Expanded(child: Text('${parseHour(widget.timeStart)}-${TimeParser.parsingTime(widget.timeEnd.split(' ')[1])}',
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
@@ -73,9 +73,17 @@ class ContainerBottomSheet extends StatefulWidget{
                   color: widget.statusCode==2?Colors.red:Colors.grey,
                   fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)),),
            SizedBox(
-             height: SizeUtil.getSize(6,GlobalData.sizeScreen!),
+             height: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
            ),
 
+          TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])>1440?Text('Запись находиться между двумя днями. Изменения разрешены только на странице редактирования',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color:Colors.red,
+                fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),):Container(),
+          SizedBox(
+            height: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
+          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

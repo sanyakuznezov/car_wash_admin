@@ -130,10 +130,10 @@ class TimeParser{
   }
 
   //парсим время переходящее на другой день
-  static passingTime(String time){
+  static parsingTime(String time){
     int p=parseHourForTimeLine(time);
     if(p>1440){
-      p=p-1440;
+      p=1440;
     }
     return parseIntToStringTime(p);
   }
