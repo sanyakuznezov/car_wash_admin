@@ -44,7 +44,7 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
   @override
   Widget build(BuildContext context) {
     if(_isSuccesSendOrder){
-      Timer.periodic(Duration(seconds: 2), (timer) {
+      Timer.periodic(Duration(seconds: 1), (timer) {
         Navigator.pop(context);
         widget.onSuccesAdd(true);
         timer.cancel();

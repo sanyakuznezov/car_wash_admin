@@ -41,39 +41,55 @@
    List complexes;
 
    ModelOrderShowApi.fromApi({required Map<String,dynamic> map}):
-          id=map['id']??0,
-    carwashId=map['carwashId']??0,
-    personalId=map['personalId']==null?0:map['personalId'],
-    personalFullname=map['personalFullname']==null||map['personalFullname']==''?'....':map['personalFullname'],
-    date=map['date']??'',
-    post=map['post']??0,
-    startTime=map['startTime']??0,
-    endTime=map['endTime']??0,
-    carType=map['carType']??0,
-    carNumber=map['carNumber']??'',
-    carRegion=map['carRegion']??0,
-    color=map['color']??'',
-    carBrandid=map['carBrand']['id']??0,
-    carBrandcarwash_id=map['carBrand']['carwash_id']==null?0:map['carBrand']['carwash_id'],
-    carBrandtitle=map['carBrand']['title']??'',
-    carBrandicon=map['carBrand']['icon']==null?'':map['carBrand']['icon'],
-    carBrandsynonyms=map['carBrand']['synonyms']==null?'':map['carBrand']['synonyms'],
-     carBrandcreated_at=map['carBrand']['created_at']==null?'':map['carBrand']['created_at'],
-    carModelid=map['carModel']['id']??0,
-    carModelcar_brand_id=map['carModel']['car_brand_id']??0,
-    carModelcarwash_id=map['carModel']['carwash_id']==null?0:map['carModel']['carwash_id'],
-    carModeltitle=map['carModel']['title']??'',
-    carModelsynonyms=map['carModel']['synonyms']==null?'':map['carModel']['synonyms'],
-    carModelcreated_at=map['carModel']['created_at']??'',
-    clientFullname=map['clientFullname']??'',
-     clientPhone=map['clientPhone']==null||map['clientPhone']==''?'....':map['clientPhone'],
-    totalPrice=map['totalPrice']??0,
-    sale=map['sale']??0,
-    workTime=map['workTime']??0,
-    status=map['status']??0,
-    adminComment=map['adminComment']==''||map['adminComment']==null?'....':map['adminComment'],
-    clientComment=map['clientComment']==''||map['clientComment']==null?'....':map['clientComment'],
-    created_at=map['created_at']??'',
-    services=map['services']??[],
-    complexes=map['complexes']??[];
+          id=from('int',map['id'])??0,
+    carwashId=from('int', map['carwashId'])??0,
+    personalId=from('int',map['personalId'])==null?0:from('int',map['personalId']),
+    personalFullname=from('String', map['personalFullname'])==null||from('String', map['personalFullname'])==''?'....':from('String', map['personalFullname']),
+    date=from('String', map['date'])??'',
+    post=from('int', map['post'])??0,
+    startTime=from('int', map['startTime'])??0,
+    endTime=from('int', map['endTime'])??0,
+    carType=from('int', map['carType'])??0,
+    carNumber=from('String', map['carNumber'])??'',
+    carRegion=from('int', map['carRegion'])??0,
+    color=from('String', map['color'])??'',
+    carBrandid=from('int', map['carBrand']['id'])??0,
+    carBrandcarwash_id=from('int', map['carBrand']['carwash_id'])==null?0:from('int', map['carBrand']['carwash_id']),
+    carBrandtitle=from('String', map['carBrand']['title'])??'',
+    carBrandicon=from('String', map['carBrand']['icon'])==null?'':from('String', map['carBrand']['icon']),
+    carBrandsynonyms=from('String', map['carBrand']['synonyms'])==null?'':from('String', map['carBrand']['synonyms']),
+     carBrandcreated_at=from('String', map['carBrand']['created_at'])==null?'':from('String', map['carBrand']['created_at']),
+    carModelid=from('int', map['carModel']['id'])??0,
+    carModelcar_brand_id=from('int', map['carModel']['car_brand_id'])??0,
+    carModelcarwash_id=from('int', map['carModel']['carwash_id'])==null?0:from('int', map['carModel']['carwash_id']),
+    carModeltitle=from('String', map['carModel']['title'])??'',
+    carModelsynonyms=from('String', map['carModel']['synonyms'])==null?'':from('String', map['carModel']['synonyms']),
+    carModelcreated_at=from('String', map['carModel']['created_at'])??'',
+    clientFullname=from('String', map['clientFullname'])??'',
+     clientPhone=from('String', map['clientPhone'])==null||from('String', map['clientPhone'])==''?'....':from('String', map['clientPhone']),
+    totalPrice=from('int', map['totalPrice'])??0,
+    sale=from('int', map['sale'])??0,
+    workTime=from('int', map['workTime'])??0,
+    status=from('int', map['status'])??0,
+    adminComment=from('String', map['adminComment'])==''||from('String', map['adminComment'])==null?'....':from('String', map['adminComment']),
+    clientComment=from('String', map['clientComment'])==''||from('String', map['clientComment'])==null?'....':from('String', map['clientComment']),
+    created_at=from('String', map['created_at'])??'',
+    services=from('List', map['services'])??[],
+    complexes=from('List', map['complexes'])??[];
 }
+
+
+ from(String type,dynamic value){
+    if(value is int){
+      print('$type - int');
+    }
+    if(value is String){
+      print('$type - String');
+    }
+
+    if(value is List){
+      print('$type - List');
+    }
+
+    return value;
+ }

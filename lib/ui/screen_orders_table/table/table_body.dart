@@ -281,12 +281,11 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==6){
-                            if(widget.orderList.length>value.data!['index']){
+                            print('Index ${value.data!['index']}');
                               int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                               widget.orderList[i].update('enable', (value) =>0);
                               _mapOld!.update('id', (value) =>widget.orderList.length);
                                widget.orderList.add(_mapOld!);
-                            }
 
                           }
                         }
@@ -357,18 +356,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         height: 50,
                         child: DragTarget<int>(
                           onAccept: (value){
-                            Fluttertoast.showToast(
-                                msg: "Заказ вернулся в исходное состояние",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0
-                            );
-                            GlobalData.edit_mode=false;
-                            AppModule.blocTable.streamSinkEdit.add(1);
-                            AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                            // Fluttertoast.showToast(
+                            //     msg: "Заказ вернулся в исходное состояние",
+                            //     toastLength: Toast.LENGTH_SHORT,
+                            //     gravity: ToastGravity.CENTER,
+                            //     timeInSecForIosWeb: 1,
+                            //     backgroundColor: Colors.red,
+                            //     textColor: Colors.white,
+                            //     fontSize: 16.0
+                            // );
+                            // GlobalData.edit_mode=false;
+                            // AppModule.blocTable.streamSinkEdit.add(1);
+                            // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                           },
                             onLeave: (value) {
                               leave = 0;
@@ -398,18 +397,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         height: 100,
                         child: DragTarget<int>(
                             onAccept: (value){
-                              Fluttertoast.showToast(
-                                  msg: "Заказ вернулся в исходное состояние",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
-                              GlobalData.edit_mode=false;
-                              AppModule.blocTable.streamSinkEdit.add(1);
-                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                              // Fluttertoast.showToast(
+                              //     msg: "Заказ вернулся в исходное состояние",
+                              //     toastLength: Toast.LENGTH_SHORT,
+                              //     gravity: ToastGravity.CENTER,
+                              //     timeInSecForIosWeb: 1,
+                              //     backgroundColor: Colors.red,
+                              //     textColor: Colors.white,
+                              //     fontSize: 16.0
+                              // );
+                              // GlobalData.edit_mode=false;
+                              // AppModule.blocTable.streamSinkEdit.add(1);
+                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                             },
                             onLeave: (value) {
                               leave = 0;
@@ -439,18 +438,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(
                             onAccept: (value){
-                              Fluttertoast.showToast(
-                                  msg: "Заказ вернулся в исходное состояние",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
-                              GlobalData.edit_mode=false;
-                              AppModule.blocTable.streamSinkEdit.add(1);
-                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                              // Fluttertoast.showToast(
+                              //     msg: "Заказ вернулся в исходное состояние",
+                              //     toastLength: Toast.LENGTH_SHORT,
+                              //     gravity: ToastGravity.CENTER,
+                              //     timeInSecForIosWeb: 1,
+                              //     backgroundColor: Colors.red,
+                              //     textColor: Colors.white,
+                              //     fontSize: 16.0
+                              // );
+                              // GlobalData.edit_mode=false;
+                              // AppModule.blocTable.streamSinkEdit.add(1);
+                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                             },
                             onLeave: (value) {
                           leave = 0;
@@ -481,18 +480,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(
                             onAccept: (value){
-                              Fluttertoast.showToast(
-                                  msg: "Заказ вернулся в исходное состояние",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
-                              GlobalData.edit_mode=false;
-                              AppModule.blocTable.streamSinkEdit.add(1);
-                              AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
+                              // Fluttertoast.showToast(
+                              //     msg: "Заказ вернулся в исходное состояние",
+                              //     toastLength: Toast.LENGTH_SHORT,
+                              //     gravity: ToastGravity.CENTER,
+                              //     timeInSecForIosWeb: 1,
+                              //     backgroundColor: Colors.red,
+                              //     textColor: Colors.white,
+                              //     fontSize: 16.0
+                              // );
+                              // GlobalData.edit_mode=false;
+                              // AppModule.blocTable.streamSinkEdit.add(1);
+                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                             },
                             onLeave: (value) {
                           leave = 0;

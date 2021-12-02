@@ -44,7 +44,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
   bool isCollision=false;
   int? _editState;
   int? _statusCode;
- // final double c1=110;
   final double c2=15;
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
@@ -191,6 +190,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                 top: startY,
                                 left: 5,
                                 child: widget.orderList[a]['enable']==1?BodyCard(
+                                  lengthOrders: widget.orderList.length,
                                   onMsgError: (data){
                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время заказа истекло')));
                                   },

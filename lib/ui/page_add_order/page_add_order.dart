@@ -44,6 +44,7 @@ import '../../../global_data.dart';
   int _typeCarInt =1;
   bool _isLoading=false;
   int _editStatusMain=2;
+  ValueNotifier<bool>? _fabNotifi;
 
   Future<ModelOrderShow?> _getOrderShow({required BuildContext context,required int id})async{
     final order=await RepositoryModule.userRepository().getOrderShow(context: context, id: id);
@@ -54,11 +55,14 @@ import '../../../global_data.dart';
 
 
 
-  Future<ModelCalculatePrice?> _getPrice({required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
+  Future<ModelCalculatePrice?> _getPrice({required bool edit,required BuildContext context,required int carType,required List<int> servicesIds, required List<int> complexesIds})async{
     _isLoading=true;
     _notifier.value=ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []);
     final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
     _notifier.value=result!;
+    if(edit){
+      _fabNotifi!.value=true;
+    }
     _isLoading=false;
     return result;
   }
@@ -103,7 +107,6 @@ class PageAddOrder extends StatefulWidget{
     bool _isSucces=false;
     String? _msg;
     int? _idOrder=0;
-    ValueNotifier<bool>? _fabNotifi;
     bool _isEdit=false;
 
   @override
@@ -111,7 +114,7 @@ class PageAddOrder extends StatefulWidget{
     if(widget.isClose){
       Navigator.of(context, rootNavigator: true).pop('dialog');
       if(_isSucces){
-        Timer.periodic(Duration(seconds: 2), (timer) {
+        Timer.periodic(Duration(seconds: 1), (timer) {
           Navigator.pop(context);
           timer.cancel();
         });
@@ -227,7 +230,6 @@ class PageAddOrder extends StatefulWidget{
               future: _getOrderShow(context: context,id: widget.idOrder!),
               builder: (context,order){
                 if(order.hasError){
-                  print('Error ${order.error}');
                    return Container(
                      height: MediaQuery.of(context).size.height,
                      child: Center(
@@ -247,6 +249,7 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
+                  print('Order data');
                   _order.update('post', (value) => order.data!.post);
                   _order.update('date', (value) => order.data!.date);
                     _order.update('startTime', (value) =>order.data!.startTime);
@@ -268,8 +271,6 @@ class PageAddOrder extends StatefulWidget{
                   _order.update('ComplexesList', (value) => order.data!.complexes);
                   _order.update('ServicesList', (value) => order.data!.services);
                   _idOrder=order.data!.id;
-                  // _idComplexList=order.data!.complexes;
-                  //  _idServiceList=order.data!.services;
                   if(order.data!.clientFullname.split(' ').length==3){
                     _surName=order.data!.clientFullname.split(' ')[1];
                     _lastName=order.data!.clientFullname.split(' ')[0];
@@ -287,7 +288,7 @@ class PageAddOrder extends StatefulWidget{
                   order.data!.complexes.forEach((element) {
                     _idComplexList.add(element['id']);
                   });
-                  _getPrice(context: context, carType: order.data!.carType, servicesIds: _idServiceList, complexesIds:_idComplexList);
+                  _getPrice(edit:false,context: context, carType: order.data!.carType, servicesIds: _idServiceList, complexesIds:_idComplexList);
                   return Column(
                     children: [
                       ItemDate.editOrder(
@@ -1309,8 +1310,8 @@ class _ItemPriceState extends State<ItemPrice> {
                                      }
 
                                    });
-                                   widget.callback(true);
-                                   _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                  // widget.callback(true);
+                                   _getPrice(edit:true,context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                  });
 
                              },)));
@@ -1388,7 +1389,7 @@ class _ItemPriceState extends State<ItemPrice> {
                                     }
                                   }
                                 }
-                                _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                _getPrice(edit:true,context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                 if(_calculateList.length==2){
                                   _isEdit=false;
 
@@ -1979,9 +1980,9 @@ class _ItemCarState extends State<ItemCar> {
                                  }else if(_typeCar=='Иное'){
                                    _typeCarInt=5;
                                  }
-                                   widget.callback(true);
+                                   //widget.callback(true);
                                  _order.update('carType', (value) => _typeCarInt);
-                                 _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                 _getPrice(edit:true,context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                });
                              },
                              items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
@@ -2574,9 +2575,9 @@ class _ItemDateState extends State<ItemDate> {
                               ),
                               onChanged: (int? newValue) {
                                 setState(() {
+                                  widget.callback(true);
                                   widget.post = newValue!;
                                   _order.update('post', (value) => widget.post);
-                                  _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                 });
                               },
                               items: _getListPosts().map<DropdownMenuItem<int>>((int value) {

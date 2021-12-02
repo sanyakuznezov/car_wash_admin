@@ -29,9 +29,11 @@ class BodyCard extends StatefulWidget{
   var onPost=(int? post)=>post;
   var onId=(int? id)=>id;
   int? timePosition;
+  int lengthOrders;
 
   BodyCard(
-      {required this.dataOrder,
+      {required this.lengthOrders,
+        required this.dataOrder,
       required this.timeStep,
       required this.bodyHeight,
       required this.stateDrag,
@@ -188,7 +190,7 @@ class StateBodyCard extends State<BodyCard>{
                           ):Container()),
 
                     ],
-                  ):LayerController(bodyHeaght: widget.bodyHeight,color: colorBage(widget.dataOrder['orderBody'].status)!,
+                  ):LayerController(lenghtOrders:widget.lengthOrders,bodyHeaght: widget.bodyHeight,color: colorBage(widget.dataOrder['orderBody'].status)!,
                       dataOrder:widget.dataOrder,
                   timeStep: widget.timeStep,
                   offsetsOrder: widget.offsetsOrder);

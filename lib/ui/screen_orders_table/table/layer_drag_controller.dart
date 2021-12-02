@@ -20,6 +20,7 @@ class LayerController extends StatefulWidget{
    Map dataOrder;
    int timeStep;
    List<Map> offsetsOrder;
+   int lenghtOrders;
 
 
 
@@ -27,7 +28,7 @@ class LayerController extends StatefulWidget{
   State<StatefulWidget> createState() {
     return StateLayerController();
   }
-  LayerController({required this.bodyHeaght,required this.color,required this.dataOrder,required this.timeStep,required this.offsetsOrder});
+  LayerController({required this.lenghtOrders,required this.bodyHeaght,required this.color,required this.dataOrder,required this.timeStep,required this.offsetsOrder});
 }
 
 
@@ -214,7 +215,7 @@ class LayerController extends StatefulWidget{
                     ],
                   ),
                   childWhenDragging: Container(),
-                  feedback: FeedBackWidget(widget.bodyHeaght,widget.color,widget.dataOrder)),
+                  feedback: FeedBackWidget(widget.lenghtOrders,widget.bodyHeaght,widget.color,widget.dataOrder)),
         ));
   }
           getTime(int timeStep){
@@ -257,20 +258,25 @@ class LayerController extends StatefulWidget{
 
 
 
-  class FeedBackWidget extends StatelessWidget{
+  class FeedBackWidget extends StatefulWidget{
 
     double bodyHeaght;
     Color color;
     Map dataOrder;
-    FeedBackWidget(this.bodyHeaght,this.color,this.dataOrder);
+    int lenghtOrders;
+    FeedBackWidget(this.lenghtOrders,this.bodyHeaght,this.color,this.dataOrder);
 
+  @override
+  State<FeedBackWidget> createState() => _FeedBackWidgetState();
+}
 
+class _FeedBackWidgetState extends State<FeedBackWidget> {
   @override
     Widget build(BuildContext context) {
       return Material(
           child: Container(
             width: GlobalData.numBoxes!>1?130:260,
-            height: bodyHeaght,
+            height: widget.bodyHeaght,
             child:  Stack(
               children: [
                 Align(
@@ -279,9 +285,9 @@ class LayerController extends StatefulWidget{
                     Container(
                         margin: EdgeInsets.fromLTRB(0, 1, 0, 3),
                         width: GlobalData.numBoxes!>1?130:260,
-                        height: bodyHeaght,
+                        height: widget.bodyHeaght,
                         decoration: BoxDecoration(
-                            color: color,
+                            color: widget.color,
                             borderRadius: BorderRadius.circular(10)
                         ),
 
@@ -290,7 +296,7 @@ class LayerController extends StatefulWidget{
                             child: Column(
                               children: [
                                 Text(
-                                  dataOrder['orderBody'].carNumber,
+                                  widget.dataOrder['orderBody'].carNumber,
                                   style: TextStyle(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -300,7 +306,7 @@ class LayerController extends StatefulWidget{
                                   size: 24.0,
                                 ),
 
-                                bodyHeaght>=156?
+                                widget.bodyHeaght>=156?
                                 Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                                     child:
                                     Column(
@@ -309,7 +315,7 @@ class LayerController extends StatefulWidget{
                                         Container(
                                           width: 120.0,
                                           child: Flexible(
-                                            child: Text('- ${dataOrder['orderBody'].carType}',
+                                            child: Text('- ${widget.dataOrder['orderBody'].carType}',
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
@@ -319,7 +325,7 @@ class LayerController extends StatefulWidget{
                                         Container(
                                           width: 120.0,
                                           child: Flexible(
-                                            child: Text('- ${dataOrder['orderBody'].brandTitle}',
+                                            child: Text('- ${widget.dataOrder['orderBody'].brandTitle}',
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
@@ -337,7 +343,7 @@ class LayerController extends StatefulWidget{
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                        border: Border.all(color: color,width: 1),
+                        border: Border.all(color: widget.color,width: 1),
                         shape: BoxShape.circle,
                         color: Colors.white),
                   ),
@@ -349,7 +355,7 @@ class LayerController extends StatefulWidget{
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                        border: Border.all(color:color,width: 1),
+                        border: Border.all(color:widget.color,width: 1),
                         shape: BoxShape.circle,
                         color: Colors.white),
                   ),
@@ -362,7 +368,25 @@ class LayerController extends StatefulWidget{
       );
     }
 
+  @override
+  void dispose() {
+    super.dispose();
+    if(!GlobalData.accept){
+      Fluttertoast.showToast(
+          msg: "Заказ вернулся в исходное состояние",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+      GlobalData.edit_mode=false;
+      AppModule.blocTable.streamSinkEdit.add(1);
+      AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.lenghtOrders-1});
 
+    }
   }
+}
 
 
