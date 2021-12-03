@@ -948,7 +948,6 @@ class MainServiseApi {
              contentType: 'application/x-www-form-urlencoded',
             )
         );
-        print('ID $id ${result.data}');
         return ModelOrderShowApi.fromApi(map: result.data);
 
       } on DioError catch (e) {

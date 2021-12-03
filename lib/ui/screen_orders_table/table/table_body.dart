@@ -116,7 +116,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
     _centerColumnsController.dispose();
     _timeColumnsController.dispose();
     _timeLineColumnsController.dispose();
-    //AppModule.blocTable.disponseDragStream();
+   // AppModule.blocTable.disponseDragStream();
   }
 
   @override
@@ -249,11 +249,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               'expiration_date':widget.orderList[i]['expiration_date'],
                               'post':widget.orderList[i]['post'],
                               'orderBody':widget.orderList[i]['orderBody'],
-                              // 'status':widget.orderList[i]['status'],
-                              // 'brand_car':widget.orderList[i]['brand_car'],
-                              // 'type_car':widget.orderList[i]['type_car'],
-                              // 'number_car':widget.orderList[i]['number_car'],
-                              // 'region':widget.orderList[i]['region'],
                             };
                             _mapOld={
                               'id':widget.orderList[i]['id'],
@@ -262,11 +257,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               'expiration_date':widget.orderList[i]['expiration_date'],
                               'post':widget.orderList[i]['post'],
                               'orderBody':widget.orderList[i]['orderBody'],
-                              // 'status':widget.orderList[i]['status'],
-                              // 'brand_car':widget.orderList[i]['brand_car'],
-                              // 'type_car':widget.orderList[i]['type_car'],
-                              // 'number_car':widget.orderList[i]['number_car'],
-                              // 'region':widget.orderList[i]['region'],
                             };
                             widget.orderList[i].update('enable', (value) =>0);
 
@@ -281,11 +271,11 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==6){
-                            print('Index ${value.data!['index']}');
                               int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                               widget.orderList[i].update('enable', (value) =>0);
                               _mapOld!.update('id', (value) =>widget.orderList.length);
                                widget.orderList.add(_mapOld!);
+                               AppModule.blocTable.streamSinkDrag.add({'action':0,'index':0});
 
                           }
                         }

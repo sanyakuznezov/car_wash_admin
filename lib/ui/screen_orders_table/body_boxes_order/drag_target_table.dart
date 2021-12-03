@@ -112,6 +112,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             builder: (context) => ContainerBottomSheet(
                               statusCode: _statusCode!,
                               onCancellation: (i){
+                                print('streamSinkDrag');
                                 AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                               },
                                 onAccept: (id){

@@ -19,21 +19,18 @@ class BlocTableOrder{
     StreamSink get streamSinkScroll=> _streamControllerScroll.sink;
     StreamSink get streamSinkEdit=> _streamControllerEdit.sink;
     StreamSink get streamSink => _streamController.sink;
-    final _dyx=BehaviorSubject<DragTargetDetails>();
     final _timeSteram=BehaviorSubject<String>();
     final _dragStrem=BehaviorSubject<Map>();
     final _counterStream = BehaviorSubject<int>();
     final _editStream = BehaviorSubject<int>();
     final _dyStream = BehaviorSubject<double>();
     final _feedBack= BehaviorSubject<double>();
-    Sink get _getDYX=>_dyx.sink;
     Sink get _timeSink=>_timeSteram.sink;
     Sink get _dragSink=>_dragStrem.sink;
     Sink get _sendXYFeedback=>_feedBack.sink;
     Sink get _stateEditSink=>_editStream.sink;
     Sink get _addDY => _dyStream.sink;
     Sink get _addValue => _counterStream.sink;
-    Stream get getDYXScroll=>_dyx.stream;
     Stream get streamTimer=>_timeSteram.stream;
     Stream get dragS=>_dragStrem.stream;
     Stream get stateDYFeedback=>_feedBack.stream;
@@ -52,9 +49,6 @@ class BlocTableOrder{
      _streamControllerTimer.stream.listen(_fromTimer);
     }
 
-    void sendDYX(offset){
-      _getDYX.add(offset);
-    }
 
     void _sendMapDrag(map){
       _dragSink.add(map);
@@ -102,6 +96,7 @@ class BlocTableOrder{
     void disponseDragStream(){
       _streamControllerDrag.close();
       _dragStrem.close();
+      print('disponseDragStream');
     }
     void disponseTimerStream(){
       _streamControllerTimer.close();
