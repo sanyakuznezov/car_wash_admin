@@ -315,6 +315,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         },
         //слушает карточку во время перетягивания
         onMove: (e) {
+          GlobalData.accept=false;
           _y = e.offset.dy-120;
           AppModule.blocTable.streamSinkFeedback.add(_y);
           if (_leave != 2) {

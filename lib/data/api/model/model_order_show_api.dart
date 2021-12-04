@@ -23,11 +23,11 @@
    String carBrandsynonyms;
    String  carBrandcreated_at;
    int carModelid;
-   // int carModelcar_brand_id;
-   // int carModelcarwash_id;
-   // String carModeltitle;
-   //String carModelsynonyms;
-   //String carModelcreated_at;
+   int carModelcar_brand_id;
+   int carModelcarwash_id;
+   String carModeltitle;
+   String carModelsynonyms;
+   String carModelcreated_at;
     String clientFullname;
    String  clientPhone;
    int totalPrice;
@@ -53,25 +53,20 @@
     carNumber=from('String', map['carNumber'])??'',
     carRegion=from('int', map['carRegion'])??0,
     color=from('String', map['color'])??'',
-         carBrandid=0,
-         carBrandcarwash_id=0,
-         carBrandtitle='',
-         carBrandicon='',
-         carModelid=0,
-         carBrandcreated_at='',
-         carBrandsynonyms='',
-    //carBrandid=from('int', map['carBrand']['id'])??0;
-    //carBrandcarwash_id=from('int', map['carBrand']['carwash_id'])==null?0:from('int', map['carBrand']['carwash_id']),
-    //carBrandtitle=from('String', map['carBrand']['title'])??'',
-    //carBrandicon=from('String', map['carBrand']['icon'])==null?'':from('String', map['carBrand']['icon']),
-   // carBrandsynonyms=from('String', map['carBrand']['synonyms'])==null?'':from('String', map['carBrand']['synonyms']);
-    // carBrandcreated_at=from('String', map['carBrand']['created_at'])==null?'':from('String', map['carBrand']['created_at']);
-   // carModelid=from('int', map['carModel']['id'])??0,
-   //  carModelcar_brand_id=from('int', map['carModel']['car_brand_id'])??0,
-   //  carModelcarwash_id=from('int', map['carModel']['carwash_id'])==null?0:from('int', map['carModel']['carwash_id']),
-   //  carModeltitle=from('String', map['carModel']['title'])??'',
-    //carModelsynonyms=from('String', map['carModel']['synonyms'])==null?'':from('String', map['carModel']['synonyms']),
-   // carModelcreated_at=from('String', map['carModel']['created_at'])??'',
+   //Error type 'String' is not a subtype of type 'int' of 'index'
+    carBrandid=(map['carBrand']['id']??0),
+    carBrandcarwash_id=from('int', map['carBrand']['carwash_id'])==null?0:from('int', map['carBrand']['carwash_id']),
+    carBrandtitle=from('String', map['carBrand']['title'])??'',
+    carBrandicon=from('String', map['carBrand']['icon'])==null?'':from('String', map['carBrand']['icon']),
+   carBrandsynonyms=from('String', map['carBrand']['synonyms'])==null?'':from('String', map['carBrand']['synonyms']),
+     carBrandcreated_at=from('String', map['carBrand']['created_at'])==null?'':from('String', map['carBrand']['created_at']),
+   carModelid=from('int', map['carModel']['id'])??0,
+   carModelcar_brand_id=from('int', map['carModel']['car_brand_id'])??0,
+    carModelcarwash_id=from('int', map['carModel']['carwash_id'])==null?0:from('int', map['carModel']['carwash_id']),
+    carModeltitle=from('String', map['carModel']['title'])??'',
+    carModelsynonyms=from('String', map['carModel']['synonyms'])==null?'':from('String', map['carModel']['synonyms']),
+   carModelcreated_at=from('String', map['carModel']['created_at'])??'',
+   //Error type 'String' is not a subtype of type 'int' of 'index'
          clientFullname=from('String', map['clientFullname'])??'',
      clientPhone=from('String', map['clientPhone'])==null||from('String', map['clientPhone'])==''?'....':from('String', map['clientPhone']),
     totalPrice=from('int', map['totalPrice'])??0,

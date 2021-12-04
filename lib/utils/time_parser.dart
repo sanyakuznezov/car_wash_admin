@@ -46,9 +46,9 @@ class TimeParser{
      }
      return '2021-08-29 $hour:$minute';
    }
-
+  //переводим время начала заказа из числа в строку при окончании перетягивания и делаем кратным пяти
   static parseReverseTimeStart(int y,int timeStep){
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -81,9 +81,9 @@ class TimeParser{
   }
 
 
-
+ //переводим время окончания заказа из числа в строку при окончании перетягивания и делаем кратным пяти
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
-    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
+    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
@@ -178,14 +178,14 @@ class TimeParser{
 
 
   static parseTimeStartFeedBack(double y,int timeStep){
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
     return result.toInt();
   }
 
   static parseTimeEndFeedBack(double y,int bodyHeaght,int timeStep){
     double k=GlobalData.timeStepsConstant[timeStep]['coof'];
     var r=y/k;
-    var result=r+bodyHeaght/k;
+    var result=r+bodyHeaght/k-10;
     return result.toInt();
   }
 
@@ -223,8 +223,6 @@ class TimeParser{
   }
 
   //Фильтры времени для редакирования при создании заказа
-
-
   static Future<List<String>> getListTimeHourStart() async{
     bool now=DateTime.now().toString().split(' ')[0]==GlobalData.date;
     int currentTime=DateTime.now().hour;

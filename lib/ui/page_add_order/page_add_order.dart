@@ -258,30 +258,30 @@ class PageAddOrder extends StatefulWidget{
                   _order.update('carType', (value) => order.data!.carType);
                   _order.update('carNumber', (value) => order.data!.carNumber);
                   _order.update('carRegion', (value) => order.data!.carRegion);
-                  // _order.update('carBrandId', (value) => order.data!.carBrandid);
-                  // _order.update('carModelId', (value) => order.data!.carModelid);
-                  // _order.update('color', (value) => order.data!.color);
-                  // _order.update('clientPhone', (value) => order.data!.clientPhone);
-                  // _order.update('clientFullname', (value) => order.data!.clientFullname);
-                  // _order.update('totalPrice', (value) => order.data!.totalPrice);
-                  // _order.update('sale', (value) => order.data!.sale);
-                  // _order.update('workTime', (value) => order.data!.workTime);
-                  // _order.update('status', (value) => order.data!.status);
-                  // _order.update('adminComment', (value) => order.data!.adminComment);
-                  // _order.update('clientComment', (value) => order.data!.clientComment);
-                  // _order.update('ComplexesList', (value) => order.data!.complexes);
-                  // _order.update('ServicesList', (value) => order.data!.services);
+                  _order.update('carBrandId', (value) => order.data!.carBrandid);
+                  _order.update('carModelId', (value) => order.data!.carModelid);
+                  _order.update('color', (value) => order.data!.color);
+                  _order.update('clientPhone', (value) => order.data!.clientPhone);
+                  _order.update('clientFullname', (value) => order.data!.clientFullname);
+                  _order.update('totalPrice', (value) => order.data!.totalPrice);
+                  _order.update('sale', (value) => order.data!.sale);
+                  _order.update('workTime', (value) => order.data!.workTime);
+                  _order.update('status', (value) => order.data!.status);
+                  _order.update('adminComment', (value) => order.data!.adminComment);
+                  _order.update('clientComment', (value) => order.data!.clientComment);
+                  _order.update('ComplexesList', (value) => order.data!.complexes);
+                  _order.update('ServicesList', (value) => order.data!.services);
                   _idOrder=order.data!.id;
-                  // if(order.data!.clientFullname.split(' ').length==3){
-                  //   _surName=order.data!.clientFullname.split(' ')[1];
-                  //   _lastName=order.data!.clientFullname.split(' ')[0];
-                  //  _patronymicName=order.data!.clientFullname.split(' ')[2];
-                  // }else if(order.data!.clientFullname.split(' ').length==2){
-                  //   _surName=order.data!.clientFullname.split(' ')[1];
-                  //   _lastName=order.data!.clientFullname.split(' ')[0];
-                  // }else if(order.data!.clientFullname.split(' ').length==1){
-                  //   _lastName=order.data!.clientFullname.split(' ')[0];
-                  // }
+                  if(order.data!.clientFullname.split(' ').length==3){
+                    _surName=order.data!.clientFullname.split(' ')[1];
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                   _patronymicName=order.data!.clientFullname.split(' ')[2];
+                  }else if(order.data!.clientFullname.split(' ').length==2){
+                    _surName=order.data!.clientFullname.split(' ')[1];
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                  }else if(order.data!.clientFullname.split(' ').length==1){
+                    _lastName=order.data!.clientFullname.split(' ')[0];
+                  }
                   // //вызов списка работ
                   // order.data!.services.forEach((element) {
                   //   _idServiceList.add(element['id']);
@@ -425,12 +425,6 @@ class PageAddOrder extends StatefulWidget{
     super.initState();
     if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
       _isEdit=false;
-      // _getPrice(context: context, carType: _order['carType'], servicesIds: _idServiceList, complexesIds: _idComplexList)
-      //     .onError((error, stackTrace){
-      //   setState(() {
-      //     _isLoading=false;
-      //   });
-      // });
       _order.update('post', (value) => widget.post);
       _order.update('date', (value) => widget.date);
       _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
@@ -781,14 +775,14 @@ class _ItemCommentState extends State<ItemComment> {
               child: Column(
                    crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                // Padding(
-                //   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(3.0,GlobalData.sizeScreen!), 0, 0),
-                //   child: Text(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE? widget.modelOrderShow!.clientComment:'.....',
-                //     style: TextStyle(
-                //         fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
-                //         color: AppColors.textColorPhone
-                //     ),),
-                // ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(3.0,GlobalData.sizeScreen!), 0, 0),
+                  child: Text(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE? widget.modelOrderShow!.clientComment:'.....',
+                    style: TextStyle(
+                        fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                        color: AppColors.textColorPhone
+                    ),),
+                ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.2,GlobalData.sizeScreen!), 0, SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
                   child: Text('Комментарий клиента',
@@ -829,7 +823,7 @@ class _ItemCommentState extends State<ItemComment> {
                                       maxLines: 10,
                                       maxLengthEnforced: true,
                                       decoration: InputDecoration(
-                                         // hintText: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.adminComment:'.....',
+                                          hintText: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.adminComment:'.....',
                                           contentPadding: EdgeInsets.all(
                                               SizeUtil.getSize(
                                                   1.5,
@@ -1460,22 +1454,22 @@ class _ItemClientState extends State<ItemClient> {
     surnameController=TextEditingController();
     patronymicControler=TextEditingController();
 
-    // if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
-    //   telController!.text=widget.modelOrderShow!.clientPhone;
-    // }
-    //
-    // if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
-    //   if(widget.modelOrderShow!.clientFullname.split(' ').length==3){
-    //     nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
-    //     surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
-    //     patronymicControler!.text=widget.modelOrderShow!.clientFullname.split(' ')[2];
-    //   }else if(widget.modelOrderShow!.clientFullname.split(' ').length==2){
-    //     nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
-    //     surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
-    //   }else if(widget.modelOrderShow!.clientFullname.split(' ').length==1){
-    //     nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
-    //   }
-    // }
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+      telController!.text=widget.modelOrderShow!.clientPhone;
+    }
+
+    if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE&&widget.modelOrderShow!.clientFullname!='....'){
+      if(widget.modelOrderShow!.clientFullname.split(' ').length==3){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
+        surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+        patronymicControler!.text=widget.modelOrderShow!.clientFullname.split(' ')[2];
+      }else if(widget.modelOrderShow!.clientFullname.split(' ').length==2){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[1];
+        surnameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+      }else if(widget.modelOrderShow!.clientFullname.split(' ').length==1){
+        nameController!.text=widget.modelOrderShow!.clientFullname.split(' ')[0];
+      }
+    }
 
     myFocusNodeTel = FocusNode();
     myFocusNodeName=FocusNode();
@@ -1587,13 +1581,13 @@ class _ItemClientState extends State<ItemClient> {
                                 color: AppColors.colorDisableButton,
                                 borderRadius: BorderRadius.all(Radius.circular( SizeUtil.getSize(1.0, GlobalData.sizeScreen!)))
                               ),
-                              child: Container()
-                              // Text('${widget.modelOrderShow!.clientPhone}',
-                              //     style: TextStyle(
-                              //         color: AppColors.textColorPhone,
-                              //         fontWeight: FontWeight.bold,
-                              //         fontSize: SizeUtil.getSize(1.8,
-                              //             GlobalData.sizeScreen!))),
+                              child:
+                              Text('${widget.modelOrderShow!.clientPhone}',
+                                  style: TextStyle(
+                                      color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(1.8,
+                                          GlobalData.sizeScreen!))),
                             ),
                           ),
                         ),
@@ -2366,12 +2360,12 @@ class _ItemCarState extends State<ItemCar> {
         regionCarController=TextEditingController();
         numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
         regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
-        // if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
-        //   _brandCar=widget.modelOrderShow!.carBrandtitle;
-        //   _idBrand=widget.modelOrderShow!.carBrandid;
-        //   _modelCar=widget.modelOrderShow!.carModeltitle;
-        //   editingControllerColor.text=widget.modelOrderShow!.color;
-        // }
+        if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+          _brandCar=widget.modelOrderShow!.carBrandtitle;
+          _idBrand=widget.modelOrderShow!.carBrandid;
+          _modelCar=widget.modelOrderShow!.carModeltitle;
+          editingControllerColor.text=widget.modelOrderShow!.color;
+        }
      }
 
 }

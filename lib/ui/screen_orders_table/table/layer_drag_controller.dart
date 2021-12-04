@@ -371,6 +371,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
   @override
   void dispose() {
     super.dispose();
+    print('dispose feedback');
     if(!GlobalData.accept){
       Fluttertoast.showToast(
           msg: "Заказ вернулся в исходное состояние",
