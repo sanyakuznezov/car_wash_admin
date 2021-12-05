@@ -46,9 +46,11 @@ class TimeParser{
      }
      return '2021-08-29 $hour:$minute';
    }
+
+
   //переводим время начала заказа из числа в строку при окончании перетягивания и делаем кратным пяти
   static parseReverseTimeStart(int y,int timeStep){
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -83,7 +85,7 @@ class TimeParser{
 
  //переводим время окончания заказа из числа в строку при окончании перетягивания и делаем кратным пяти
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
-    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
+    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;

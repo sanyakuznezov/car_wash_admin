@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:car_wash_admin/data/api/api_util.dart';
 import 'package:car_wash_admin/data/api/model/model_data_table_api.dart';
 import 'package:car_wash_admin/data/api/model/model_brand_car_api.dart';
 import 'package:car_wash_admin/data/api/model/model_calculate_price_api.dart';
@@ -748,9 +749,10 @@ class MainServiseApi {
             )
         );
 
-        return (result.data['orders'] as List)
-            .map((x) => ModelOrderApi.fromApi(map: x))
-            .toList();
+        // return (result.data['orders'] as List)
+        //     .map((x) => ModelOrderApi.fromApi(map: x))
+        //     .toList();
+      return ApiUtil.getList(orders: result, selectedDate: date);
       } on DioError catch (e) {
         if (e.response != null) {
           if (e.response!.statusCode == 403) {

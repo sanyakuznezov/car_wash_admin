@@ -57,6 +57,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   double? startY;
   double paddingLeft=50.0;
   late AnimationController _controller;
+  bool _isToPull=false;
 
 
 
@@ -241,6 +242,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       builder: (context,value){
                         if(value.data!=null){
                           if(value.data!['action']==1){
+                            print('action=1');
                             int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                             _map={
                               'id':widget.orderList[i]['id'],
@@ -250,32 +252,39 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               'post':widget.orderList[i]['post'],
                               'orderBody':widget.orderList[i]['orderBody'],
                             };
-                            _mapOld={
-                              'id':widget.orderList[i]['id'],
-                              'enable':1,
-                              'start_date':widget.orderList[i]['start_date'],
-                              'expiration_date':widget.orderList[i]['expiration_date'],
-                              'post':widget.orderList[i]['post'],
-                              'orderBody':widget.orderList[i]['orderBody'],
-                            };
+                            if(!_isToPull){
+                              _mapOld={
+                                'id':widget.orderList[i]['id'],
+                                'enable':1,
+                                'start_date':widget.orderList[i]['start_date'],
+                                'expiration_date':widget.orderList[i]['expiration_date'],
+                                'post':widget.orderList[i]['post'],
+                                'orderBody':widget.orderList[i]['orderBody'],
+                              };
+                              _isToPull=true;
+                            }
                             widget.orderList[i].update('enable', (value) =>0);
 
                           }else if(value.data!['action']==3){
+                            print('action=3');
                             int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==5){
+                            print('action=5');
                             int i=getIndex(value.data!['id'],widget.orderList);
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==6){
+                            print('action=6');
                               int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                               widget.orderList[i].update('enable', (value) =>0);
                               _mapOld!.update('id', (value) =>widget.orderList.length);
                                widget.orderList.add(_mapOld!);
                                AppModule.blocTable.streamSinkDrag.add({'action':0,'index':0});
+                            _isToPull=false;
 
                           }
                         }
@@ -327,38 +336,12 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                   //Датчики для скроллов таблицы
 
-            // StreamBuilder<DragTargetDetails>(
-            //     stream: AppModule.blocTable.getDYXScroll,
-            //     builder: (context, offset) {
-            //       if(offset.data!=null){
-            //         _centerColumnsController.jumpTo(offset.data!.offset.dy);
-            //         widget.scrollControllertop.jumpTo(offset.data!.offset.dx);
-            //        // print('Go to top ${directionOfTravel(offset.data!.offset.dy, offset.data!.offset.dx,yl,xl)}');
-            //    //directionOfTravel(offset.data!.offset.dy, offset.data!.offset.dx,yl,xl,_centerColumnsController);
-            //        }
-            //       return Container();
-            //     }),
-
             Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
                         width: MediaQuery.of(context).size.width,
                         height: 50,
                         child: DragTarget<int>(
-                          onAccept: (value){
-                            // Fluttertoast.showToast(
-                            //     msg: "Заказ вернулся в исходное состояние",
-                            //     toastLength: Toast.LENGTH_SHORT,
-                            //     gravity: ToastGravity.CENTER,
-                            //     timeInSecForIosWeb: 1,
-                            //     backgroundColor: Colors.red,
-                            //     textColor: Colors.white,
-                            //     fontSize: 16.0
-                            // );
-                            // GlobalData.edit_mode=false;
-                            // AppModule.blocTable.streamSinkEdit.add(1);
-                            // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
-                          },
                             onLeave: (value) {
                               leave = 0;
                               _centerColumnsController.animateTo(
@@ -386,20 +369,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         width: MediaQuery.of(context).size.width,
                         height: 100,
                         child: DragTarget<int>(
-                            onAccept: (value){
-                              // Fluttertoast.showToast(
-                              //     msg: "Заказ вернулся в исходное состояние",
-                              //     toastLength: Toast.LENGTH_SHORT,
-                              //     gravity: ToastGravity.CENTER,
-                              //     timeInSecForIosWeb: 1,
-                              //     backgroundColor: Colors.red,
-                              //     textColor: Colors.white,
-                              //     fontSize: 16.0
-                              // );
-                              // GlobalData.edit_mode=false;
-                              // AppModule.blocTable.streamSinkEdit.add(1);
-                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
-                            },
                             onLeave: (value) {
                               leave = 0;
                               _centerColumnsController.animateTo(
@@ -427,20 +396,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         width: 50,
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(
-                            onAccept: (value){
-                              // Fluttertoast.showToast(
-                              //     msg: "Заказ вернулся в исходное состояние",
-                              //     toastLength: Toast.LENGTH_SHORT,
-                              //     gravity: ToastGravity.CENTER,
-                              //     timeInSecForIosWeb: 1,
-                              //     backgroundColor: Colors.red,
-                              //     textColor: Colors.white,
-                              //     fontSize: 16.0
-                              // );
-                              // GlobalData.edit_mode=false;
-                              // AppModule.blocTable.streamSinkEdit.add(1);
-                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
-                            },
                             onLeave: (value) {
                           leave = 0;
                           widget.scrollControllertop.animateTo(
@@ -469,20 +424,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                         width: 100,
                         height: MediaQuery.of(context).size.height,
                         child: DragTarget<int>(
-                            onAccept: (value){
-                              // Fluttertoast.showToast(
-                              //     msg: "Заказ вернулся в исходное состояние",
-                              //     toastLength: Toast.LENGTH_SHORT,
-                              //     gravity: ToastGravity.CENTER,
-                              //     timeInSecForIosWeb: 1,
-                              //     backgroundColor: Colors.red,
-                              //     textColor: Colors.white,
-                              //     fontSize: 16.0
-                              // );
-                              // GlobalData.edit_mode=false;
-                              // AppModule.blocTable.streamSinkEdit.add(1);
-                              // AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
-                            },
                             onLeave: (value) {
                           leave = 0;
                           widget.scrollControllertop.animateTo(
@@ -515,7 +456,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 }
 
 
-
+  //показать индекс из списка заказов по id
   getIndex(int id,List<Map> order){
   for(int i=0;order.length>i;i++){
     if(order[i]['id']==id){

@@ -112,7 +112,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             builder: (context) => ContainerBottomSheet(
                               statusCode: _statusCode!,
                               onCancellation: (i){
-                                print('streamSinkDrag');
                                 AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                               },
                                 onAccept: (id){
@@ -391,6 +390,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени
+  //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемоо заказа
   _isColision(List<Map> orders,int b1,int b2){
       for(int i=0;orders.length>i;i++){
         if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
@@ -405,6 +405,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
         // if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
         //   return true;
         // }
+        if(b1<=orders[i]['end']&&b2>=orders[i]['start']){
+          return true;
+        }
 
         //проверка для линии времени
         if(_date==GlobalData.date){

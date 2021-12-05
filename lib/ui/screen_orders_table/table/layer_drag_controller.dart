@@ -120,7 +120,7 @@ class LayerController extends StatefulWidget{
             widget.bodyHeaght=TimeParser.makeMultipleOfFive(widget.bodyHeaght);
             GlobalData.bodyHeightFeedBackWidget=widget.bodyHeaght;
             GlobalData.timeEnd=TimeParser.parseSkrethTime(widget.bodyHeaght.toInt(),widget.timeStep,widget.dataOrder['start_date']);
-            GlobalData.isCollision=isColissionEdit(widget.offsetsOrder,TimeParser.parseHour(GlobalData.timeEnd!));
+            GlobalData.isCollision=isColissionEdit(widget.offsetsOrder,TimeParser.parseHour(GlobalData.timeEnd!),TimeParser.parseHour(GlobalData.timeStart!));
 
           }
           
@@ -241,15 +241,23 @@ class LayerController extends StatefulWidget{
               return 80;
             }
           }
-
-          isColissionEdit(List<Map> orders,int b1){
+          //пересечение заказов при растягивании заказа
+          //b2-время окончания заказа b1-время начала заказа
+          isColissionEdit(List<Map> orders,int b2,int b1){
                bool result=false;
                for(int i=0;orders.length>i;i++){
                  if(orders[i]['id']!=widget.dataOrder['id']){
+                   if(orders[i]['start']<b2&&orders[i]['end']>b2){
+                     result=true;
+                   }
                    if(orders[i]['start']<b1&&orders[i]['end']>b1){
                      result=true;
                    }
+                   if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
+                     return true;
+                   }
                  }
+
             }
             return result;
           }

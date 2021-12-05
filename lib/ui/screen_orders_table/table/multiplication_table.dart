@@ -385,16 +385,19 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
                             child: TextButton(
                                   onPressed: () {
+                                    print('Date ${GlobalData.date}');
+
                                     DatePicker.showDatePicker(context,
                                         showTitleActions: true,
                                         minTime: DateTime(2021, 6, 7),
                                         maxTime: DateTime(2025, 6, 7),
-                                        onChanged: (date) {}, onConfirm: (date) {
+                                        onConfirm: (date) {
                                       setState(() {
                                         GlobalData.date = date.toString().split(' ')[0];
                                         dateValue =dateFormat(date.weekday, date.month, date.day);
                                       });
-                                    }, currentTime: DateTime.now(), locale: LocaleType.ru);
+                                    },
+                                        currentTime: DateTime(int.parse(GlobalData.date!.split('-')[0]),int.parse(GlobalData.date!.split('-')[1]),int.parse(GlobalData.date!.split('-')[2])), locale: LocaleType.ru);
                                   },
                                   child: Text(
                                     dateValue,

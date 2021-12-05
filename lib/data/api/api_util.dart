@@ -23,11 +23,13 @@ import 'package:car_wash_admin/domain/model/model_time.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'model/model_data_table_api.dart';
 import 'model/model_brand_car_api.dart';
+import 'model/model_order_api.dart';
 import 'model/model_sale_api.dart';
 
 class ApiUtil{
@@ -158,5 +160,15 @@ class ApiUtil{
       final result=await _mainServiseApi.editOrderJournal(endAt: endAt, startAt: startAt, context: context, idOrder: idOrder, post: post
       );
       return result;
+    }
+
+   static  List<ModelOrderApi>? getList({required Response<dynamic> orders,required String selectedDate}){
+     List<ModelOrderApi>? list=[];
+     (orders.data['orders'] as List).forEach((element) {
+       if(element['startDate'].split(' ')[0]==selectedDate||element['endDate'].split(' ')[0]==selectedDate){
+         list.add(ModelOrderApi.fromApi(map: element));
+       }
+     });
+     return list;
     }
 }

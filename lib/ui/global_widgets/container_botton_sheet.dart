@@ -1,6 +1,8 @@
 
 
-  import 'package:car_wash_admin/internal/dependencies/app_module.dart';
+  import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/internal/dependencies/app_module.dart';
+import 'package:car_wash_admin/ui/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,8 +30,24 @@ class ContainerBottomSheet extends StatefulWidget{
 }
 
    class StateContainerBottomSheet extends State<ContainerBottomSheet>{
+
+   bool _isCarryoverOrder=false;
+   String _textMain='Переместить запись?';
+
   @override
   Widget build(BuildContext context) {
+    print('timeEnd ${widget.timeEnd} timeStart ${widget.timeStart}');
+    if(TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])>1440||
+        TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])<TimeParser.parseHourForTimeLine(widget.timeStart.split(' ')[1])){
+      _isCarryoverOrder=true;
+      _textMain='Запись находится между двумя днями. Изменения разрешены только на странице редактирования';
+    }else{
+      if(widget.statusCode==1){
+        _textMain='Редактировать запись?';
+      }else if(widget.statusCode==2){
+        _textMain='Недопустимое изменение?';
+      }
+    }
     return Container(
       padding: EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width,
@@ -48,41 +66,35 @@ class ContainerBottomSheet extends StatefulWidget{
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: Text('Пост ${widget.post}',
+              !_isCarryoverOrder?Expanded(child: Text('Пост ${widget.post}',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                     fontWeight: FontWeight.bold,
                     color: Colors.black
-                ),),),
+                ),),):Container(),
 
-              Expanded(child: Text('${parseHour(widget.timeStart)}-${TimeParser.parsingTime(widget.timeEnd.split(' ')[1])}',
+              !_isCarryoverOrder?Expanded(child: Text('${parseHour(widget.timeStart)}-${TimeParser.parsingTime(widget.timeEnd.split(' ')[1])}',
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                     fontWeight: FontWeight.bold,
                     color: Colors.black
-                ),),)
+                ),),):Container(),
             ],
           ),
-          SizedBox(
-            height: SizeUtil.getSize(6,GlobalData.sizeScreen!),
-          ),
-            Text(widget.statusCode==0?'Переместить запись?':widget.statusCode==1?'Редактировать запись?':'Недопустимое изменение?',
+          !_isCarryoverOrder?SizedBox(
+            height: SizeUtil.getSize(6,GlobalData.sizeScreen!))
+              :SizedBox(height: SizeUtil.getSize(2,GlobalData.sizeScreen!)),
+            Text('$_textMain',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                  color: widget.statusCode==2?Colors.red:Colors.grey,
+                  color: widget.statusCode==2||_isCarryoverOrder?Colors.red:Colors.grey,
                   fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)),),
-           SizedBox(
+          !_isCarryoverOrder?SizedBox(
              height: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
-           ),
-
-          TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])>1440?Text('Запись находиться между двумя днями. Изменения разрешены только на странице редактирования',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color:Colors.red,
-                fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),):Container(),
-          SizedBox(
-            height: SizeUtil.getSize(1.5,GlobalData.sizeScreen!),
+           ):SizedBox(
+            height: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,11 +130,27 @@ class ContainerBottomSheet extends StatefulWidget{
                   child: GestureDetector(
                     onTap: (){
                       Navigator.pop(context);
-                      if(widget.statusCode!=2){
-                        widget.onAccept(1);
+                      if(_isCarryoverOrder){
                         GlobalData.edit_mode = false;
                         AppModule.blocTable.streamSinkEdit.add(1);
+                        widget.onCancellation(1);
+                        Navigator.push(context, SlideTransitionSize(
+                            PageAddOrder(
+                              editStatus:GlobalData.EDIT_MODE,
+                              timeEndWash: 1440,
+                              timeStartWash: 0,
+                              post:widget.post,
+                              time:'${parseHour(widget.timeStart)}-${TimeParser.parsingTime(widget.timeEnd.split(' ')[1])}',
+                              date:GlobalData.date,
+                              idOrder: GlobalData.idOrder)));
+                      }else{
+                        if(widget.statusCode!=2){
+                          widget.onAccept(1);
+                          GlobalData.edit_mode = false;
+                          AppModule.blocTable.streamSinkEdit.add(1);
+                        }
                       }
+
                     },
                 child:  Text(widget.statusCode==2?'ПРОДОЛЖИТЬ':'ПОДТВЕРДИТЬ',
                     textAlign: TextAlign.center,
