@@ -21,7 +21,7 @@ import '../../global_data.dart';
 
 
   int _typeCarInt =1;
-  String? _dateValue;
+   String? _dateValue;
   int _totalPriceFinalOfListService=0;
   List<ModelService> _listService=[];
   List<ModelServiceFromCalculate> _calculateList=[];
@@ -136,7 +136,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
   @override
   void initState() {
     super.initState();
-    _order.update('date', (value) =>DateTime.now().toString().split(' ')[0]);
+    _order.update('date', (value) => GlobalData.date);
     _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
   }
 }
@@ -224,7 +224,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                     });
 
                                   },
-                                  currentTime: DateTime.now(), locale: LocaleType.ru);
+                                 currentTime: DateTime(int.parse(GlobalData.date!.split('-')[0]),int.parse(GlobalData.date!.split('-')[1]),int.parse(GlobalData.date!.split('-')[2])), locale: LocaleType.ru);
                             },
                             child: Icon(
                               Icons.calendar_today_outlined,
@@ -403,7 +403,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
     @override
     void initState() {
-      _dateValue=DateTime.now().toString().split(' ')[0];
+      _dateValue= GlobalData.date ;
       numCarController=TextEditingController();
       regionCarController=TextEditingController();
       numCarController!.text='A000AA';

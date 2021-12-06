@@ -38,7 +38,9 @@ abstract class TableSatetBase with Store{
   settingsRequest({required BuildContext context,required String date}){
     getSettings(context: context, date: date);
     _timer=Timer.periodic(Duration(minutes: 10), (timer) {
-      getSettings(context: context, date: date);
+      if(!GlobalData.edit_mode){
+        getSettings(context: context, date: date);
+      }
     });
 
   }
@@ -100,7 +102,6 @@ abstract class TableSatetBase with Store{
      isError=true;
      isLoading=false;
      msgError='Ошибка получения данных';
-     print('Error  ${error.toString()}');
    });
    if(result==null){
      isError=true;

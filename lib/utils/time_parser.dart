@@ -44,13 +44,17 @@ class TimeParser{
      }else{
        minute=h.toString();
      }
-     return '2021-08-29 $hour:$minute';
+     return '0000-00-00 $hour:$minute';
    }
 
 
   //переводим время начала заказа из числа в строку при окончании перетягивания и делаем кратным пяти
   static parseReverseTimeStart(int y,int timeStep){
+    if(y<0){
+      y=1800;
+    }
     var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
+
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -79,7 +83,7 @@ class TimeParser{
     }else{
       minute=m.toString();
     }
-    return '2021-08-29 $hour:$minute';
+    return '0000-00-00 $hour:$minute';
   }
 
 

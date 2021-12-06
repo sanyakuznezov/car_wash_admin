@@ -104,6 +104,7 @@ class StateBodyCard extends State<BodyCard>{
                     context: context,
                     builder: (context) => ContainerBottomSheet(
                         statusCode:0,
+                        statusOrder: widget.dataOrder['orderBody'].status,
                         onCancellation: (i){
                           GlobalData.edit_mode=false;
                           AppModule.blocTable.streamSinkDrag.add({'action':4});
@@ -121,7 +122,7 @@ class StateBodyCard extends State<BodyCard>{
                     if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
                       setState(() {
                         widget.stateDrag = 1;
-                        AppModule.blocTable.streamSinkEdit.add(0);
+                       AppModule.blocTable.streamSinkEdit.add(0);
                         GlobalData.bodyHeightFeedBackWidget = widget.bodyHeight.toDouble();
                         GlobalData.edit_mode = true;
                         GlobalData.accept=false;
@@ -154,11 +155,10 @@ class StateBodyCard extends State<BodyCard>{
                 builder: (context,state){
                   if(state.data==1){
                     if(widget.stateDrag==1){
-                      widget.stateDrag =0;
+                      widget.stateDrag=0;
                     }
-
                   }
-                  return widget.stateDrag ==0?Stack(
+                  return widget.stateDrag==0?Stack(
                     alignment: Alignment.topCenter,
                     children: [
                       Container(

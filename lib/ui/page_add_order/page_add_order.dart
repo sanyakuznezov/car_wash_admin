@@ -132,7 +132,7 @@ class PageAddOrder extends StatefulWidget{
                   builder: (context) => ContainerAddOrder(
                     isEdit: _isEdit,
                     onAccept: (int? i) {
-                      if(_editStatusMain==GlobalData.EDIT_MODE){
+                      if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
                         _editOrder(map: _order, context: context,id: _idOrder!);
                       }else{
                         _validateTime(map: _order, context: context);
@@ -250,7 +250,6 @@ class PageAddOrder extends StatefulWidget{
                 }
 
                 if(order.hasData){
-                  print('Order data');
                   _order.update('post', (value) => order.data!.post);
                   _order.update('date', (value) => order.data!.date);
                     _order.update('startTime', (value) =>order.data!.startTime);
@@ -2552,7 +2551,7 @@ class _ItemDateState extends State<ItemDate> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: _editStatusMain!=GlobalData.VIEW_MODE?
+                          child:
                           Align(
                             alignment: Alignment.centerRight,
                             child: DropdownButton<int>(
@@ -2583,13 +2582,7 @@ class _ItemDateState extends State<ItemDate> {
                                 );
                               }).toList(),
                             ),
-                          ):Text('${widget.post}',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          ),
                         ),
                       ),
                     ],

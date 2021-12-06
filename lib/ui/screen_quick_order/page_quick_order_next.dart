@@ -99,7 +99,7 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
               order: widget.order,
                 priceTotal: widget.totalPriceFinalOfListService),
             Padding(
-              padding:_isSuccesSendOrder?EdgeInsets.all(SizeUtil.getSize(3.0,GlobalData.sizeScreen!)):EdgeInsets.fromLTRB(0,  SizeUtil.getSize(10,GlobalData.sizeScreen!), 0, 0),
+              padding:_isSuccesSendOrder?EdgeInsets.all(SizeUtil.getSize(3.0,GlobalData.sizeScreen!)):EdgeInsets.fromLTRB(0,  SizeUtil.getSize(5,GlobalData.sizeScreen!), 0, SizeUtil.getSize(5,GlobalData.sizeScreen!)),
               child: SizedBox(
                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
                 child: RaisedButton(

@@ -18,6 +18,7 @@ class ContainerBottomSheet extends StatefulWidget{
   var onAccept=(int? i)=>i;
   var onCancellation=(int? i)=>i;
   int statusCode;
+  int? statusOrder;
 
 
   @override
@@ -26,7 +27,7 @@ class ContainerBottomSheet extends StatefulWidget{
     return StateContainerBottomSheet();
   }
 
-  ContainerBottomSheet({required this.statusCode,required this.post, required this.timeStart,required this.timeEnd,required this.onAccept,required this.onCancellation});
+  ContainerBottomSheet({this.statusOrder,required this.statusCode,required this.post, required this.timeStart,required this.timeEnd,required this.onAccept,required this.onCancellation});
 }
 
    class StateContainerBottomSheet extends State<ContainerBottomSheet>{
@@ -136,7 +137,7 @@ class ContainerBottomSheet extends StatefulWidget{
                         widget.onCancellation(1);
                         Navigator.push(context, SlideTransitionSize(
                             PageAddOrder(
-                              editStatus:GlobalData.EDIT_MODE,
+                              editStatus:widget.statusOrder==11?GlobalData.VIEW_MODE:GlobalData.EDIT_MODE,
                               timeEndWash: 1440,
                               timeStartWash: 0,
                               post:widget.post,

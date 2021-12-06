@@ -242,7 +242,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       builder: (context,value){
                         if(value.data!=null){
                           if(value.data!['action']==1){
-                            print('action=1');
                             int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                             _map={
                               'id':widget.orderList[i]['id'],
@@ -266,19 +265,16 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                             widget.orderList[i].update('enable', (value) =>0);
 
                           }else if(value.data!['action']==3){
-                            print('action=3');
                             int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==5){
-                            print('action=5');
                             int i=getIndex(value.data!['id'],widget.orderList);
                             widget.orderList[i].update('start_date', (v) => value.data!['start']);
                             widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
                             widget.orderList[i].update('post', (v) => value.data!['post']);
                           }else if(value.data!['action']==6){
-                            print('action=6');
                               int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
                               widget.orderList[i].update('enable', (value) =>0);
                               _mapOld!.update('id', (value) =>widget.orderList.length);
