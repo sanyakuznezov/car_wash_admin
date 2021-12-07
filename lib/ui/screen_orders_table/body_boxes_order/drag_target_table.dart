@@ -9,9 +9,14 @@ import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:car_wash_admin/utils/time_position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'body_order.dart';
+
+bool _isWashingOrder=false;
+
+
 //слой для размещения заказов и перемещение по слою заказов
 class DragTargetTable extends StatefulWidget{
 
@@ -48,6 +53,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
   String? _date;
+
 
 
 
@@ -201,6 +207,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                     },
                                   onId: (id){
                                     GlobalData.id=id;
+                                     if(widget.orderList[id!]['orderBody'].status==11){
+                                       _isWashingOrder=true;
+                                     }else{
+                                       _isWashingOrder=false;
+                                     }
                                   },
                                   onPost: (post){
                                     GlobalData.post=post;
@@ -253,7 +264,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
-                                            child: Text('${TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt(), widget.timeStep).split(' ')[1]}',
+                                            child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['start_date'].split(' ')[1]}':
+                                              '${TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt(), widget.timeStep).split(' ')[1]}',
                                               style: TextStyle(
                                                   color: Colors.white
                                               ),),
@@ -274,7 +286,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
-                                            child: Text('${TimeParser.parseReverseTimeEnd(
+                                            child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['expiration_date'].split(' ')[1]}': '${TimeParser.parseReverseTimeEnd(
                                                 _y.toInt() + _scrollY.toInt(),
                                                 GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep).split(' ')[1]}',
                                             style: TextStyle(
@@ -296,14 +308,20 @@ class StateDragTargetTable extends State<DragTargetTable> {
           setState(() {
             _leave = 0;
             GlobalData.accept = true;
-            GlobalData.timeStart = TimeParser.parseReverseTimeStart(
-                _y.toInt() + _scrollY.toInt(), widget.timeStep);
-            GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(
-                _y.toInt() + _scrollY.toInt(),
-                GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
+            if(widget.orderList[data]['orderBody'].status==11){
+              GlobalData.timeStart=widget.orderList[data]['start_date'];
+              GlobalData.timeEnd=widget.orderList[data]['expiration_date'];
+            }else{
+              GlobalData.timeStart = TimeParser.parseReverseTimeStart(
+                  _y.toInt() + _scrollY.toInt(), widget.timeStep);
+              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(
+                  _y.toInt() + _scrollY.toInt(),
+                  GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
+            }
             GlobalData.post=widget.post+1;
             widget.accept(GlobalData.timeStart,GlobalData.timeEnd,widget.post+1);
             _scrollY = 0;
+
           });
         },
 
@@ -322,7 +340,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
               _leave = 2;
             });
           }
-
           if(_offsetsOrder.isNotEmpty){
             isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
@@ -393,7 +410,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемоо заказа
   _isColision(List<Map> orders,int b1,int b2){
       for(int i=0;orders.length>i;i++){
-        if(orders[i]['start']<=b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>=b2){
+        if(orders[i]['start']<b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>b2){
           return true;
         }
 
@@ -402,9 +419,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
            return true;
          }
         }
-        // if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
-        //   return true;
-        // }
+
         if(b1<=orders[i]['end']&&b2>=orders[i]['start']){
           return true;
         }

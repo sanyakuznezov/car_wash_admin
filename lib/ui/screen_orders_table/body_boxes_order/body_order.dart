@@ -119,7 +119,7 @@ class StateBodyCard extends State<BodyCard>{
                   );
                 }else{
                   if(_isTime(widget.timePosition!,widget.dataOrder['expiration_date'],widget.dataOrder['start_date'])){
-                    if(!GlobalData.edit_mode&&widget.bodyHeight>=78) {
+                    if(widget.bodyHeight>=78) {
                       setState(() {
                         widget.stateDrag = 1;
                        AppModule.blocTable.streamSinkEdit.add(0);
@@ -133,15 +133,18 @@ class StateBodyCard extends State<BodyCard>{
                         widget.onId(widget.dataOrder['id']);
                       });
                     }else{
-                      Fluttertoast.showToast(
-                          msg: "Для редактирования заказа, перейдите на другой шаг времени",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                          fontSize: 16.0
-                      );
+                      if(!GlobalData.edit_mode){
+                        Fluttertoast.showToast(
+                            msg: "Для редактирования заказа, перейдите на другой шаг времени",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 16.0
+                        );
+                      }
+
                     }
                   }else{
                     widget.onMsgError('');

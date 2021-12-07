@@ -50,11 +50,11 @@ class TimeParser{
 
   //переводим время начала заказа из числа в строку при окончании перетягивания и делаем кратным пяти
   static parseReverseTimeStart(int y,int timeStep){
-    if(y<0){
-      y=1800;
+    print('parseReverseTimeStart $y');
+    if(y<14){
+      y=14;
     }
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
-
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -89,7 +89,7 @@ class TimeParser{
 
  //переводим время окончания заказа из числа в строку при окончании перетягивания и делаем кратным пяти
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
-    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
+    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
@@ -119,7 +119,7 @@ class TimeParser{
     }else{
       minute=m.toString();
     }
-    return '2021-08-29 $hour:$minute';
+    return '0000-00-00 $hour:$minute';
   }
 
  static parseHour(String time) {
@@ -191,7 +191,7 @@ class TimeParser{
   static parseTimeEndFeedBack(double y,int bodyHeaght,int timeStep){
     double k=GlobalData.timeStepsConstant[timeStep]['coof'];
     var r=y/k;
-    var result=r+bodyHeaght/k-10;
+    var result=r+bodyHeaght/k-5;
     return result.toInt();
   }
 
@@ -200,7 +200,6 @@ class TimeParser{
     var u=i.toInt();
     var y=u/5;
     var s=y.toString().split('.')[1][0];
-    print('s $s y $y');
     return int.parse(s)>0;
   }
 

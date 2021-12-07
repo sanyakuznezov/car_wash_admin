@@ -144,47 +144,47 @@ class LayerController extends StatefulWidget{
                       Align(
                         alignment: Alignment.topCenter,
                         child: Container(
-                            margin: EdgeInsets.fromLTRB(0, 1, 0, 3),
-                            width: _wight,
-                            height: widget.bodyHeaght,
-                            decoration: BoxDecoration(
-                                color: widget.color,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                                padding: EdgeInsets.all(5),
-                                child:widget.bodyHeaght>60? Column(
-                                  children: [
-                                    Text(
-                                      widget.dataOrder['orderBody'].carNumber,
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                                    Icon(
-                                      Icons.sentiment_satisfied_alt,
-                                      color: Colors.white,
-                                      size: 24.0,
-                                    ),
+                             margin: EdgeInsets.fromLTRB(0, 1, 0, 3),
+                             width: _wight,
+                             height: widget.bodyHeaght,
+                             decoration: BoxDecoration(
+                                 color: widget.color,
+                                 borderRadius: BorderRadius.circular(10)),
+                             child: Padding(
+                                 padding: EdgeInsets.all(5),
+                                 child:widget.bodyHeaght>60? Column(
+                                   children: [
+                                     Text(
+                                       widget.dataOrder['orderBody'].carNumber,
+                                       style: TextStyle(
+                                           fontSize: 16, color: Colors.white),
+                                     ),
+                                     Icon(
+                                       Icons.sentiment_satisfied_alt,
+                                       color: Colors.white,
+                                       size: 24.0,
+                                     ),
 
-                                    widget.bodyHeaght>=156?
-                                    Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                        child:
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('- ${widget.dataOrder['orderBody'].carType}',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 16, color: Colors.white),
-                                            ),
-                                            Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 16, color: Colors.white),
-                                            ),
-                                          ],
-                                        )):Container()
-                                  ],
-                                ):Container())),
+                                     widget.bodyHeaght>=156?
+                                     Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                                         child:
+                                         Column(
+                                           crossAxisAlignment: CrossAxisAlignment.start,
+                                           children: [
+                                             Text('- ${widget.dataOrder['orderBody'].carType}',
+                                               overflow: TextOverflow.ellipsis,
+                                               style: TextStyle(
+                                                   fontSize: 16, color: Colors.white),
+                                             ),
+                                             Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
+                                               overflow: TextOverflow.ellipsis,
+                                               style: TextStyle(
+                                                   fontSize: 16, color: Colors.white),
+                                             ),
+                                           ],
+                                         )):Container()
+                                   ],
+                                 ):Container())),
                       ),
                       Align(
                         alignment: Alignment.topRight,
@@ -253,7 +253,9 @@ class LayerController extends StatefulWidget{
                    if(orders[i]['start']<b1&&orders[i]['end']>b1){
                      result=true;
                    }
-                   if(b1<=orders[i]['start']&&b2>=orders[i]['end']){
+
+
+                   if(b1<=orders[i]['end']&&b2>=orders[i]['start']){
                      return true;
                    }
                  }
@@ -303,8 +305,8 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                             padding: EdgeInsets.all(5),
                             child: Column(
                               children: [
-                                Text(
-                                  widget.dataOrder['orderBody'].carNumber,
+                                Text(widget.dataOrder['orderBody'].carNumber,
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 16, color: Colors.white),
                                 ),
@@ -324,6 +326,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                                           width: 120.0,
                                           child: Flexible(
                                             child: Text('- ${widget.dataOrder['orderBody'].carType}',
+                                              textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
@@ -334,6 +337,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                                           width: 120.0,
                                           child: Flexible(
                                             child: Text('- ${widget.dataOrder['orderBody'].brandTitle}',
+                                              textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontSize: 16, color: Colors.white),
