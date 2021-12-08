@@ -2,8 +2,10 @@
 
   import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
+
+
+
 
 class BlocTableOrder{
 
@@ -50,6 +52,8 @@ class BlocTableOrder{
     }
 
 
+
+
     void _sendMapDrag(map){
       _dragSink.add(map);
     }
@@ -74,6 +78,7 @@ class BlocTableOrder{
       _sendXYFeedback.add(value);
     }
 
+//TODO реализовать правильную инициализацию и закрытие стримов в проекте
 
     void diponseScrollStream(){
      _streamControllerScroll.close();
@@ -96,7 +101,6 @@ class BlocTableOrder{
     void disponseDragStream(){
       _streamControllerDrag.close();
       _dragStrem.close();
-      print('disponseDragStream');
     }
     void disponseTimerStream(){
       _streamControllerTimer.close();

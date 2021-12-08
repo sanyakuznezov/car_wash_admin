@@ -60,8 +60,8 @@ class ApiUtil{
      await _mainServiseApi.uploadNameUser(firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
       return true;
     }
-    Future<bool>updateIdLang({required int id_lang})async{
-      await _mainServiseApi.updateIdLang(id_lang: id_lang);
+    Future<bool>updateIdLang({required int idLang})async{
+      await _mainServiseApi.updateIdLang(idLang: idLang);
       return true;
     }
 

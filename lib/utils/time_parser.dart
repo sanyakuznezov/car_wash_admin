@@ -50,7 +50,6 @@ class TimeParser{
 
   //переводим время начала заказа из числа в строку при окончании перетягивания и делаем кратным пяти
   static parseReverseTimeStart(int y,int timeStep){
-    print('parseReverseTimeStart $y');
     if(y<14){
       y=14;
     }

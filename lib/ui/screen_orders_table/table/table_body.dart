@@ -1,25 +1,18 @@
 import 'dart:async';
 
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
-import 'package:car_wash_admin/domain/model/model_order.dart';
-import 'package:car_wash_admin/domain/state/strem_controllers.dart';
 import 'package:car_wash_admin/domain/state/table_state.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
-import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
-import '../body_boxes_order/body_order.dart';
 import '../body_boxes_order/box_order.dart';
 import '../body_boxes_order/drag_target_table.dart';
 import 'box_time.dart';
-import 'layer_drag_controller.dart';
-import 'package:sizer/sizer.dart';
 
 bool accept=false;
 class TableBody extends StatefulWidget {
@@ -43,8 +36,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   late ScrollController _timeColumnsController;
   late ScrollController _timeLineColumnsController;
   bool dragControll=false;
-  double? _x;
-   double? _y;
   final timeState=GlobalData.stateTime;
   final numBoxes=GlobalData.numBoxes;
   int leave=0;
@@ -176,8 +167,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                             index: index,
                                             callbackBox: (drag, x, y) {
                                               setState(() {
-                                                _x = x;
-                                                _y = y;
                                                 dragControll = true;
                                               });
                                             });

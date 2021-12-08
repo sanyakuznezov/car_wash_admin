@@ -186,11 +186,10 @@ class StateDragTargetTable extends State<DragTargetTable> {
                               _offsetsOrder.add({'start':startCollision,'end':endCollision,'id':widget.orderList[a]['id']});
                             }
                             if(GlobalData.edit_mode){
-                               if(widget.orderList.length==a+1&&_leave==0){
+                               if(widget.orderList.length==a+1&&GlobalData.accept){
                                  _editState=1;
                                }
                             }
-
                             //Рзмещение заказов по таблице
                             return Positioned(
                                 top: startY,

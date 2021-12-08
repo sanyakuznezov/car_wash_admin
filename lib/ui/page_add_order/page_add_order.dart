@@ -282,12 +282,12 @@ class PageAddOrder extends StatefulWidget{
                     _lastName=order.data!.clientFullname.split(' ')[0];
                   }
                   // //вызов списка работ
-                  // order.data!.services.forEach((element) {
-                  //   _idServiceList.add(element['id']);
-                  // });
-                  // order.data!.complexes.forEach((element) {
-                  //   _idComplexList.add(element['id']);
-                  // });
+                  order.data!.services.forEach((element) {
+                    _idServiceList.add(element['id']);
+                  });
+                  order.data!.complexes.forEach((element) {
+                    _idComplexList.add(element['id']);
+                  });
                   _getPrice(edit:false,context: context, carType: order.data!.carType, servicesIds: _idServiceList, complexesIds:_idComplexList);
                   return Column(
                     children: [

@@ -277,7 +277,7 @@ class PageLanguadge extends StatefulWidget{
         setState(() {
           _input.sink.add(2);
         });
-        final result=await RepositoryModule.userRepository().updateIdLang(id_lang: idlang)
+        final result=await RepositoryModule.userRepository().updateIdLang(idLang: idlang)
             .catchError((error){
           setState(() {
             _input.sink.add(0);

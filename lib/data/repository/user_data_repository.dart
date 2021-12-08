@@ -68,11 +68,11 @@ class UserDataRepository extends UserRepository{
   }
 
   @override
-  Future<bool> updateIdLang({required int id_lang}) async{
-     await _apiUtil.updateIdLang(id_lang: id_lang);
+  Future<bool> updateIdLang({required int idLang}) async{
+     await _apiUtil.updateIdLang(idLang: idLang);
      final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
      final userDao = database.userataDao;
-     await userDao.updateLangId(id_lang).catchError((error){
+     await userDao.updateLangId(idLang).catchError((error){
        print('Error DB $error');
      });
     return true;

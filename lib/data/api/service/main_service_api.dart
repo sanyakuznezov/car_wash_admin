@@ -1,8 +1,6 @@
 
 
 
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:car_wash_admin/data/api/api_util.dart';
 import 'package:car_wash_admin/data/api/model/model_data_table_api.dart';
@@ -132,10 +130,10 @@ class MainServiseApi {
   }
 
   //редактирвание языка
-  Future<bool> updateIdLang({required int id_lang}) async {
+  Future<bool> updateIdLang({required int idLang}) async {
     BlocVerifyUser blocVerifyUser = BlocVerifyUser();
     Map data = await blocVerifyUser.checkDataValidUser();
-    final value = {'pId': data['pid'], 'token': data['token'], 'lang': id_lang};
+    final value = {'pId': data['pid'], 'token': data['token'], 'lang': idLang};
     await _dio.post(
         'personal/edit-profile',
         data: value,
@@ -749,9 +747,6 @@ class MainServiseApi {
             )
         );
 
-        // return (result.data['orders'] as List)
-        //     .map((x) => ModelOrderApi.fromApi(map: x))
-        //     .toList();
       return ApiUtil.getList(orders: result, selectedDate: date);
       } on DioError catch (e) {
         if (e.response != null) {
@@ -950,7 +945,6 @@ class MainServiseApi {
              contentType: 'application/x-www-form-urlencoded',
             )
         );
-        print('ID ${id}');
         return ModelOrderShowApi.fromApi(map: result.data);
 
       } on DioError catch (e) {
