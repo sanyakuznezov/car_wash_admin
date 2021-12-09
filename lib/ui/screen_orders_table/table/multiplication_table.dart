@@ -33,6 +33,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   late AnimationController _controller;
   TableState? _tableState;
   String _timeValue='1 час';
+  int _initValueTime=0;
   List<String> _listTime=[
   '1 час',
   '30 минут',
@@ -352,7 +353,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                             child: CupertinoPicker(
                                               backgroundColor: Colors.white,
                                               itemExtent: 30,
-                                              scrollController: FixedExtentScrollController(initialItem: 1),
+                                              scrollController: FixedExtentScrollController(initialItem: _initValueTime),
                                               children: [
                                                 Text('1 час'),
                                                 Text('30 минут'),
@@ -360,6 +361,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                                 Text('5 минут')
                                               ],
                                               onSelectedItemChanged: (value) {
+                                                _initValueTime=value;
                                                 _timeValue=_listTime[value];
                                                 _notifierDropdownButton.value = _listTime[value];
                                                       AppModule.blocTable.streamSink

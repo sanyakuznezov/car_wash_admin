@@ -67,32 +67,29 @@ class _PageProfileState extends State<PageProfile> {
                  AppBar(
                      elevation: 0,
                      actions: [
-                       Expanded(
-                         child: Padding(
-                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                           child: Stack(
-                             alignment: Alignment.center,
-                             children: [
-                               Align(
-                                 alignment: Alignment.centerLeft,
-                                 child: GestureDetector(
-                                   onTap: (){
-                                     Navigator.pop(context);
-                                   },
-                                   child: Icon(
-                                     Icons.arrow_back_ios,
-                                     color: AppColors.colorIndigo,
-                                   ),
+                       Container(
+                         width: MediaQuery.of(context).size.width,
+                         child: Stack(
+                           children: [
+                             Padding(
+                               padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.5,GlobalData.sizeScreen!), SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0),
+                               child: GestureDetector(
+                                 onTap: (){
+                                   Navigator.pop(context);
+                                 },
+                                 child: Icon(
+                                   Icons.arrow_back_ios,
+                                   color: AppColors.colorIndigo,
                                  ),
                                ),
-                               Expanded(
-                                 child: Text('Профиль',
-                                   textAlign: TextAlign.center,
-                                   style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                                       fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                               )
-                             ],
-                           ),
+                             ),
+                             Center(
+                               child: Text('Профиль',
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                                     fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                             )
+                           ],
                          ),
                        )
 
