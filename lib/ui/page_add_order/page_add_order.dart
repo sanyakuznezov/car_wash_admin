@@ -1881,6 +1881,7 @@ class _ItemClientState extends State<ItemClient> {
 
 class _ItemCarState extends State<ItemCar> {
      String _typeCar = 'Седан';
+     List<String> _listCarType=['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное'];
      String _brandCar='.....';
      String _modelCar='.....';
      TextEditingController? numCarController;
@@ -1946,48 +1947,57 @@ class _ItemCarState extends State<ItemCar> {
                          padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                          child:Align(
                            alignment: Alignment.centerRight,
-                           child: _editStatusMain!=GlobalData.VIEW_MODE?
-                           DropdownButton<String>(
-                             value: _typeCar,
-                             icon: const Icon(Icons.arrow_drop_down,
-                               color: Colors.black,),
-                             iconSize: 24,
-                             elevation: 16,
-                             alignment: Alignment.centerRight,
-                             style: TextStyle(color: AppColors.textColorPhone,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                             underline: Container(
-                               height: 2,
-                               color: Colors.transparent,
-                             ),
-                             onChanged: (String? newValue) {
-                               setState(() {
-                                 _typeCar = newValue!;
-                                 if(_typeCar=='Седан'){
-                                   _typeCarInt=1;
-                                 }else if(_typeCar=='Кроссовер'){
-                                   _typeCarInt=2;
-                                 }else if(_typeCar=='Внедорожник'){
-                                   _typeCarInt=3;
-                                 }else if(_typeCar=='Микроавтобус'){
-                                   _typeCarInt=4;
-                                 }else if(_typeCar=='Иное'){
-                                   _typeCarInt=5;
-                                 }
-                                   //widget.callback(true);
-                                 _order.update('carType', (value) => _typeCarInt);
-                                 _getPrice(edit:true,context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
-                               });
-                             },
-                             items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
-                                 .map<DropdownMenuItem<String>>((String value) {
-                               return DropdownMenuItem<String>(
-                                 value: value,
-                                 child: Text(value),
-                               );
-                             }).toList(),
-                           ):Padding(
+                           child: _editStatusMain!=GlobalData.VIEW_MODE? TextButton(
+                                    onPressed: () {
+                                      showCupertinoModalPopup(
+                                          context: context,
+                                          builder: (_) => Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                height: SizeUtil.getSize(
+                                                    15, GlobalData.sizeScreen!),
+                                                child: CupertinoPicker(
+                                                  backgroundColor: Colors.white,
+                                                  itemExtent: 30,
+                                                  scrollController:
+                                                      FixedExtentScrollController(
+                                                          initialItem: _typeCarInt-1),
+                                                  children: [
+                                                    Text('Седан'),
+                                                    Text('Кроссовер'),
+                                                    Text('Внедорожник'),
+                                                    Text('Микроавтобус'),
+                                                    Text('Иное')
+                                                  ],
+                                                  onSelectedItemChanged:
+                                                      (value) {
+                                                    setState(() {
+                                                      _typeCar=_listCarType[value];
+                                                      _typeCarInt=value+1;
+                                                      _order.update('carType', (value) => _typeCarInt);
+                                                      _getPrice(edit:true,context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                                    });
+
+                                                      },
+                                                ),
+                                              ));
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          _typeCar,
+                                          style: TextStyle(
+                                              color: AppColors.textColorPhone,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: SizeUtil.getSize(
+                                                  2.0, GlobalData.sizeScreen!)),
+                                        ),
+                                    Icon(Icons.arrow_drop_down,
+                                     color: Colors.black,)
+                                      ],
+                                    )):Padding(
                              padding: EdgeInsets.all(SizeUtil.getSize(0.6,GlobalData.sizeScreen!)),
                              child: Text('${_getType(widget.modelOrderShow!.carType)}',
                              style: TextStyle(

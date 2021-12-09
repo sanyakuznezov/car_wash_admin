@@ -8,6 +8,7 @@ import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -31,6 +32,13 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
   late ValueNotifier<String> _notifierDropdownButton;
   late AnimationController _controller;
   TableState? _tableState;
+  String _timeValue='1 час';
+  List<String> _listTime=[
+  '1 час',
+  '30 минут',
+  '15 минут',
+  '5 минут'
+  ];
 
   @override
   void initState() {
@@ -331,44 +339,46 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                             ),
                             height: SizeUtil.getSize(3.9,GlobalData.sizeScreen!),
                             padding: EdgeInsets.fromLTRB(7, 0, 4, 0),
-
                             child:ValueListenableBuilder<String>(
                               valueListenable: _notifierDropdownButton,
-                              builder: (context,item,widget){
-                                return DropdownButton<String>(
-                                  value: item,
-                                    icon: const Icon(Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                        ),
-                                        iconSize: 20,
-                                        elevation: 16,
-                                        alignment: Alignment.center,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: SizeUtil.getSize(
-                                                1.5, GlobalData.sizeScreen!)),
-                                        underline: Container(
-                                          height: 2,
-                                          color: Colors.transparent,
-                                        ),
-                                        onChanged: (String? newValue) {
-                                          _notifierDropdownButton.value = newValue!;
-                                          AppModule.blocTable.streamSink
-                                              .add(state(newValue));
-                                        },
-                                        items: <String>[
-                                          '1 час',
-                                          '30 минут',
-                                          '15 минут',
-                                          '5 минут'
-                                        ].map<DropdownMenuItem<String>>((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList());
-                                  }
+                              builder: (context,item,widget) {
+                                return TextButton(
+                                    onPressed: () {
+                                      showCupertinoModalPopup(
+                                          context: context,
+                                          builder: (_) => Container(
+                                            width: MediaQuery.of(context).size.width,
+                                            height: SizeUtil.getSize(15,GlobalData.sizeScreen!),
+                                            child: CupertinoPicker(
+                                              backgroundColor: Colors.white,
+                                              itemExtent: 30,
+                                              scrollController: FixedExtentScrollController(initialItem: 1),
+                                              children: [
+                                                Text('1 час'),
+                                                Text('30 минут'),
+                                                Text('15 минут'),
+                                                Text('5 минут')
+                                              ],
+                                              onSelectedItemChanged: (value) {
+                                                _timeValue=_listTime[value];
+                                                _notifierDropdownButton.value = _listTime[value];
+                                                      AppModule.blocTable.streamSink
+                                                          .add(state(_listTime[value]));
+                                              },
+                                            ),
+                                          ));
+
+                                    },
+                                    child: Text(
+                                      _timeValue,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize:
+                                          SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
+                                    ));
+
+                              }
                             ) ),
                         Container(
                             decoration: BoxDecoration(
@@ -385,8 +395,6 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
                             child: TextButton(
                                   onPressed: () {
-                                    print('Date ${GlobalData.date}');
-
                                     DatePicker.showDatePicker(context,
                                         showTitleActions: true,
                                         minTime: DateTime(2021, 6, 7),

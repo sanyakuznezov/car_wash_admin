@@ -10,6 +10,7 @@ import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_information/page_search_services.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -208,6 +209,7 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
    int _serviceType=2;
    int _carType=1;
    late String _typeCar='Седан';
+   List<String> _listCarType=['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное'];
 
 
 
@@ -405,46 +407,56 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
                                 padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                 child:Align(
                                   alignment: Alignment.centerRight,
-                                  child: DropdownButton<String>(
-                                    value: _typeCar,
-                                    icon: const Icon(Icons.arrow_drop_down,
-                                      color: Colors.black,),
-                                    iconSize: 24,
-                                    elevation: 1,
-                                    alignment: Alignment.centerRight,
-                                    style: TextStyle(color: AppColors.textColorPhone,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                                    underline: Container(
-                                      height: 2,
-                                      color: Colors.transparent,
-                                    ),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        _typeCar = newValue!;
-                                        if(_typeCar=='Седан'){
-                                          _carType=1;
-                                        }else if(_typeCar=='Кроссовер'){
-                                          _carType=2;
-                                        }else if(_typeCar=='Внедорожник'){
-                                          _carType=3;
-                                        }else if(_typeCar=='Микроавтобус'){
-                                          _carType=4;
-                                        }else if(_typeCar=='Иное'){
-                                          _carType=5;
-                                        }
-                                        _getServiceInfo(context: context, carType:_carType, serviceType:_serviceType, isDetailing:_isDetailing, query:'');
+                                  child:                       TextButton(
+                                      onPressed: () {
+                                        showCupertinoModalPopup(
+                                            context: context,
+                                            builder: (_) => Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: SizeUtil.getSize(15, GlobalData.sizeScreen!),
+                                              child: CupertinoPicker(
+                                                backgroundColor: Colors.white,
+                                                itemExtent: 30,
+                                                scrollController:
+                                                FixedExtentScrollController(initialItem: _carType-1),
+                                                children: [
+                                                  Text('Седан'),
+                                                  Text('Кроссовер'),
+                                                  Text('Внедорожник'),
+                                                  Text('Микроавтобус'),
+                                                  Text('Иное')
+                                                ],
+                                                onSelectedItemChanged:
+                                                    (value) {
+                                                  setState(() {
+                                                    _typeCar=_listCarType[value];
+                                                    _carType=value+1;
+                                                    _getServiceInfo(context: context, carType:_carType, serviceType:_serviceType, isDetailing:_isDetailing, query:'');
 
-                                      });
-                                    },
-                                    items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
-                                        .map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ),
+
+                                                  });
+
+                                                },
+                                              ),
+                                            ));
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            _typeCar,
+                                            style: TextStyle(
+                                                color: AppColors.textColorPhone,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: SizeUtil.getSize(
+                                                    2.0, GlobalData.sizeScreen!)),
+                                          ),
+                                          Icon(Icons.arrow_drop_down,
+                                            color: Colors.black,)
+                                        ],
+                                      ))
                                 ),
 
                               ),
@@ -589,15 +601,15 @@ class PageSale extends StatefulWidget{
 class _PageSaleState extends State<PageSale> {
 
   String _typeCar='Седан';
+  List<String> _listCarType=['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное'];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          height: SizeUtil.getSize(5.1,GlobalData.sizeScreen!),
-          margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
-        3.0, GlobalData.sizeScreen!), 0, 0),
+          height: SizeUtil.getSize(7.3,GlobalData.sizeScreen!),
+          margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(3.0, GlobalData.sizeScreen!), 0, 0),
           color: Colors.white,
           child: Padding(
             padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(3.0, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
@@ -613,46 +625,58 @@ class _PageSaleState extends State<PageSale> {
                     padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                     child:Align(
                       alignment: Alignment.centerRight,
-                      child:  DropdownButton<String>(
-                        value: _typeCar,
-                        icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.black,),
-                        iconSize: 24,
-                        elevation: 1,
-                        alignment: Alignment.centerRight,
-                        style: TextStyle(color: AppColors.textColorPhone,
-                            fontWeight: FontWeight.bold,
-                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                        underline: Container(
-                          height: 2,
-                          color: Colors.transparent,
-                        ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _typeCar = newValue!;
-                            if(_typeCar=='Седан'){
-                              widget.carType=1;
-                            }else if(_typeCar=='Кроссовер'){
-                              widget.carType=2;
-                            }else if(_typeCar=='Внедорожник'){
-                              widget.carType=3;
-                            }else if(_typeCar=='Микроавтобус'){
-                              widget.carType=4;
-                            }else if(_typeCar=='Иное'){
-                              widget.carType=5;
-                            }
-                            _getSaleInfo(context: context, carType: widget.carType);
+                      child:
+                      TextButton(
+                          onPressed: () {
+                            showCupertinoModalPopup(
+                                context: context,
+                                builder: (_) => Container(
+                                  width: MediaQuery.of(context)
+                                      .size
+                                      .width,
+                                  height: SizeUtil.getSize(15, GlobalData.sizeScreen!),
+                                  child: CupertinoPicker(
+                                    backgroundColor: Colors.white,
+                                    itemExtent: 30,
+                                    scrollController:
+                                    FixedExtentScrollController(initialItem: widget.carType-1),
+                                    children: [
+                                      Text('Седан'),
+                                      Text('Кроссовер'),
+                                      Text('Внедорожник'),
+                                      Text('Микроавтобус'),
+                                      Text('Иное')
+                                    ],
+                                    onSelectedItemChanged:
+                                        (value) {
+                                      setState(() {
+                                        _typeCar=_listCarType[value];
+                                        widget.carType=value+1;
+                                        _getSaleInfo(context: context, carType: widget.carType);
 
-                          });
-                        },
-                        items: <String>['Седан', 'Кроссовер', 'Внедорожник', 'Микроавтобус','Иное']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
+
+                                      });
+
+                                    },
+                                  ),
+                                ));
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                _typeCar,
+                                style: TextStyle(
+                                    color: AppColors.textColorPhone,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(
+                                        2.0, GlobalData.sizeScreen!)),
+                              ),
+                              Icon(Icons.arrow_drop_down,
+                                color: Colors.black,)
+                            ],
+                          ))
+
                     ),
 
                   ),
