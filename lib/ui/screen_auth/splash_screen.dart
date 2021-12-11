@@ -35,7 +35,7 @@ class SplashScreen extends StatelessWidget{
                       return Center(
                           child: SvgPicture.asset(
                             "assets/banner.svg",
-                            height: SizeUtil.getSize(35, GlobalData.sizeScreen!),
+                            height: SizeUtil.getSize(20, GlobalData.sizeScreen!),
                           ));
                     }else{
                       return MyHomePage(valid: value.data!['valid'],userData: value.data!['data_user'],);

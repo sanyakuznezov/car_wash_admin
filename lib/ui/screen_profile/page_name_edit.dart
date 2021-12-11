@@ -95,93 +95,84 @@ class PageNameEdit extends StatefulWidget{
                       backgroundColor: Colors.white,
                       elevation: 0,
                       actions: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      if(_isSave){
-                                        widget.onNewName('${nameController!.text} ${firstnameController!.text} ${lastnameController!.text}');
-                                      }
-                                    },
-                                    child: Icon(
-                                      Icons.arrow_back_ios,
-                                      color: AppColors.colorIndigo,
-                                    ),
-                                  ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  if(_isSave){
+                                    widget.onNewName('${nameController!.text} ${firstnameController!.text} ${lastnameController!.text}');
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: AppColors.colorIndigo,
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    'Имя пользователя',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeUtil.getSize(
-                                            2.8, GlobalData.sizeScreen!)),
-                                  ),
-                                ),
-                                Align(alignment: Alignment.centerRight,
-                                        child: StreamBuilder(
-                                          stream: _output.stream,
-                                          builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-                                            if(snapshot.hasData){
-                                              if(snapshot.data==1){
-                                                return GestureDetector(
-                                                  onTap:(){
-                                                    if (_isEdit) {
-                                                      _editName(
-                                                          lastnameController!.text,
-                                                          nameController!.text,
-                                                          firstnameController!.text,
-                                                          data.data!.email);
-                                                    }
-                                                  },
-                                                  child: Text(
-                                                    'Сохр.',
-                                                    style: TextStyle(
-                                                      color:
-                                                      AppColors.colorIndigo,
-                                                      fontSize: SizeUtil.getSize(
-                                                          2.3,
-                                                          GlobalData.sizeScreen!),
-                                                    ),
-                                                  ),
-                                                );
-                                              }else if(snapshot.data==2){
-                                                return SizedBox(
-                                                  height: SizeUtil.getSize(
-                                                      2.0,
-                                                      GlobalData.sizeScreen!),
-                                                  width: SizeUtil.getSize(
-                                                      2.0,
-                                                      GlobalData.sizeScreen!),
-                                                  child: CircularProgressIndicator(
-                                                    color: AppColors.colorIndigo,
-                                                    strokeWidth: SizeUtil.getSize(
-                                                        0.3,
-                                                        GlobalData.sizeScreen!),
-                                                  ),
-                                                );
-
-                                              }else if(snapshot.data==0){
-                                                return Container();
-                                              }
-                                            }
-
-                                            return Container();
-                                            },
+                              ),
+                              Text(
+                                'Имя пользователя',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(
+                                        2.8, GlobalData.sizeScreen!)),
+                              ),
+                              StreamBuilder(
+                                stream: _output.stream,
+                                builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+                                  if(snapshot.hasData){
+                                    if(snapshot.data==1){
+                                      return GestureDetector(
+                                        onTap:(){
+                                          if (_isEdit) {
+                                            _editName(
+                                                lastnameController!.text,
+                                                nameController!.text,
+                                                firstnameController!.text,
+                                                data.data!.email);
+                                          }
+                                        },
+                                        child: Text(
+                                          'Сохр.',
+                                          style: TextStyle(
+                                            color:
+                                            AppColors.colorIndigo,
+                                            fontSize: SizeUtil.getSize(
+                                                2.3,
+                                                GlobalData.sizeScreen!),
+                                          ),
                                         ),
-                                      )
+                                      );
+                                    }else if(snapshot.data==2){
+                                      return SizedBox(
+                                        height: SizeUtil.getSize(
+                                            2.0,
+                                            GlobalData.sizeScreen!),
+                                        width: SizeUtil.getSize(
+                                            2.0,
+                                            GlobalData.sizeScreen!),
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.colorIndigo,
+                                          strokeWidth: SizeUtil.getSize(
+                                              0.3,
+                                              GlobalData.sizeScreen!),
+                                        ),
+                                      );
 
-                              ],
-                            ),
+                                    }else if(snapshot.data==0){
+                                      return Container();
+                                    }
+                                  }
+
+                                  return Container();
+                                  },
+                              )
+
+                            ],
                           ),
                         )
                       ],

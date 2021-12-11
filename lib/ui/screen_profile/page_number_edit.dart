@@ -33,11 +33,11 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
             elevation: 0,
             backgroundColor: Colors.white,
             actions: [
-              Expanded(
+              Container(
+                width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                   child: Stack(
-                    alignment: Alignment.center,
                     children: [
                       Align(
                         alignment: Alignment.centerLeft,
@@ -51,7 +51,7 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
                           ),
                         ),
                       ),
-                      Expanded(
+                      Center(
                         child: Text('Номер телефона',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,

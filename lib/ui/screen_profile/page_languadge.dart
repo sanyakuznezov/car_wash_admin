@@ -73,82 +73,87 @@ class PageLanguadge extends StatefulWidget{
                   elevation: 0,
                   backgroundColor: Colors.white,
                   actions: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: GestureDetector(
-                                onTap: (){
-                                  Navigator.pop(context);
-                                },
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.pop(context);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
                                 child: Icon(
                                   Icons.arrow_back_ios,
                                   color: AppColors.colorIndigo,
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Text('Язык',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                                    fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                            ),
-                              Align(
-                                  alignment: Alignment.centerRight,
-                                  child: StreamBuilder(
-                                    stream: _output.stream,
-                                    builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-                                      if(snapshot.hasData){
-                                        if(snapshot.data==1){
-                                          return GestureDetector(
-                                            onTap:(){
-                                              if (_isEdit) {
-                                                _editIdLAng(langId!);
-                                              }
-                                            },
-                                            child: Text(
-                                              'Сохр.',
-                                              style: TextStyle(
-                                                color:
-                                                AppColors.colorIndigo,
-                                                fontSize: SizeUtil.getSize(
-                                                    2.3,
-                                                    GlobalData.sizeScreen!),
-                                              ),
-                                            ),
-                                          );
-                                        }else if(snapshot.data==2){
-                                          return SizedBox(
-                                            height: SizeUtil.getSize(
-                                                2.0,
-                                                GlobalData.sizeScreen!),
-                                            width: SizeUtil.getSize(
-                                                2.0,
-                                                GlobalData.sizeScreen!),
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.colorIndigo,
-                                              strokeWidth: SizeUtil.getSize(
-                                                  0.3,
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text('Язык',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                                  fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                          ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: StreamBuilder(
+                                  stream: _output.stream,
+                                  builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+                                    if(snapshot.hasData){
+                                      if(snapshot.data==1){
+                                        return GestureDetector(
+                                          onTap:(){
+                                            if (_isEdit) {
+                                              _editIdLAng(langId!);
+                                            }
+                                          },
+                                          child: Text(
+                                            'Сохр.',
+                                            style: TextStyle(
+                                              color:
+                                              AppColors.colorIndigo,
+                                              fontSize: SizeUtil.getSize(
+                                                  2.3,
                                                   GlobalData.sizeScreen!),
                                             ),
-                                          );
+                                          ),
+                                        );
+                                      }else if(snapshot.data==2){
+                                        return SizedBox(
+                                          height: SizeUtil.getSize(
+                                              2.0,
+                                              GlobalData.sizeScreen!),
+                                          width: SizeUtil.getSize(
+                                              2.0,
+                                              GlobalData.sizeScreen!),
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.colorIndigo,
+                                            strokeWidth: SizeUtil.getSize(
+                                                0.3,
+                                                GlobalData.sizeScreen!),
+                                          ),
+                                        );
 
-                                        }else if(snapshot.data==0){
-                                          return Container();
-                                        }
+                                      }else if(snapshot.data==0){
+                                        return Container();
                                       }
+                                    }
 
-                                      return Container();
-                                    },
-                                  )),
-                            ],
-                          ),
+                                    return Container();
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      )
+                    )
                     ],
                   ),
                   Container(

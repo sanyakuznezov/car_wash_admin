@@ -49,7 +49,8 @@ class PageNotifi extends StatefulWidget{
               backgroundColor: Colors.white,
               elevation: 0,
               actions: [
-                Expanded(
+                Container(
+                  width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Stack(
@@ -67,7 +68,8 @@ class PageNotifi extends StatefulWidget{
                             ),
                           ),
                         ),
-                        Expanded(
+                        Align(
+                          alignment: Alignment.center,
                           child: Text('Уведомления',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
