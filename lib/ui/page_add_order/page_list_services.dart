@@ -75,7 +75,8 @@ class _PageListServicesState extends State<PageListServices> {
                 backgroundColor: Colors.white,
                 elevation: 0,
                 actions: [
-                  Expanded(
+                  Container(
+                    width: MediaQuery.of(context).size.width,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                       child: Stack(
@@ -94,7 +95,7 @@ class _PageListServicesState extends State<PageListServices> {
                               ),
                             ),
                           ),
-                          Expanded(
+                          Center(
                             child: Text(
                               'Список работ',
                               textAlign: TextAlign.center,

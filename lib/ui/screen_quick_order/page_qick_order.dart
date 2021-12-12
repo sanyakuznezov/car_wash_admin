@@ -2,7 +2,9 @@
 
 
 
-  import 'package:car_wash_admin/app_colors.dart';
+  import 'dart:async';
+
+import 'package:car_wash_admin/app_colors.dart';
 import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
@@ -32,9 +34,17 @@ import '../../global_data.dart';
     _notifier.value=ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []);
     final result=await RepositoryModule.userRepository().getPrice(context: context, carType: carType, servicesIds: servicesIds, complexesIds: complexesIds);
     _notifier.value=result!;
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
+      _scrollController.animateTo(_scrollController
+          .position.maxScrollExtent,
+          duration: Duration(seconds:1),
+          curve: Curves.easeOut);
+      timer.cancel();
+    });
     _isLoading=false;
     return result;
   }
+  late ScrollController _scrollController=ScrollController();
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
   bool _isLoading=false;
@@ -56,79 +66,82 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
   @override
   Widget build(BuildContext context) {
    return Scaffold(
-     backgroundColor: AppColors.colorBackgrondProfile,
-     body: SingleChildScrollView(
-       child: Column(
-         children: [
-           AppBar(
-             backgroundColor: Colors.white,
-             elevation: 0,
-             actions: [
-               Expanded(
-                 child: Padding(
-                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                   child: Stack(
-                     alignment: Alignment.center,
-                     children: [
-                       Align(
-                         alignment: Alignment.centerLeft,
-                         child: GestureDetector(
-                           onTap: (){
-                             Navigator.pop(context);
-                           },
-                           child: Icon(
-                             Icons.arrow_back_ios,
-                             color: AppColors.colorIndigo,
-                           ),
-                         ),
-                       ),
-                       Expanded(
-                         child: Text('Быстрая запись',
-                           textAlign: TextAlign.center,
-                           style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                               fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                       ),
-
-                     ],
+     appBar: AppBar(
+       backgroundColor: Colors.white,
+       elevation: 0,
+       actions: [
+         Container(
+           width: MediaQuery.of(context).size.width,
+           child: Padding(
+             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+             child: Stack(
+               alignment: Alignment.center,
+               children: [
+                 Align(
+                   alignment: Alignment.centerLeft,
+                   child: GestureDetector(
+                     onTap: (){
+                       Navigator.pop(context);
+                     },
+                     child: Icon(
+                       Icons.arrow_back_ios,
+                       color: AppColors.colorIndigo,
+                     ),
                    ),
                  ),
-               )
-             ],
-           ),
+                 Center(
+                   child: Text('Быстрая запись',
+                     textAlign: TextAlign.center,
+                     style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                         fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                 ),
 
-           _ItemInfoMain(),
-           _ItemListWork(onEdit: (verifi){
-             setState(() {
-                _isEndAddOrder=verifi!;
-
-              });
-           },),
-           _ItemPrice(),
-
-           Padding(
-             padding: EdgeInsets.all(SizeUtil.getSize(5,GlobalData.sizeScreen!)),
-             child: SizedBox(
-               width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
-             child: RaisedButton(
-                 color: _isEndAddOrder?AppColors.colorIndigo:AppColors.colorDisableButton,
-                 onPressed: (){
-                   if(_isEndAddOrder){
-                     Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
-                       onSuccesAdd: (add){
-                         if(add!){
-                           Navigator.pop(context);
-                         }
-                       },
-                         totalPriceFinalOfListService:_totalPriceFinalOfListService,
-                         order:_order,
-                         list:_calculateList)));
-                   }
-                 }, child: Text('Далее',style: TextStyle(
-               color: Colors.white
-             ),)),
+               ],
              ),
            ),
-         ],
+         )
+       ],
+     ),
+     backgroundColor: AppColors.colorBackgrondProfile,
+     body: SingleChildScrollView(
+       controller: _scrollController,
+       child: Column(
+       children: [
+         _ItemInfoMain(),
+         _ItemListWork(onEdit: (verifi){
+           setState(() {
+              _isEndAddOrder=verifi!;
+            });
+         },),
+         _ItemPrice(),
+         Align(
+             alignment: Alignment.bottomCenter,
+             child: Padding(
+               padding: EdgeInsets.fromLTRB(0,SizeUtil.getSize(2,GlobalData.sizeScreen!),0,SizeUtil.getSize(2,GlobalData.sizeScreen!)),
+               child: SizedBox(
+                 width: SizeUtil.getSize(40,GlobalData.sizeScreen!),
+                 child: RaisedButton(
+                     color: _isEndAddOrder?AppColors.colorIndigo:AppColors.colorDisableButton,
+                     onPressed: (){
+                       if(_isEndAddOrder){
+                         Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
+                             onSuccesAdd: (add){
+                               if(add!){
+                                 Navigator.pop(context);
+                               }
+                             },
+                             totalPriceFinalOfListService:_totalPriceFinalOfListService,
+                             order:_order,
+                             list:_calculateList)));
+                       }
+                     }, child: Text('Далее',style: TextStyle(
+                     color: Colors.white
+                 ),)),
+               ),
+             )
+
+         )
+       ],
        ),
      ),
    );
@@ -437,7 +450,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
 
     bool _isEdit=false;
     int i=-2;
-    bool _loadData=true;
+
 
     @override
     Widget build(BuildContext context) {
@@ -448,51 +461,56 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
         child: Column(
           children: [
             Container(
+              width: MediaQuery.of(context).size.width,
               height: SizeUtil.getSize(5,GlobalData.sizeScreen!),
               margin: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0),
-              child: Row(
-                children: [
-                  SizedBox(
-                    child: SvgPicture.asset('assets/ic_list_work.svg'),
-                    height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
-                      child: Text('Список работ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                            color: AppColors.textColorTitle
-                        ),),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Expanded(
-                      child: _listService.length>1?GestureDetector(
-                        child: Text(_isEdit?'Отмена':'Править',
-                          textAlign: TextAlign.right,
+              child: Stack(
+                children:[
+                  Row(
+                  children: [
+                    SizedBox(
+                      child: SvgPicture.asset('assets/ic_list_work.svg'),
+                      height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
+                        child: Text('Список работ',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                              color: AppColors.colorIndigo
+                              color: AppColors.textColorTitle
                           ),),
-                        onTap: (){
-                          setState(() {
-                            if(!_isEdit){
-                              _isEdit=true;
-                            }else{
-                              _isEdit=false;
-                            }
-
-                          });
-                        },
-                      ):Container(),
+                      ),
                     ),
-                  ),
 
-                ],
-              ),
+                  ],
+
+                ),
+
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: _listService.length>1?GestureDetector(
+                      child: Text(_isEdit?'Отмена':'Править',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                            color: AppColors.colorIndigo
+                        ),),
+                      onTap: (){
+                        setState(() {
+                          if(!_isEdit){
+                            _isEdit=true;
+                          }else{
+                            _isEdit=false;
+                          }
+
+                        });
+                      },
+                    ):Container(),
+                  )
+    ]),
             ),
             Container(
               margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
@@ -501,47 +519,47 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                 children: [
                   Padding(
                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                    child: Row(
+                    child: Stack(
                       children: [
-                        Text('Добавить',
-                            style: TextStyle(
-                                color: AppColors.textColorItem,
-                                fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                            )),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: (){
-                                Navigator.push(context, SlideTransitionLift(PageListServices(
-                                  carType: _typeCarInt,listAlreadySelected: _listService,
-                                  onListServices: (list){
-                                    setState(() {
-                                      _idComplexList.clear();
-                                      _idServiceList.clear();
-                                      _listService.clear();
-                                      _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
-                                      list!.forEach((element) {
-                                        if(element.type=='complex'){
-                                          _idComplexList.add(element.id);
-                                        }else if(element.type=='service'){
-                                          _idServiceList.add(element.id);
-                                        }
-                                        _listService.add(element);
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Добавить',
+                              style: TextStyle(
+                                  color: AppColors.textColorItem,
+                                  fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                              )),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, SlideTransitionLift(PageListServices(
+                                carType: _typeCarInt,listAlreadySelected: _listService,
+                                onListServices: (list){
+                                  setState(() {
+                                    _idComplexList.clear();
+                                    _idServiceList.clear();
+                                    _listService.clear();
+                                    _listService.add(ModelService(listServices:[],id: 0, type: 'service', name: 'Въезд-Выезд', isDetailing: false, price: 0, time: 0));
+                                    list!.forEach((element) {
+                                      if(element.type=='complex'){
+                                        _idComplexList.add(element.id);
+                                      }else if(element.type=='service'){
+                                        _idServiceList.add(element.id);
+                                      }
+                                      _listService.add(element);
 
-                                      });
-                                      _order.update('ComplexesList', (value) => _idComplexList);
-                                      _order.update('ServicesList', (value) => _idServiceList);
-                                      _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
-                                      _onEdit(_listService.length);
                                     });
-
-                                  },)));
-                              },
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: AppColors.colorIndigo,
-                              ),
+                                    _order.update('ComplexesList', (value) => _idComplexList);
+                                    _order.update('ServicesList', (value) => _idServiceList);
+                                    _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
+                                  });
+                                  _onEdit(_listService.length);
+                                },)));
+                            },
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              color: AppColors.colorIndigo,
                             ),
                           ),
                         ),
@@ -563,6 +581,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                             _calculateList.add(element);
                           });
                         }
+
                         return Column(
                             children:
                             List.generate(_calculateList.length, (index){
@@ -671,19 +690,21 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                 _order.update('sale', (value) => snapshot.sale);
                 _order.update('workTime', (value) => snapshot.workTime);
                 _finalPrice= (snapshot.totalPrice).toString();
+
+
               }
               return Column(
                 children: [
                   Container(
                     height: SizeUtil.getSize(5,GlobalData.sizeScreen!),
                     margin: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          child: SvgPicture.asset('assets/ic_price.svg'),
-                          height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
-                        Expanded(
-                          child: Padding(
+                    child: Stack(
+                      children:[ Row(
+                        children: [
+                          SizedBox(
+                            child: SvgPicture.asset('assets/ic_price.svg'),
+                            height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
+                          Padding(
                             padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
                             child: Text('Стоимость',
                               style: TextStyle(
@@ -692,29 +713,28 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                   color: AppColors.textColorTitle
                               ),),
                           ),
-                        ),
+                        ],
+                      ),
                         Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Expanded(
-                            child: _listService.length>1?GestureDetector(
-                              child: Text('Править',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                                    color: AppColors.colorIndigo
-                                ),),
-                              onTap: (){
-                                setState(() {
-                                  _focusNode.requestFocus();
+                          alignment: Alignment.bottomRight,
+                          child: _listService.length>1?GestureDetector(
+                            child: Text('Править',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                                  color: AppColors.colorIndigo
+                              ),),
+                            onTap: (){
+                              setState(() {
+                                _focusNode.requestFocus();
 
-                                });
-                              },
-                            ):Container(),
-                          ),
+                              });
+                            },
+                          ):Container(),
                         )
-                      ],
-                    ),
+
+                      ]),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
@@ -723,14 +743,15 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                       children: [
                         Padding(
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                          child: Row(
+                          child: Stack(
                             children: [
                               Text('Всего',
                                   style: TextStyle(
                                       color: AppColors.textColorItem,
                                       fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                                   )),
-                              Expanded(
+                              Align(
+                                alignment: Alignment.centerRight,
                                 child: Padding(
                                     padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                     child: !_isLoading?Text('${snapshot.totalPrice} RUB',
@@ -766,14 +787,15 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                             color: AppColors.colorLine),
                         Padding(
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                          child: Row(
+                          child: Stack(
                             children: [
                               Text('Скидка',
                                   style: TextStyle(
                                       color: AppColors.textColorItem,
                                       fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                                   )),
-                              Expanded(
+                              Align(
+                                alignment:Alignment.centerRight,
                                 child: Padding(
                                   padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                   child: !_isLoading?Text('${snapshot.sale} RUB',
@@ -809,80 +831,90 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                             height: 1,
                             color: AppColors.colorLine),
 
-                        Padding(
-                          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                          child: Row(
-                            children: [
-                              Text('Итого:',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
-                                  )),
-                              Expanded(
-                                child: !_isLoading?
-                                TextField(
-                                  keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      hintText: _finalPrice,
-                                        hintStyle: TextStyle(
-                                            color: AppColors.textColorPhone,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
-                                        ),
-                                        contentPadding: EdgeInsets.all(
-                                            SizeUtil.getSize(
-                                                1.5,
-                                                GlobalData
-                                                    .sizeScreen!)),
-                                        border: InputBorder.none),
-                                    onChanged: (text) {
-                                      if (text.isNotEmpty) {
-                                        _order.update('totalPrice', (value) => int.parse(text));
-                                      }else{
-                                        _order.update('totalPrice', (value) => _finalPrice);
-                                      }
-                                    },
-                                  controller: _textEditingController,
-                                   focusNode: _focusNode,
-                                    textAlign: TextAlign.end,
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Padding(
+                            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Итого:',
                                     style: TextStyle(
-                                        color: AppColors.textColorPhone,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
-                                    )):Padding(
-                                      padding: EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(2.3,GlobalData.sizeScreen!), 0),
-                                      child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                      height: SizeUtil.getSize(
-                                          2.0,
-                                          GlobalData.sizeScreen!),
-                                      width: SizeUtil.getSize(
-                                          2.0,
-                                          GlobalData.sizeScreen!),
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.colorIndigo,
-                                        strokeWidth: SizeUtil.getSize(
-                                            0.3,
-                                            GlobalData.sizeScreen!),
-                                      ),
-                                  ),
-                                ),
-                                    ),
-                              ),
-                              Padding(
-                                padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(
-                                    2.0,
-                                    GlobalData.sizeScreen!), 0),
-                                child: Text('RUB',
-                                    style: TextStyle(
-                                        color: AppColors.textColorPhone,
+                                        color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
                                     )),
-                              ),
-                            ],
+                                Row(
+                                  children: [
+                                    !_isLoading?
+                                    Container(
+                                      width: SizeUtil.getSize(20,GlobalData.sizeScreen!),
+                                      child: SizedBox(
+                                        height: SizeUtil.getSize(5.5
+                                            ,GlobalData.sizeScreen!),
+                                        child: TextField(
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                                hintText: _finalPrice,
+                                                hintStyle: TextStyle(
+                                                    color: AppColors.textColorPhone,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                                ),
+                                                //contentPadding: EdgeInsets.all(SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
+                                                border: InputBorder.none),
+                                            onChanged: (text) {
+                                              if (text.isNotEmpty) {
+                                                _order.update('totalPrice', (value) => int.parse(text));
+                                              }else{
+                                                _order.update('totalPrice', (value) => _finalPrice);
+                                              }
+                                            },
+                                            controller: _textEditingController,
+                                            focusNode: _focusNode,
+                                            textAlign: TextAlign.end,
+                                            style: TextStyle(
+                                                color: AppColors.textColorPhone,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                            )),
+                                      ),
+                                    ):Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(2.3,GlobalData.sizeScreen!), 0),
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: SizedBox(
+                                          height: SizeUtil.getSize(
+                                              2.0,
+                                              GlobalData.sizeScreen!),
+                                          width: SizeUtil.getSize(
+                                              2.0,
+                                              GlobalData.sizeScreen!),
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.colorIndigo,
+                                            strokeWidth: SizeUtil.getSize(
+                                                0.3,
+                                                GlobalData.sizeScreen!),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Padding(
+                                        padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0),
+                                        child: Text('RUB',
+                                            style: TextStyle(
+                                                color: AppColors.textColorPhone,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: SizeUtil.getSize(
+                                                    2.3, GlobalData.sizeScreen!))),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                         Container(
