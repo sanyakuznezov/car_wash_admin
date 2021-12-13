@@ -186,8 +186,10 @@ class StateBodyCard extends State<BodyCard>{
                                     BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))
                                 ),
                               ),
-                              //проверка на перехоной заказ
-                              !rollingOrder?Expanded(child:Padding(
+                              //проверка на переходной заказ
+                              !rollingOrder?Expanded(
+                                  child:
+                                  Padding(
                                   padding: EdgeInsets.all(5),
                                   child: Column(
                                     children: [

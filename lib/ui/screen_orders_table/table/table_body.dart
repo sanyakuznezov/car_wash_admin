@@ -142,7 +142,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                 }),
                               ),
                             ),
-
                       Expanded(
                         child: Container(
                           margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
@@ -194,30 +193,29 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                           startY=c1+TimeParser.shiftTime(
                               time_start: TimeParser.parseHourForTimeLine(time.data!),
                               timeStep: snapshot.data);
-                          return Expanded(
-                              child: Container(
-                                  margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                                  child: SingleChildScrollView(
-                                      controller: _timeLineColumnsController,
-                                      scrollDirection: Axis.vertical,
-                                      physics: const AlwaysScrollableScrollPhysics(
-                                          parent: BouncingScrollPhysics()),
-                                      child: SizedBox(
-                                          width: GlobalData.numBoxes!>1?_getWight(widget.modelDataTable.posts) *widget.modelDataTable.posts.toDouble():390,
-                                          height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                  top:startY,
-                                                  child: Container(
-                                                    margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
-                                                    color: Colors.indigo,
-                                                    //widget.modelDataTable.posts.toDouble()
-                                                    width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
-                                                    height: 2,
-                                                  ))
-                                            ],
-                                          )))));
+                          return Container(
+                              margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                              child: SingleChildScrollView(
+                                  controller: _timeLineColumnsController,
+                                  scrollDirection: Axis.vertical,
+                                  physics: const AlwaysScrollableScrollPhysics(
+                                      parent: BouncingScrollPhysics()),
+                                  child: SizedBox(
+                                      width: GlobalData.numBoxes!>1?_getWight(widget.modelDataTable.posts) *widget.modelDataTable.posts.toDouble():390,
+                                      height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                      child: Stack(
+                                        children: [
+                                          Positioned(
+                                              top:startY,
+                                              child: Container(
+                                                margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
+                                                color: Colors.indigo,
+                                                //widget.modelDataTable.posts.toDouble()
+                                                width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
+                                                height: 2,
+                                              ))
+                                        ],
+                                      ))));
                         }else{
                           return Container();
                         }
@@ -276,46 +274,45 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                         return Padding(
                           padding: EdgeInsets.fromLTRB(paddingLeft, 0, 0, 0),
-                          child: Expanded(
-                              child: Container(
-                                  margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                          child: Container(
+                              margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                              child: SingleChildScrollView(
+                                controller: _centerColumnsController,
+                                scrollDirection: Axis.vertical,
+                                physics: const AlwaysScrollableScrollPhysics(
+                                    parent: BouncingScrollPhysics()),
+                                child: SizedBox(
+                                  // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
+                                  width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
+                                  height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
                                   child: SingleChildScrollView(
-                                    controller: _centerColumnsController,
-                                    scrollDirection: Axis.vertical,
-                                    physics: const AlwaysScrollableScrollPhysics(
-                                        parent: BouncingScrollPhysics()),
-                                    child: SizedBox(
-                                      // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
-                                      width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
-                                      height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                      child: SingleChildScrollView(
-                                          controller: widget.scrollControllertop,
-                                          scrollDirection: Axis.horizontal,
-                                          physics: const AlwaysScrollableScrollPhysics(
-                                              parent: BouncingScrollPhysics()),
-                                          child: Row(
-                                            children: List.generate(widget.modelDataTable.posts, (i) {
-                                              return Container(
-                                                  width: GlobalData.numBoxes!>1?150:300,
-                                                  child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
-                                                    post:i,
-                                                    tableState: widget.tableState,
-                                                    time: _time!,
-                                                    orderList: widget.orderList,
-                                                    timeStep: snapshot.data,
-                                                   accept: (start,end,postNum){
-                                                    AppModule.blocTable.streamSinkDrag.add({'action':2});
-                                                      _map!.update('start_date', (value) => start);
-                                                      _map!.update('expiration_date', (value) => end);
-                                                      _map!.update('post', (value) => postNum);
-                                                      _map!.update('id', (value) =>widget.orderList.length);
-                                                    widget.orderList.add(_map!);
-                                                  },));
-                                            }),
-                                          )
-                                      ),
-                                    ),
-                                  ))),
+                                      controller: widget.scrollControllertop,
+                                      scrollDirection: Axis.horizontal,
+                                      physics: const AlwaysScrollableScrollPhysics(
+                                          parent: BouncingScrollPhysics()),
+                                      child: Row(
+                                        children: List.generate(widget.modelDataTable.posts, (i) {
+                                          return Container(
+                                              width: GlobalData.numBoxes!>1?150:300,
+                                              child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                                post:i,
+                                                tableState: widget.tableState,
+                                                time: _time!,
+                                                orderList: widget.orderList,
+                                                timeStep: snapshot.data,
+                                               accept: (start,end,postNum){
+                                                AppModule.blocTable.streamSinkDrag.add({'action':2});
+                                                  _map!.update('start_date', (value) => start);
+                                                  _map!.update('expiration_date', (value) => end);
+                                                  _map!.update('post', (value) => postNum);
+                                                  _map!.update('id', (value) =>widget.orderList.length);
+                                                widget.orderList.add(_map!);
+                                              },));
+                                        }),
+                                      )
+                                  ),
+                                ),
+                              )),
                         );
                       }),
 

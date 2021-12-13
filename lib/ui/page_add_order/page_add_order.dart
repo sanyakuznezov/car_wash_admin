@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -45,7 +46,7 @@ import '../../../global_data.dart';
   bool _isLoading=false;
   int _editStatusMain=2;
   ValueNotifier<bool>? _fabNotifi;
-
+  String? _dateValue;
   Future<ModelOrderShow?> _getOrderShow({required BuildContext context,required int id})async{
     final order=await RepositoryModule.userRepository().getOrderShow(context: context, id: id);
      return order;
@@ -121,6 +122,63 @@ class PageAddOrder extends StatefulWidget{
       }
     }
     return Scaffold(
+      appBar:             AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.colorIndigo,
+                      ),
+                    ),
+                  ),
+                  Text(widget.editStatus==GlobalData.ADD_ORDER_MODE?'Создать запись':'Просмотр записи',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                        fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                  !_isSucces?GestureDetector(
+                    onTap: () {
+                      if(_editStatusMain==GlobalData.EDIT_MODE&&_idOrder!=0){
+                        showMaterialModalBottomSheet(
+                            backgroundColor: Colors.white,
+                            context: context,
+                            builder: (context) => ContainerDeleteOrder(
+                              onAccept: (int? i) {
+                                _deleteOrder(context: context, id: _idOrder!);
+                              },));
+                      }
+                    },
+                    child: Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                            height: SizeUtil.getSize(
+                                3.0, GlobalData.sizeScreen!),
+                            child: _editStatusMain==GlobalData.EDIT_MODE
+                                ? Icon(
+                              Icons.delete_outline_outlined,
+                              color: Colors.red,
+                            )
+                                :_editStatusMain==GlobalData.VIEW_MODE?SvgPicture.asset('assets/flag_1.svg'):Container())),
+                  ):Container()
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
       backgroundColor: AppColors.colorBackgrondProfile,
       floatingActionButton: ValueListenableBuilder<bool>(
         builder: (context,hide,widget){
@@ -142,72 +200,14 @@ class PageAddOrder extends StatefulWidget{
                     },));
 
             },
-            child: const Icon(Icons.send),
-            backgroundColor: AppColors.colorFAB,
+            child: const Icon(Icons.check_outlined,color:Colors.indigo),
+            backgroundColor: Colors.white,
           ):Container();
         }, valueListenable: _fabNotifi!,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              actions: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              color: AppColors.colorIndigo,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(widget.editStatus==GlobalData.ADD_ORDER_MODE?'Создать запись':'Просмотр записи',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                                fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                        ),
-                        !_isSucces?GestureDetector(
-                          onTap: () {
-                              if(_editStatusMain==GlobalData.EDIT_MODE&&_idOrder!=0){
-                                showMaterialModalBottomSheet(
-                                    backgroundColor: Colors.white,
-                                    context: context,
-                                    builder: (context) => ContainerDeleteOrder(
-                                      onAccept: (int? i) {
-                                        _deleteOrder(context: context, id: _idOrder!);
-                                      },));
-                              }
-                          },
-                          child: Align(
-                              alignment: Alignment.centerRight,
-                              child: SizedBox(
-                                  height: SizeUtil.getSize(
-                                      3.0, GlobalData.sizeScreen!),
-                                  child: _editStatusMain==GlobalData.EDIT_MODE
-                                      ? Icon(
-                                          Icons.delete_outline_outlined,
-                                          color: Colors.red,
-                                        )
-                                      :_editStatusMain==GlobalData.VIEW_MODE?SvgPicture.asset('assets/flag_1.svg'):Container())),
-                        ):Container()
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
             _isSucces?Container(
               height: MediaQuery.of(context).size.height,
               child: Center(
@@ -1238,7 +1238,7 @@ class _ItemPriceState extends State<ItemPrice> {
 
                _idComplexList.length>0||_idServiceList.length>0?Align(
                  alignment: Alignment.bottomCenter,
-                 child: Expanded(
+                 child: Container(
                    child:  _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                      child: Text(_isEdit?'Отмена':'Править',
                        textAlign: TextAlign.right,
@@ -1892,6 +1892,8 @@ class _ItemCarState extends State<ItemCar> {
      bool _isFirstData=true;
      late FocusNode focusEditColor;
      late TextEditingController editingControllerColor;
+     bool _isEditCarNumber=false;
+     bool _isEditCarRegion=false;
 
   @override
   Widget build(BuildContext context) {
@@ -2039,6 +2041,7 @@ class _ItemCarState extends State<ItemCar> {
                                  child: TextField(
                                    maxLength: 6,
                                    controller: numCarController,
+                                   textCapitalization: TextCapitalization.characters,
                                    textAlign: TextAlign.center,
                                    style: TextStyle(
                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
@@ -2050,7 +2053,9 @@ class _ItemCarState extends State<ItemCar> {
                                      }
                                    },
                                    decoration: InputDecoration(
-                                     contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                     hintText: '${_order['carNumber']}',
+                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)
+                                     ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)),
                                      border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
                                    ),
@@ -2067,14 +2072,16 @@ class _ItemCarState extends State<ItemCar> {
                                    ),
                                    controller: regionCarController,
                                    onChanged: (text){
-                                     if(text.isNotEmpty){
-                                       widget.callback(true);
-                                       _order.update('carRegion', (value) => text);
-                                     }
+                                       if(text.isNotEmpty){
+                                         widget.callback(true);
+                                         _order.update('carRegion', (value) => text);
+                                       }
                                    },
                                    keyboardType: TextInputType.number,
                                    decoration: InputDecoration(
-                                     contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                     hintText: '${_order['carRegion']}',
+                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)
+    ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)),
                                        border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                    ),
@@ -2367,8 +2374,8 @@ class _ItemCarState extends State<ItemCar> {
         editingControllerColor=TextEditingController();
         numCarController=TextEditingController();
         regionCarController=TextEditingController();
-        numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
-        regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
+        //numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
+        //regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
         if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
           _brandCar=widget.modelOrderShow!.carBrandtitle;
           _idBrand=widget.modelOrderShow!.carBrandid;
@@ -2438,39 +2445,6 @@ class _ItemDateState extends State<ItemDate> {
                       ),),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Expanded(
-                    child: _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
-                      child: Text('Править',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                            color: AppColors.colorIndigo
-                        ),),
-                      onTap: (){
-                         showMaterialModalBottomSheet(
-                           backgroundColor: Colors.white,
-                             context: context, builder:
-                         (context)=>ContainerBottomSheetEditTime(
-                           onTimeSelect: (tStart,tEnd){
-                             setState(() {
-                               if(_timeStart!=tStart||_timeEnd!=tEnd){
-                                 _timeStart=tStart;
-                                 _timeEnd=tEnd;
-                                 _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
-                                 _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
-                                 widget.callback(true);
-                               }
-                             });
-                           },
-                           time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
-
-                      },
-                    ):Container(),
-                  ),
-                ),
               ],
             ),
           ),
@@ -2491,13 +2465,47 @@ class _ItemDateState extends State<ItemDate> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child: Text('${widget.date}',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                              )),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('${widget.date}',
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                  )),
+                              _editStatusMain!=GlobalData.VIEW_MODE?Padding(
+                                padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
+                                child: GestureDetector(
+                                  onTap: (){
+                                     //date picker
+                                    DatePicker.showDatePicker(context,
+                                        showTitleActions: true,
+                                        minTime: DateTime(2021, 6, 7),
+                                        maxTime: DateTime(2025, 6, 7),
+                                        onChanged: (date) {
+                                        },
+                                        onConfirm: (date) {
+                                          setState(() {
+                                            _dateValue=date.toString().split(' ')[0];
+                                            _order.update('date', (value) =>_dateValue);
+                                            widget.date=_dateValue;
+                                          });
+
+                                        },
+                                        currentTime: DateTime(int.parse(widget.date!.split('-')[0]),int.parse(widget.date!.split('-')[1]),int.parse(widget.date!.split('-')[2])), locale: LocaleType.ru);
+                                  },
+                                  child:
+                                  Icon(
+                                    Icons.edit,
+                                    color: AppColors.colorBackgrondProfile,
+                                    size: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
+                                  ),
+                                ),
+                              ):Container(),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -2519,11 +2527,45 @@ class _ItemDateState extends State<ItemDate> {
                       Expanded(
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                          child:  Text('${TimeParser.parseHouForWidget(_timeStart!)}-${TimeParser.parseHouForWidget(_timeEnd!)}',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
+                          child:  Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('${TimeParser.parseHouForWidget(_timeStart!)}-${TimeParser.parseHouForWidget(_timeEnd!)}',
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(color: AppColors.textColorPhone,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
+                              _editStatusMain!=GlobalData.VIEW_MODE?Padding(
+                                padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
+                                child: GestureDetector(
+                                  onTap: (){
+                                    showMaterialModalBottomSheet(
+                                        backgroundColor: Colors.white,
+                                        context: context, builder:
+                                        (context)=>ContainerBottomSheetEditTime(
+                                      onTimeSelect: (tStart,tEnd){
+                                        setState(() {
+                                          if(_timeStart!=tStart||_timeEnd!=tEnd){
+                                            _timeStart=tStart;
+                                            _timeEnd=tEnd;
+                                            _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
+                                            _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
+                                            widget.callback(true);
+                                          }
+                                        });
+                                      },
+                                      time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
+                                  },
+                                  child:
+                                  Icon(
+                                    Icons.edit,
+                                    color: AppColors.colorBackgrondProfile,
+                                    size: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
+                                  ),
+                                ),
+                              ):Container()
+                            ],
+                          ),
                         ),
                       ),
                       _order['startTime']>_order['endTime']&&_order['endTime']!=0?
@@ -2564,34 +2606,79 @@ class _ItemDateState extends State<ItemDate> {
                           child:
                           Align(
                             alignment: Alignment.centerRight,
-                            child: DropdownButton<int>(
-                              value: widget.post,
-                              icon: const Icon(Icons.arrow_drop_down,
-                                color: Colors.black,),
-                              iconSize: 24,
-                              elevation: 16,
-                              alignment: Alignment.centerRight,
-                              style: TextStyle(color: AppColors.textColorPhone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                              underline: Container(
-                                height: 2,
-                                color: Colors.transparent,
-                              ),
-                              onChanged: (int? newValue) {
-                                setState(() {
-                                  widget.callback(true);
-                                  widget.post = newValue!;
-                                  _order.update('post', (value) => widget.post);
-                                });
-                              },
-                              items: _getListPosts().map<DropdownMenuItem<int>>((int value) {
-                                return DropdownMenuItem<int>(
-                                  value: value,
-                                  child: Text('$value'),
-                                );
-                              }).toList(),
-                            ),
+                            child:
+                            TextButton(
+                                onPressed: () {
+                                  showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (_) => Container(
+                                        width: MediaQuery.of(context)
+                                            .size
+                                            .width,
+                                        height: SizeUtil.getSize(15, GlobalData.sizeScreen!),
+                                        child: CupertinoPicker(
+                                          backgroundColor: Colors.white,
+                                          itemExtent: 30,
+                                          scrollController:
+                                          FixedExtentScrollController(initialItem: _typeCarInt-1),
+                                          children:
+                                          List.generate(_getListPosts().length, (index){
+                                              return Text('${index+1} пост');
+                                            }),
+                                          onSelectedItemChanged:
+                                              (value) {
+                                              setState(() {
+                                                widget.post=value+1;
+                                              });
+
+                                          },
+                                        ),
+                                      ));
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text('${widget.post}',
+                                      style: TextStyle(
+                                          color: AppColors.textColorPhone,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: SizeUtil.getSize(
+                                              2.0, GlobalData.sizeScreen!)),
+                                    ),
+                                    Icon(Icons.arrow_drop_down,
+                                      color: Colors.black,)
+                                  ],
+                                ))
+
+
+                            // DropdownButton<int>(
+                            //   value: widget.post,
+                            //   icon: const Icon(Icons.arrow_drop_down,
+                            //     color: Colors.black,),
+                            //   iconSize: 24,
+                            //   elevation: 16,
+                            //   alignment: Alignment.centerRight,
+                            //   style: TextStyle(color: AppColors.textColorPhone,
+                            //       fontWeight: FontWeight.bold,
+                            //       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                            //   underline: Container(
+                            //     height: 2,
+                            //     color: Colors.transparent,
+                            //   ),
+                            //   onChanged: (int? newValue) {
+                            //     setState(() {
+                            //       widget.callback(true);
+                            //       widget.post = newValue!;
+                            //       _order.update('post', (value) => widget.post);
+                            //     });
+                            //   },
+                            //   items: _getListPosts().map<DropdownMenuItem<int>>((int value) {
+                            //     return DropdownMenuItem<int>(
+                            //       value: value,
+                            //       child: Text('$value'),
+                            //     );
+                            //   }).toList(),
+                            // ),
                           ),
                         ),
                       ),
@@ -2648,13 +2735,14 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
        Padding(
          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
          child: Row(
+           mainAxisAlignment: MainAxisAlignment.spaceBetween,
            children: [
              Text(widget.modelCalculatePrice.name,
                  style: TextStyle(
                      color: AppColors.textColorItem,
                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                  )),
-             Expanded(
+             Container(
                child: Padding(
                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                  child: widget.modelCalculatePrice.price==0?Align(

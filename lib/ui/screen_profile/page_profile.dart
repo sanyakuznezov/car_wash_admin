@@ -467,6 +467,10 @@ class _PageProfileState extends State<PageProfile> {
         _isLoadAva=false;
         _avatar=GlobalData.URL_BASE_IMAGE+result!.url;
       });
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Ошибка обработки файла...'),));
     }
 
   }

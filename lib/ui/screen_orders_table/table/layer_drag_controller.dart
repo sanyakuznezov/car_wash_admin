@@ -151,7 +151,7 @@ class LayerController extends StatefulWidget{
                                  color: widget.color,
                                  borderRadius: BorderRadius.circular(10)),
                              child: Padding(
-                                 padding: EdgeInsets.all(5),
+                                 padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
                                  child:widget.bodyHeaght>60? Column(
                                    children: [
                                      Text(
@@ -302,7 +302,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                         ),
 
                         child:Padding(
-                            padding: EdgeInsets.all(5),
+                            padding: EdgeInsets.fromLTRB(15,5,5,5),
                             child: Column(
                               children: [
                                 Text(widget.dataOrder['orderBody'].carNumber,
@@ -324,24 +324,18 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                                       children: [
                                         Container(
                                           width: 120.0,
-                                          child: Flexible(
-                                            child: Text('- ${widget.dataOrder['orderBody'].carType}',
-                                              textAlign: TextAlign.center,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 16, color: Colors.white),
-                                            ),
+                                          child: Text('- ${widget.dataOrder['orderBody'].carType}',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 16, color: Colors.white),
                                           ),
                                         ),
                                         Container(
                                           width: 120.0,
-                                          child: Flexible(
-                                            child: Text('- ${widget.dataOrder['orderBody'].brandTitle}',
-                                              textAlign: TextAlign.center,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 16, color: Colors.white),
-                                            ),
+                                          child: Text('- ${widget.dataOrder['orderBody'].brandTitle}',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 16, color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -383,7 +377,6 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
   @override
   void dispose() {
     super.dispose();
-    print('dispose feedback');
     if(!GlobalData.accept){
       Fluttertoast.showToast(
           msg: "Заказ вернулся в исходное состояние",

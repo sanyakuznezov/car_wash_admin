@@ -16,8 +16,8 @@ import 'body_order.dart';
 
 bool _isWashingOrder=false;
 
+//столбцы для размещения заказов и перемещение по слою заказов
 
-//слой для размещения заказов и перемещение по слою заказов
 class DragTargetTable extends StatefulWidget{
 
   double bodyHeaght;

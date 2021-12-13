@@ -20,17 +20,15 @@ class TableHead extends StatelessWidget {
       child:
           Container(
             margin: EdgeInsets.fromLTRB(50, 0, 0, 0),
-            child: Expanded(
-              child: ListView(
-                controller: scrollController,
-                physics: ClampingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                children: List.generate(posts, (index) {
-                  return MultiplicationTableCell(posts: posts,
-                    value: index + 1,
-                  );
-                }),
-              ),
+            child: ListView(
+              controller: scrollController,
+              physics: ClampingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              children: List.generate(posts, (index) {
+                return MultiplicationTableCell(posts: posts,
+                  value: index + 1,
+                );
+              }),
             ),
           )
 

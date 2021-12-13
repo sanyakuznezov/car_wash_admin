@@ -374,7 +374,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                           }
                                         },
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.7,GlobalData.sizeScreen!)
+                                           ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
                                         ),
