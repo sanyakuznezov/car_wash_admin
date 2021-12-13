@@ -362,6 +362,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                       child: TextField(
                                         maxLength: 6,
                                         controller: numCarController,
+                                        textCapitalization: TextCapitalization.characters,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
@@ -374,7 +375,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                           }
                                         },
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.7,GlobalData.sizeScreen!)
+                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
                                            ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
@@ -400,7 +401,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         },
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.all(SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+      ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                         ),

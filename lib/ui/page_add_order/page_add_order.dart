@@ -1561,11 +1561,8 @@ class _ItemClientState extends State<ItemClient> {
                                 filled: true,
                                   hintText: '....',
                                   prefixText: '+7 ',
-                                  contentPadding: EdgeInsets.all(
-                                      SizeUtil.getSize(
-                                          1.5,
-                                          GlobalData
-                                              .sizeScreen!)),
+                                  contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(0.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!)
+                                  ,SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
                                   border: InputBorder.none),
                               onChanged: (text) {
                                    if(text.isNotEmpty){
@@ -1892,8 +1889,7 @@ class _ItemCarState extends State<ItemCar> {
      bool _isFirstData=true;
      late FocusNode focusEditColor;
      late TextEditingController editingControllerColor;
-     bool _isEditCarNumber=false;
-     bool _isEditCarRegion=false;
+     int _keyBoardType=0;
 
   @override
   Widget build(BuildContext context) {
@@ -2038,28 +2034,7 @@ class _ItemCarState extends State<ItemCar> {
                                Container(
                                  height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
-                                 child: TextField(
-                                   maxLength: 6,
-                                   controller: numCarController,
-                                   textCapitalization: TextCapitalization.characters,
-                                   textAlign: TextAlign.center,
-                                   style: TextStyle(
-                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                   ),
-                                   onChanged: (text){
-                                     if(text.isNotEmpty){
-                                       widget.callback(true);
-                                       _order.update('carNumber', (value) => text);
-                                     }
-                                   },
-                                   decoration: InputDecoration(
-                                     hintText: '${_order['carNumber']}',
-                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)
-                                     ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)),
-                                     border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
-
-                                   ),
-                                 ),
+                                 child: _inputNumCar()
                                ),
                                Container(
                                  height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
@@ -2075,13 +2050,14 @@ class _ItemCarState extends State<ItemCar> {
                                        if(text.isNotEmpty){
                                          widget.callback(true);
                                          _order.update('carRegion', (value) => text);
+                                       }else{
+                                         _order.update('carRegion', (value) => '000');
                                        }
                                    },
                                    keyboardType: TextInputType.number,
                                    decoration: InputDecoration(
-                                     hintText: '${_order['carRegion']}',
-                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)
-    ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.0,GlobalData.sizeScreen!)),
+                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+    ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                        border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                    ),
@@ -2354,6 +2330,36 @@ class _ItemCarState extends State<ItemCar> {
 
   }
 
+     _inputNumCar(){
+       return TextField(
+         maxLength: 6,
+         controller: numCarController,
+         textCapitalization: TextCapitalization.characters,
+         textAlign: TextAlign.center,
+         style: TextStyle(
+             fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+         ),
+         onChanged: (text){
+           if(text.isNotEmpty){
+             widget.callback(true);
+             _order.update('carNumber', (value) => text);
+           }else{
+             _order.update('carNumber', (value) => 'AA000A');
+           }
+         },
+         decoration: InputDecoration(
+           contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+               ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+           border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
+
+         ),
+       );
+     }
+
+
+
+
+
      _getType(int id) {
        if (id == 1) {
          return 'Седан';
@@ -2374,8 +2380,8 @@ class _ItemCarState extends State<ItemCar> {
         editingControllerColor=TextEditingController();
         numCarController=TextEditingController();
         regionCarController=TextEditingController();
-        //numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
-        //regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
+        numCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carNumber:'A000AA';
+        regionCarController!.text=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.carRegion.toString():'000';
         if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
           _brandCar=widget.modelOrderShow!.carBrandtitle;
           _idBrand=widget.modelOrderShow!.carBrandid;
@@ -2649,36 +2655,6 @@ class _ItemDateState extends State<ItemDate> {
                                       color: Colors.black,)
                                   ],
                                 ))
-
-
-                            // DropdownButton<int>(
-                            //   value: widget.post,
-                            //   icon: const Icon(Icons.arrow_drop_down,
-                            //     color: Colors.black,),
-                            //   iconSize: 24,
-                            //   elevation: 16,
-                            //   alignment: Alignment.centerRight,
-                            //   style: TextStyle(color: AppColors.textColorPhone,
-                            //       fontWeight: FontWeight.bold,
-                            //       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                            //   underline: Container(
-                            //     height: 2,
-                            //     color: Colors.transparent,
-                            //   ),
-                            //   onChanged: (int? newValue) {
-                            //     setState(() {
-                            //       widget.callback(true);
-                            //       widget.post = newValue!;
-                            //       _order.update('post', (value) => widget.post);
-                            //     });
-                            //   },
-                            //   items: _getListPosts().map<DropdownMenuItem<int>>((int value) {
-                            //     return DropdownMenuItem<int>(
-                            //       value: value,
-                            //       child: Text('$value'),
-                            //     );
-                            //   }).toList(),
-                            // ),
                           ),
                         ),
                       ),
@@ -2914,4 +2890,3 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
   }
 
   }
-
