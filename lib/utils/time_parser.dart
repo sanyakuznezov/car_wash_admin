@@ -310,5 +310,32 @@ class TimeParser{
     }
     return '$hour:$min';
   }
+
+  static List<int> parseMaxRecordTime(){
+    List<int> date=[];
+    String d=GlobalData.date!.split(' ')[0];
+    int? r=GlobalData.maxRecordRange;
+    int year=int.parse(d.split('-')[0]);
+    int mount=int.parse(d.split('-')[1]);
+    int dey=int.parse(d.split('-')[2]);
+    String time=DateTime(year,mount,dey).add(Duration(days:r!)).toString().split(' ')[0];
+    date.add(int.parse(time.split('-')[0]));
+    date.add(int.parse(time.split('-')[1]));
+    date.add(int.parse(time.split('-')[2]));
+    return date;
+  }
+  static List<int> parseMinRecordTime(){
+    List<int> date=[];
+    String d=GlobalData.date!.split(' ')[0];
+    int? r=GlobalData.maxRecordRange;
+    int year=int.parse(d.split('-')[0]);
+    int mount=int.parse(d.split('-')[1]);
+    int dey=int.parse(d.split('-')[2]);
+    String time=DateTime(year,mount,dey).subtract(Duration(days:3)).toString().split(' ')[0];
+    date.add(int.parse(time.split('-')[0]));
+    date.add(int.parse(time.split('-')[1]));
+    date.add(int.parse(time.split('-')[2]));
+    return date;
+  }
 }
 

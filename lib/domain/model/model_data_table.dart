@@ -10,7 +10,8 @@
   int endDayHour;
   int endDayMin;
   bool isWorkDay;
+  int maxRecordRange;
 
-  ModelDataTable({required this.posts, required this.startDayHour, required this.startDayMin,
+  ModelDataTable({required this.maxRecordRange,required this.posts, required this.startDayHour, required this.startDayMin,
     required this.endDayHour, required this.endDayMin, required this.isWorkDay});
 }

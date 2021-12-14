@@ -53,45 +53,46 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
 
     return Scaffold(
       backgroundColor: AppColors.colorBackgrondProfile,
+      appBar:             AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.colorIndigo,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text('Время',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                          fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                  ),
+
+                ],
+              ),
+            ),
+          )
+
+        ],
+      ),
       body: SingleChildScrollView(
         child: !_isSuccesSendOrder?Column(
           children: [
-            AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              actions: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              color: AppColors.colorIndigo,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text('Время',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                                fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                        ),
-
-                      ],
-                    ),
-                  ),
-                )
-
-              ],
-            ),
             _PageTime(order: widget.order),
             _ItemInfoMain(order: widget.order),
             _ListService(modelServiceList: widget.list),

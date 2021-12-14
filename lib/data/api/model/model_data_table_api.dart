@@ -10,6 +10,7 @@
    int endDayHour;
    int endDayMin;
    bool isWorkDay;
+   int maxRecordRange;
 
   ModelDataTableApi.fromApi({required Map<String,dynamic> map}):
         posts=map['posts'],
@@ -17,5 +18,6 @@
    startDayMin=map['startDayMin'],
    endDayHour=map['endDayHour'],
    endDayMin=map['endDayMin'],
-   isWorkDay=map['isWorkDay'];
+   isWorkDay=map['isWorkDay'],
+   maxRecordRange=map['maxRecordRange'];
  }

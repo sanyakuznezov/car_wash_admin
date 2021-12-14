@@ -14,6 +14,7 @@
    static int? post;
    static int? id;
    static int? idOrder;
+   static int? maxRecordRange;
    static bool? isCollision=false;
    static const String URL_BASE_IMAGE='https://app.crmstep.ru';
    static String? date;

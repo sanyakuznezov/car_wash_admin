@@ -8,7 +8,7 @@ class MapperDataTable{
 
   static ModelDataTable fromApi({required ModelDataTableApi modelDataTableApi}){
 
-    return ModelDataTable(posts: modelDataTableApi.posts,
+    return ModelDataTable(maxRecordRange:modelDataTableApi.maxRecordRange,posts: modelDataTableApi.posts,
         startDayHour: modelDataTableApi.startDayHour, startDayMin: modelDataTableApi.startDayMin,
         endDayHour: modelDataTableApi.endDayHour, endDayMin: modelDataTableApi.endDayMin, isWorkDay: modelDataTableApi.isWorkDay);
   }

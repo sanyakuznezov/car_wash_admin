@@ -13,6 +13,7 @@ import 'package:car_wash_admin/ui/page_add_order/page_add_order.dart';
 import 'package:car_wash_admin/ui/page_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_quick_order/page_quick_order_next.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -49,7 +50,7 @@ import '../../global_data.dart';
   List<int> _idComplexList=[];
   bool _isLoading=false;
   Map<String,dynamic> _order={'date':'','post':0,'startTime':'','carType':1,'carNumber':'A000AA',
-    'carRegion':000,
+    'carRegion':0,
     'totalPrice':0,'sale':0,'workTime':0,'ComplexesList':[],
     'ServicesList':[]};
 
@@ -230,8 +231,9 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                             onTap: (){
                               DatePicker.showDatePicker(context,
                                   showTitleActions: true,
-                                  minTime: DateTime(2021, 6, 7),
-                                  maxTime: DateTime(2025, 6, 7), onChanged: (date) {
+                                  minTime: DateTime(TimeParser.parseMinRecordTime()[0],TimeParser.parseMinRecordTime()[1],TimeParser.parseMinRecordTime()[2]),
+                                  maxTime: DateTime(TimeParser.parseMaxRecordTime()[0],TimeParser.parseMaxRecordTime()[1],TimeParser.parseMaxRecordTime()[2]),
+                                  onChanged: (date) {
                                   }, onConfirm: (date) {
                                     setState(() {
                                       _dateValue=date.toString().split(' ')[0];
@@ -394,9 +396,9 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         controller: regionCarController,
                                         onChanged: (text){
                                           if(text.isNotEmpty){
-                                            _order.update('carRegion', (value) => text);
+                                            _order.update('carRegion', (value) => int.parse(text));
                                           }else{
-                                            _order.update('carRegion', (value) => '000');
+                                            _order.update('carRegion', (value) => 0);
                                           }
                                         },
                                         keyboardType: TextInputType.number,
@@ -689,7 +691,6 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
             builder: (context,snapshot,widget) {
               if(snapshot!=null){
                 _totalPriceFinalOfListService=snapshot.totalPrice;
-                _order.update('totalPrice', (value) => snapshot.totalPrice);
                 _order.update('sale', (value) => snapshot.sale);
                 _order.update('workTime', (value) => snapshot.workTime);
                 _finalPrice= (snapshot.totalPrice).toString();
@@ -853,10 +854,9 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                     Container(
                                       width: SizeUtil.getSize(20,GlobalData.sizeScreen!),
                                       child: SizedBox(
-                                        height: SizeUtil.getSize(5.5
-                                            ,GlobalData.sizeScreen!),
+                                        height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
                                         child: TextField(
-                                            keyboardType: TextInputType.number,
+                                            keyboardType: _listService.length>1?TextInputType.number:TextInputType.none,
                                             decoration: InputDecoration(
                                                 hintText: _finalPrice,
                                                 hintStyle: TextStyle(
@@ -905,7 +905,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Padding(
-                                        padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0),
+                                        padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.2, GlobalData.sizeScreen!), 0),
                                         child: Text('RUB',
                                             style: TextStyle(
                                                 color: AppColors.textColorPhone,

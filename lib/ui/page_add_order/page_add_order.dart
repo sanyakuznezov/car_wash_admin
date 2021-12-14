@@ -32,7 +32,7 @@ import '../../../global_data.dart';
 
 
  Map<String,dynamic> _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
- 'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
+ 'carRegion':000,'color':'Черный','carBrandId':0,'carModelId':0,'clientFullname':'','clientPhone':'',
    'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
    'ServicesList':[]};
  String _surName='';
@@ -196,7 +196,6 @@ class PageAddOrder extends StatefulWidget{
                         _validateTime(map: _order, context: context);
                       }
 
-
                     },));
 
             },
@@ -230,7 +229,6 @@ class PageAddOrder extends StatefulWidget{
               future: _getOrderShow(context: context,id: widget.idOrder!),
               builder: (context,order){
                 if(order.hasError){
-                  print('Error ${order.error}');
                    return Container(
                      height: MediaQuery.of(context).size.height,
                      child: Center(
@@ -891,6 +889,9 @@ class _ItemCommentState extends State<ItemComment> {
 class _ItemPriceState extends State<ItemPrice> {
 
     String? _selWorkerString='....';
+    late TextEditingController _textEditingController;
+    late FocusNode _focusNode;
+    String _finalPrice='';
     bool _isEdit=false;
     ModelWorker? _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
 
@@ -902,34 +903,58 @@ class _ItemPriceState extends State<ItemPrice> {
      child: ValueListenableBuilder<ModelCalculatePrice>(
        valueListenable: _notifier,
        builder: (context,snapshot,widget) {
-         if(snapshot!=null){
-           _order.update('totalPrice', (value) => snapshot.totalPrice-snapshot.sale);
+         if(snapshot.result){
+           print('Total price ${_order['totalPrice'].toString()} ${(snapshot.totalPrice).toString()}');
            _order.update('sale', (value) => snapshot.sale);
            _order.update('workTime', (value) => snapshot.workTime);
+           _finalPrice=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?_order['totalPrice'].toString():(snapshot.totalPrice).toString();
+
          }
          return Column(
            children: [
              Container(
                height: SizeUtil.getSize(5,GlobalData.sizeScreen!),
                margin: EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0),
-               child: Row(
-                 children: [
-                   SizedBox(
-                     child: SvgPicture.asset('assets/ic_price.svg'),
-                     height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
-                   Expanded(
-                     child: Padding(
-                       padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
-                       child: Text('Стоимость',
-                         style: TextStyle(
-                             fontWeight: FontWeight.bold,
-                             fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
-                             color: AppColors.textColorTitle
-                         ),),
-                     ),
-                   ),
+               child: Stack(
+                   children:[ Row(
+                     children: [
+                       SizedBox(
+                         child: SvgPicture.asset('assets/ic_price.svg'),
+                         height: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),),
+                       Expanded(
+                         child: Padding(
+                           padding: EdgeInsets.fromLTRB(SizeUtil.getSize(2.0,GlobalData.sizeScreen!), 0, 0, 0),
+                           child: Text('Стоимость',
+                             style: TextStyle(
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                                 color: AppColors.textColorTitle
+                             ),),
+                         ),
+                       ),
 
-                 ],
+                     ],
+                   ),
+                     Align(
+                       alignment: Alignment.bottomRight,
+                       child: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.ADD_ORDER_MODE?GestureDetector(
+                         child: Text('Править',
+                           textAlign: TextAlign.right,
+                           style: TextStyle(
+                               fontWeight: FontWeight.bold,
+                               fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!),
+                               color: AppColors.colorIndigo
+                           ),),
+                         onTap: (){
+                           setState(() {
+                             _focusNode.requestFocus();
+
+                           });
+                         },
+                       ):Container(),
+                     )
+
+                   ]
                ),
              ),
              Container(
@@ -948,30 +973,30 @@ class _ItemPriceState extends State<ItemPrice> {
                              )),
                          Expanded(
                            child: Padding(
-                             padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.totalPrice} RUB',
-                                 textAlign: TextAlign.end,
-                                 style: TextStyle(
-                                     color: AppColors.textColorPhone,
-                                     fontWeight: FontWeight.bold,
-                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )):Align(
-                               alignment: Alignment.centerRight,
-                               child: SizedBox(
-                                 height: SizeUtil.getSize(
-                                     2.0,
-                                     GlobalData.sizeScreen!),
-                                 width: SizeUtil.getSize(
-                                     2.0,
-                                     GlobalData.sizeScreen!),
-                                 child: CircularProgressIndicator(
-                                   color: AppColors.colorIndigo,
-                                   strokeWidth: SizeUtil.getSize(
-                                       0.3,
+                               padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                               child: !_isLoading?Text('${snapshot.totalPrice} RUB',
+                                   textAlign: TextAlign.end,
+                                   style: TextStyle(
+                                       color: AppColors.textColorPhone,
+                                       fontWeight: FontWeight.bold,
+                                       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                   )):Align(
+                                 alignment: Alignment.centerRight,
+                                 child: SizedBox(
+                                   height: SizeUtil.getSize(
+                                       2.0,
                                        GlobalData.sizeScreen!),
+                                   width: SizeUtil.getSize(
+                                       2.0,
+                                       GlobalData.sizeScreen!),
+                                   child: CircularProgressIndicator(
+                                     color: AppColors.colorIndigo,
+                                     strokeWidth: SizeUtil.getSize(
+                                         0.3,
+                                         GlobalData.sizeScreen!),
+                                   ),
                                  ),
-                               ),
-                             )
+                               )
                            ),
                          ),
                        ],
@@ -1025,46 +1050,108 @@ class _ItemPriceState extends State<ItemPrice> {
                        height: 1,
                        color: AppColors.colorLine),
 
-                   Padding(
-                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                     child: Row(
-                       children: [
-                         Text('Итого',
-                             style: TextStyle(
-                                 color: Colors.black,
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                             )),
-                         Expanded(
-                           child: Padding(
+                   Container(
+                     width: MediaQuery.of(context).size.width,
+                     child: Padding(
+                       padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                       child: Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         children: [
+                           Text('Итого',
+                               style: TextStyle(
+                                   color: Colors.black,
+                                   fontWeight: FontWeight.bold,
+                                   fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                               )),
+                           Padding(
                              padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                             child: !_isLoading?Text('${snapshot.totalPrice} RUB',
-                                 textAlign: TextAlign.end,
-                                 style: TextStyle(
-                                     color: AppColors.textColorPhone,
-                                     fontWeight: FontWeight.bold,
-                                     fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                 )):Align(
-                               alignment: Alignment.centerRight,
-                               child: SizedBox(
-                                 height: SizeUtil.getSize(
-                                     2.0,
-                                     GlobalData.sizeScreen!),
-                                 width: SizeUtil.getSize(
-                                     2.0,
-                                     GlobalData.sizeScreen!),
-                                 child: CircularProgressIndicator(
-                                   color: AppColors.colorIndigo,
-                                   strokeWidth: SizeUtil.getSize(
-                                       0.3,
-                                       GlobalData.sizeScreen!),
+                             child: Row(
+                               children: [
+                                 !_isLoading?Container(
+                                   width: SizeUtil.getSize(20,GlobalData.sizeScreen!),
+                                   child: SizedBox(
+                                     height: SizeUtil.getSize(5.5,GlobalData.sizeScreen!),
+                                     child: TextField(
+                                         keyboardType:
+                                         _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.ADD_ORDER_MODE?TextInputType.number:TextInputType.none,
+                                         decoration: InputDecoration(
+                                             hintText: _finalPrice,
+                                             hintStyle: TextStyle(
+                                                 color: AppColors.textColorPhone,
+                                                 fontWeight: FontWeight.bold,
+                                                 fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                             ),
+                                             //contentPadding: EdgeInsets.all(SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
+                                             border: InputBorder.none),
+                                         onChanged: (text) {
+                                           if (text.isNotEmpty) {
+                                             _order.update('totalPrice', (value) => int.parse(text));
+                                           }else{
+                                             _order.update('totalPrice', (value) => _finalPrice);
+                                           }
+                                         },
+                                         controller: _textEditingController,
+                                         focusNode: _focusNode,
+                                         textAlign: TextAlign.end,
+                                         style: TextStyle(
+                                             color: AppColors.textColorPhone,
+                                             fontWeight: FontWeight.bold,
+                                             fontSize: SizeUtil.getSize(2.3,GlobalData.sizeScreen!)
+                                         )),
+                                   ),
+                                 ):Align(
+                                   alignment: Alignment.centerRight,
+                                   child: SizedBox(
+                                     height: SizeUtil.getSize(
+                                         2.0,
+                                         GlobalData.sizeScreen!),
+                                     width: SizeUtil.getSize(
+                                         2.0,
+                                         GlobalData.sizeScreen!),
+                                     child: CircularProgressIndicator(
+                                       color: AppColors.colorIndigo,
+                                       strokeWidth: SizeUtil.getSize(
+                                           0.3,
+                                           GlobalData.sizeScreen!),
+                                     ),
+                                   ),
                                  ),
-                               ),
+                                 Align(
+                                   alignment: Alignment.centerRight,
+                                   child: Padding(
+                                     padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0,0, 0),
+                                     child: Text('RUB',
+                                         style: TextStyle(
+                                             color: AppColors.textColorPhone,
+                                             fontWeight: FontWeight.bold,
+                                             fontSize: SizeUtil.getSize(
+                                                 2.3, GlobalData.sizeScreen!))),
+                                   ),
+                                 ),
+                                 _editStatusMain==GlobalData.EDIT_MODE&&_order['totalPrice'].toString()!=(snapshot.totalPrice).toString()||_editStatusMain==GlobalData.VIEW_MODE&&_order['totalPrice'].toString()!=(snapshot.totalPrice).toString()?
+                                 Padding(
+                                   padding:EdgeInsets.fromLTRB(SizeUtil.getSize(1.0, GlobalData.sizeScreen!), 0,0, 0),
+                                   child: GestureDetector(
+                                     child: Icon(Icons.error,color: Colors.red,size: SizeUtil.getSize(2.2,GlobalData.sizeScreen!),),
+                                     onTap: (){
+                                       Fluttertoast.showToast(
+                                           msg: "Цена скорректирована при создании заказа",
+                                           toastLength: Toast.LENGTH_SHORT,
+                                           gravity: ToastGravity.CENTER,
+                                           timeInSecForIosWeb: 3,
+                                           backgroundColor: Colors.white,
+                                           textColor: Colors.black,
+                                           fontSize: 16.0
+                                       );
+                                     },
+                                   ),
+                                 ):Container()
+                               ],
                              ),
                            ),
-                         ),
 
-                       ],
+                         ],
+                       ),
                      ),
                    ),
                    Container(
@@ -1072,91 +1159,91 @@ class _ItemPriceState extends State<ItemPrice> {
                        color: AppColors.colorLine),
 
                    Padding(
-                     padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                     child: Row(
-                       children: [
-                         Text('Исполнитель',
-                             style: TextStyle(
-                                 color: AppColors.textColorItem,
-                                 fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                             )),
-                         FutureBuilder<List<ModelWorker>?>(
-                           future: RepositoryModule.userRepository().getWorkers(context: context),
-                           builder: (context,value){
-                                  if (value.hasData) {
-                                    return Expanded(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Padding(
-                                            padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                                            child: Text(_selWorkerString!,
-                                                textAlign: TextAlign.end,
-                                                style: TextStyle(
-                                                    color: AppColors.textColorPhone,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                                )),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    SlideTransitionLift(
-                                                        PageListWorkers(
-                                                      onWorker: (data) {
-                                                        setState(() {
-                                                          _isEdit=true;
-                                                          if(data==null){
-                                                            _selWorkerString='....';
-                                                            _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
-                                                          }else{
-                                                            _modelWorker = data;
-                                                            _selWorkerString ='${data.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
-                                                          }
-                                                        });
-                                                      },
-                                                      list: value.data,
-                                                      selWorker: _modelWorker!,
-                                                    )));
-                                              },
-                                              child: _editStatusMain!=GlobalData.VIEW_MODE?Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: AppColors.colorIndigo,
-                                              ):Container(),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    return Expanded(
-                                      child: Padding(
-                                        padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: SizedBox(
-                                            height: SizeUtil.getSize(
-                                                2.0, GlobalData.sizeScreen!),
-                                            width: SizeUtil.getSize(
-                                                2.0, GlobalData.sizeScreen!),
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.colorIndigo,
-                                              strokeWidth: SizeUtil.getSize(
-                                                  0.3, GlobalData.sizeScreen!),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                         ),
+                       padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                       child: Row(
+                         children: [
+                           Text('Исполнитель',
+                               style: TextStyle(
+                                   color: AppColors.textColorItem,
+                                   fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                               )),
+                           FutureBuilder<List<ModelWorker>?>(
+                             future: RepositoryModule.userRepository().getWorkers(context: context),
+                             builder: (context,value){
+                               if (value.hasData) {
+                                 return Expanded(
+                                   child: Row(
+                                     mainAxisAlignment: MainAxisAlignment.end,
+                                     children: [
+                                       Padding(
+                                         padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                         child: Text(_selWorkerString!,
+                                             textAlign: TextAlign.end,
+                                             style: TextStyle(
+                                                 color: AppColors.textColorPhone,
+                                                 fontWeight: FontWeight.bold,
+                                                 fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                                             )),
+                                       ),
+                                       Align(
+                                         alignment: Alignment.centerRight,
+                                         child: GestureDetector(
+                                           onTap: () {
+                                             Navigator.push(
+                                                 context,
+                                                 SlideTransitionLift(
+                                                     PageListWorkers(
+                                                       onWorker: (data) {
+                                                         setState(() {
+                                                           _isEdit=true;
+                                                           if(data==null){
+                                                             _selWorkerString='....';
+                                                             _modelWorker=ModelWorker(id:0, firstname: '', lastname: '', patronymic: '', avatar: '', phone: '', email: '', post: '');
+                                                           }else{
+                                                             _modelWorker = data;
+                                                             _selWorkerString ='${data.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
+                                                           }
+                                                         });
+                                                       },
+                                                       list: value.data,
+                                                       selWorker: _modelWorker!,
+                                                     )));
+                                           },
+                                           child: _editStatusMain!=GlobalData.VIEW_MODE?Icon(
+                                             Icons.arrow_forward_ios,
+                                             color: AppColors.colorIndigo,
+                                           ):Container(),
+                                         ),
+                                       ),
+                                     ],
+                                   ),
+                                 );
+                               } else {
+                                 return Expanded(
+                                   child: Padding(
+                                     padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.5,GlobalData.sizeScreen!), 0),
+                                     child: Align(
+                                       alignment: Alignment.centerRight,
+                                       child: SizedBox(
+                                         height: SizeUtil.getSize(
+                                             2.0, GlobalData.sizeScreen!),
+                                         width: SizeUtil.getSize(
+                                             2.0, GlobalData.sizeScreen!),
+                                         child: CircularProgressIndicator(
+                                           color: AppColors.colorIndigo,
+                                           strokeWidth: SizeUtil.getSize(
+                                               0.3, GlobalData.sizeScreen!),
+                                         ),
+                                       ),
+                                     ),
+                                   ),
+                                 );
+                               }
+                             },
+                           ),
 
-                       ],
-                     )
+                         ],
+                       )
                    ),
 
                  ],
@@ -1164,6 +1251,7 @@ class _ItemPriceState extends State<ItemPrice> {
              ),
            ],
          );
+
        }
      ),
    );
@@ -1173,11 +1261,15 @@ class _ItemPriceState extends State<ItemPrice> {
   @override
   void dispose() {
     super.dispose();
+    _textEditingController.dispose();
+    _focusNode.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    _focusNode=FocusNode();
+    _textEditingController=TextEditingController();
     if(_isEdit){
       widget.callback(true);
     }
@@ -1574,7 +1666,7 @@ class _ItemClientState extends State<ItemClient> {
                             ):Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: AppColors.colorDisableButton,
+                                color: Colors.black12,
                                 borderRadius: BorderRadius.all(Radius.circular( SizeUtil.getSize(1.0, GlobalData.sizeScreen!)))
                               ),
                               child:
@@ -2049,9 +2141,9 @@ class _ItemCarState extends State<ItemCar> {
                                    onChanged: (text){
                                        if(text.isNotEmpty){
                                          widget.callback(true);
-                                         _order.update('carRegion', (value) => text);
+                                         _order.update('carRegion', (value) => int.parse(text));
                                        }else{
-                                         _order.update('carRegion', (value) => '000');
+                                         _order.update('carRegion', (value) =>0);
                                        }
                                    },
                                    keyboardType: TextInputType.number,
@@ -2063,6 +2155,7 @@ class _ItemCarState extends State<ItemCar> {
                                    ),
                                  ),
                                ),
+
                              ],
                            ):Row(
                              mainAxisAlignment: MainAxisAlignment.end,
@@ -2234,13 +2327,14 @@ class _ItemCarState extends State<ItemCar> {
                        ),
                      ):Expanded(
                        child: Padding(
-                           padding:EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0, 0),
+                           padding:EdgeInsets.fromLTRB(0, 0, 0, SizeUtil.getSize(1.2, GlobalData.sizeScreen!)),
                            child: SizedBox(
                              height:
-                             SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
+                             SizeUtil.getSize(5.0, GlobalData.sizeScreen!),
                              child: TextField(
                                  textAlign: TextAlign.end,
                                  focusNode: focusEditColor,
+                                 keyboardType: _editStatusMain!=GlobalData.VIEW_MODE?TextInputType.text:TextInputType.none,
                                  style: TextStyle(
                                      color: AppColors.textColorPhone,
                                      fontWeight: FontWeight.bold,
@@ -2488,8 +2582,8 @@ class _ItemDateState extends State<ItemDate> {
                                      //date picker
                                     DatePicker.showDatePicker(context,
                                         showTitleActions: true,
-                                        minTime: DateTime(2021, 6, 7),
-                                        maxTime: DateTime(2025, 6, 7),
+                                        minTime: DateTime(TimeParser.parseMinRecordTime()[0],TimeParser.parseMinRecordTime()[1],TimeParser.parseMinRecordTime()[2]),
+                                        maxTime: DateTime(TimeParser.parseMaxRecordTime()[0],TimeParser.parseMaxRecordTime()[1],TimeParser.parseMaxRecordTime()[2]),
                                         onChanged: (date) {
                                         },
                                         onConfirm: (date) {

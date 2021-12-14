@@ -935,6 +935,8 @@ class MainServiseApi {
         'pId': data['pid'],
         'token': data['token']
       };
+
+      print('Id Order $id');
       try {
         final result = await _dio.get(
             'orders/show',

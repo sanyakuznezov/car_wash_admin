@@ -8,6 +8,7 @@ import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_profile.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -173,7 +174,6 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                   );
                 }
 
-                GlobalData.numBoxes=_tableState!.modelDataTable!.posts;
                 if(!_tableState!.modelDataTable!.isWorkDay){
                   return Container(
                       alignment: Alignment.center,
@@ -399,8 +399,8 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                   onPressed: () {
                                     DatePicker.showDatePicker(context,
                                         showTitleActions: true,
-                                        minTime: DateTime(2021, 6, 7),
-                                        maxTime: DateTime(2025, 6, 7),
+                                        minTime: DateTime(TimeParser.parseMinRecordTime()[0],TimeParser.parseMinRecordTime()[1],TimeParser.parseMinRecordTime()[2]),
+                                        maxTime: DateTime(TimeParser.parseMaxRecordTime()[0],TimeParser.parseMaxRecordTime()[1],TimeParser.parseMaxRecordTime()[2]),
                                         onConfirm: (date) {
                                       setState(() {
                                         GlobalData.date = date.toString().split(' ')[0];

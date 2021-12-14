@@ -109,6 +109,8 @@ abstract class TableSatetBase with Store{
      msgError='Ошибка получения данных';
    }
    modelDataTable=result;
+   GlobalData.maxRecordRange=modelDataTable!.maxRecordRange;
+   GlobalData.numBoxes=modelDataTable!.posts;
    isLoading=false;
   }
 
