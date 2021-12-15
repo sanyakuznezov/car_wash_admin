@@ -1572,9 +1572,14 @@ class _ItemClientState extends State<ItemClient> {
   void dispose() {
     super.dispose();
     myFocusNodeTel.dispose();
+    myFocusNodeTel.dispose();
     myFocusNodePatronymic.dispose();
     myFocusNodeName.dispose();
     myFocusNodeSurname.dispose();
+    telController!.dispose();
+    nameController!.dispose();
+    surnameController!.dispose();
+    patronymicControler!.dispose();
   }
 
   @override
@@ -1981,7 +1986,6 @@ class _ItemCarState extends State<ItemCar> {
      bool _isFirstData=true;
      late FocusNode focusEditColor;
      late TextEditingController editingControllerColor;
-     int _keyBoardType=0;
 
   @override
   Widget build(BuildContext context) {
@@ -2470,6 +2474,7 @@ class _ItemCarState extends State<ItemCar> {
 
      @override
   void initState() {
+    super.initState();
         focusEditColor=FocusNode();
         editingControllerColor=TextEditingController();
         numCarController=TextEditingController();

@@ -31,6 +31,50 @@ class _PageListWorkersState extends State<PageListWorkers> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      appBar:           AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.colorIndigo,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Список работников',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: SizeUtil.getSize(
+                              2.8, GlobalData.sizeScreen!)),
+                    ),
+                  ),
+
+
+                ],
+              ),
+            ),
+          )
+
+        ],
+      ),
       floatingActionButton: _isSelected?FloatingActionButton(
         onPressed: () {
           // Add your onPressed code here!
@@ -47,49 +91,6 @@ class _PageListWorkersState extends State<PageListWorkers> {
       backgroundColor: AppColors.colorBackgrondProfile,
       body: Column(
         children: [
-          AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            actions: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: AppColors.colorIndigo,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Список работников',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: SizeUtil.getSize(
-                                  2.8, GlobalData.sizeScreen!)),
-                        ),
-                      ),
-
-
-                    ],
-                  ),
-                ),
-              )
-
-            ],
-          ),
           Padding(
             padding:  EdgeInsets.fromLTRB(0, SizeUtil.getSize(4.0,
                 GlobalData.sizeScreen!), 0,0),
@@ -157,7 +158,6 @@ class _PageListWorkersState extends State<PageListWorkers> {
      return GestureDetector(
        onTap: (){
            setState(() {
-             print('SEECTED 1 ${_isSelect}');
              if(_isSelect){
              _isSelect=false;
                widget.onSelect(widget.modelWorker,_isSelect);
@@ -165,7 +165,6 @@ class _PageListWorkersState extends State<PageListWorkers> {
                _isSelect=true;
                widget.onSelect(widget.modelWorker,_isSelect);
              }
-             print('SEECTED 2 ${_isSelect}');
            });
 
 
