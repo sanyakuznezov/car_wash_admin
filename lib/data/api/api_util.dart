@@ -56,8 +56,8 @@ class ApiUtil{
           return UserDataMapper.fromResponseUploadAvatarApi(result);
     }
 
-    Future<bool>uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email}) async{
-     await _mainServiseApi.uploadNameUser(firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
+    Future<bool>uploadDataUser({required String phone,required String firstname,required String patronymic,required String lastname,required String email}) async{
+     await _mainServiseApi.uploadDataUser(phone:phone,firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
       return true;
     }
     Future<bool>updateIdLang({required int idLang})async{

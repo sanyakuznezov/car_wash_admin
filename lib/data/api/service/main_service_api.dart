@@ -102,9 +102,9 @@ class MainServiseApi {
     return ResponseUploadAvatarApi.fromApi(response.data);
   }
 
-  //редактирвание ФИО пользователя
-  Future<bool> uploadNameUser(
-      {required String firstname, required String patronymic, required String lastname, required String email}) async {
+  //редактирвание данных пользователя
+  //TODO добавить параметр- номер телефона
+  Future<bool> uploadDataUser({required String phone,required String firstname, required String patronymic, required String lastname, required String email}) async {
     BlocVerifyUser blocVerifyUser = BlocVerifyUser();
     Map data = await blocVerifyUser.checkDataValidUser();
     final value = {

@@ -2725,7 +2725,7 @@ class _ItemDateState extends State<ItemDate> {
                                           backgroundColor: Colors.white,
                                           itemExtent: 30,
                                           scrollController:
-                                          FixedExtentScrollController(initialItem: _typeCarInt-1),
+                                          FixedExtentScrollController(initialItem: _order['post']-1),
                                           children:
                                           List.generate(_getListPosts().length, (index){
                                               return Text('${index+1} пост');
@@ -2733,7 +2733,11 @@ class _ItemDateState extends State<ItemDate> {
                                           onSelectedItemChanged:
                                               (value) {
                                               setState(() {
-                                                widget.post=value+1;
+                                                if(_order['post']!=value+1){
+                                                  widget.post=value+1;
+                                                  _order.update('post', (v) => value+1);
+                                                  widget.callback(true);
+                                                }
                                               });
 
                                           },

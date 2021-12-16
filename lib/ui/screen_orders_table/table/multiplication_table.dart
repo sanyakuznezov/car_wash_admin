@@ -146,8 +146,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
       color: Colors.white,
       child: Stack(
         children: [
-          Observer(
-              builder: (_){
+          Observer(builder: (_){
                 if (_tableState!.isLoading) {
                   return Container(
                     alignment: Alignment.center,

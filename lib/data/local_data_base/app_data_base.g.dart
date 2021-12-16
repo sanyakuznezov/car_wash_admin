@@ -166,10 +166,10 @@ class _$UserDataDao extends UserDataDao {
   }
 
   @override
-  Future<void> updateName(String p1, String p2, String p3) async {
+  Future<void> updateName(String p1, String p2, String p3,String p4) async {
     await _queryAdapter.queryNoReturn(
-        'UPDATE UserData SET firstname=?1, lastname=?2, patronymic=?3',
-        arguments: [p1, p2, p3]);
+        'UPDATE UserData SET firstname=?1, lastname=?2, patronymic=?3, phone=?4',
+        arguments: [p1, p2, p3,p4]);
   }
 
   @override

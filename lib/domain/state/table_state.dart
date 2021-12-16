@@ -14,9 +14,9 @@ import 'package:mobx/mobx.dart';
 import '../../global_data.dart';
  part 'table_state.g.dart';
 
-class TableState= TableSatetBase with _$TableState;
+class TableState=TableStateBase with _$TableState;
 
-abstract class TableSatetBase with Store{
+abstract class TableStateBase with Store{
 
 
 

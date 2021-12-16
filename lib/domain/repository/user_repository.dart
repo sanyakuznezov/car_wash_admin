@@ -25,7 +25,7 @@ abstract class UserRepository{
     Future<bool> updateIdLang({required int idLang});
   Future<bool?> intersectionValidate({required BuildContext context,required Map<String,dynamic> map});
     Future<bool?> addOrder({required Map<String,dynamic> map,required BuildContext context});
-    Future<bool>uploadNameUser({required String firstname,required String patronymic,required String lastname,required String email});
+    Future<bool>uploadDataUser({required String phone,required String firstname,required String patronymic,required String lastname,required String email});
     Future<List<ModelBrandCar>> getListBrandCar({required BuildContext context,required int id});
     Future<List<ModelService>?> getService({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});
   Future<List<ModelService>?> getServiceInfo({required BuildContext context,required int carType,required int serviceType, required bool isDetailing,required String query});

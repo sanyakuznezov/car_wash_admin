@@ -59,6 +59,9 @@ class PageNameEdit extends StatefulWidget{
     _focusNodename.dispose();
     _focusNodefirstname.dispose();
     _focusNodelastname.dispose();
+    nameController!.dispose();
+    lastnameController!.dispose();
+    firstnameController!.dispose();
   }
 
   @override
@@ -129,8 +132,7 @@ class PageNameEdit extends StatefulWidget{
                                       return GestureDetector(
                                         onTap:(){
                                           if (_isEdit) {
-                                            _editName(
-                                                lastnameController!.text,
+                                            _editName(data.data!.phone,lastnameController!.text,
                                                 nameController!.text,
                                                 firstnameController!.text,
                                                 data.data!.email);
@@ -384,7 +386,7 @@ class PageNameEdit extends StatefulWidget{
 
   }
 
-   _editName(String lastname,String firstname,String patronymic,String email) async{
+   _editName(String phone,String lastname,String firstname,String patronymic,String email) async{
      if(await StateNetwork.initConnectivity()==2){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -394,7 +396,7 @@ class PageNameEdit extends StatefulWidget{
          setState(() {
            _input.sink.add(2);
          });
-         final result=await RepositoryModule.userRepository().uploadNameUser(firstname: firstname, patronymic: patronymic, lastname: lastname, email: email)
+         final result=await RepositoryModule.userRepository().uploadDataUser(phone:phone,firstname: firstname, patronymic: patronymic, lastname: lastname, email: email)
              .catchError((error){
            setState(() {
              _input.sink.add(0);

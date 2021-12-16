@@ -42,8 +42,10 @@ class _PageProfileState extends State<PageProfile> {
   bool _isLoadAva=false;
   bool _imgPiker=false;
   bool _isName=false;
+  bool _isPhone=false;
   String? _avatar;
   String? _name;
+  String? _phone;
 
 
   @override
@@ -61,6 +63,9 @@ class _PageProfileState extends State<PageProfile> {
              }
              if(!_isName){
                _name='${data.data!.firstname} ${data.data!.patronymic} ${data.data!.lastname}';
+             }
+             if(!_isPhone){
+               _phone='${data.data!.phone}';
              }
             return Column(
                children: [
@@ -231,7 +236,7 @@ class _PageProfileState extends State<PageProfile> {
                                              Expanded(
                                                child: Padding(
                                                  padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                                                 child: Text('${data.data!.phone}',
+                                                 child: Text('$_phone',
                                                      textAlign: TextAlign.end,
                                                      style: TextStyle(
                                                          color: AppColors.textColorPhone,
@@ -244,7 +249,16 @@ class _PageProfileState extends State<PageProfile> {
                                                alignment: Alignment.centerRight,
                                                child: GestureDetector(
                                                  onTap: (){
-                                                   Navigator.push(context, SlideTransitionLift(PageNumberEdit(data.data!)));
+                                                   Navigator.push(context, SlideTransitionLift(
+                                                       PageNumberEdit(data.data!,
+                                                       onNewNumber: (numberPhone){
+                                                         setState(() {
+                                                           _isPhone=true;
+                                                           _phone=numberPhone;
+                                                           print('Phone $_phone');
+                                                         });
+                                                       },
+                                                       )));
                                                  },
                                                  child: Icon(
                                                    Icons.arrow_forward_ios,

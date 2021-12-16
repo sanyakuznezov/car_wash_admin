@@ -57,11 +57,11 @@ class UserDataRepository extends UserRepository{
   }
 
   @override
-  Future<bool> uploadNameUser({required String firstname, required String patronymic, required String lastname, required String email})async {
-    await _apiUtil.uploadNameUser(firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
+  Future<bool> uploadDataUser({required String phone,required String firstname, required String patronymic, required String lastname, required String email})async {
+    await _apiUtil.uploadDataUser(phone:phone,firstname: firstname, patronymic: patronymic, lastname: lastname, email: email);
     final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
     final userDao = database.userataDao;
-    await userDao.updateName(firstname,lastname,patronymic).catchError((error){
+    await userDao.updateName(firstname,lastname,patronymic,phone).catchError((error){
       print('Error DB $error');
     });
     return true;
