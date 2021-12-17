@@ -284,6 +284,7 @@ class MainServiseApi {
         'servicesIds': servicesIds.join(','),
         'complexesIds': complexesIds.join(',')
       };
+      print('Api Get Price');
       final result = await _dio.post(
           'orders/calculate-price',
           data: value,

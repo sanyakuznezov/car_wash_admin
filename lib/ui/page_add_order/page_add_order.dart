@@ -9,6 +9,7 @@ import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/domain/state/state_order.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_bottomsheet_edittime.dart';
@@ -23,34 +24,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobx/mobx.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../global_data.dart';
 
 
 
- Map<String,dynamic> _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
- 'carRegion':000,'color':'Черный','carBrandId':0,'carModelId':0,'clientFullname':'','clientPhone':'',
-   'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
-   'ServicesList':[]};
+ Map<String,dynamic> _order={};
  String _surName='';
  String _lastName='';
  String _patronymicName='';
  late ValueNotifier<ModelCalculatePrice> _notifier;
   List<int> _idServiceList=[];
   List<int> _idComplexList=[];
+  //TODO добавить список испонителей на APi и в модели
   List<ModelWorker> _listWorker=[];
   int _typeCarInt =1;
   bool _isLoading=false;
   int _editStatusMain=2;
   ValueNotifier<bool>? _fabNotifi;
   String? _dateValue;
-  Future<ModelOrderShow?> _getOrderShow({required BuildContext context,required int id})async{
-    final order=await RepositoryModule.userRepository().getOrderShow(context: context, id: id);
-     return order;
-  }
+  String? _date;
+
 
 
 
@@ -86,9 +85,6 @@ class PageAddOrder extends StatefulWidget{
 
 
 
-
-
-
   @override
   StatePageAddOrder createState() {
     // TODO: implement createState
@@ -108,6 +104,7 @@ class PageAddOrder extends StatefulWidget{
     bool _isSucces=false;
     String? _msg;
     int? _idOrder=0;
+    StateOrder? _stateOrder;
     bool _isEdit=false;
 
   @override
@@ -191,6 +188,9 @@ class PageAddOrder extends StatefulWidget{
                     isEdit: _isEdit,
                     onAccept: (int? i) {
                       if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+                        _order.update('clientFullname', (value) =>'$_lastName $_surName $_patronymicName');
+                        _order.update('ComplexesList', (value) => _idComplexList);
+                        _order.update('ServicesList', (value) => _idServiceList);
                         _editOrder(map: _order, context: context,id: _idOrder!);
                       }else{
                         _validateTime(map: _order, context: context);
@@ -225,10 +225,9 @@ class PageAddOrder extends StatefulWidget{
           ],
         ),
               ),
-            ):_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?FutureBuilder<ModelOrderShow?>(
-              future: _getOrderShow(context: context,id: widget.idOrder!),
-              builder: (context,order){
-                if(order.hasError){
+            ):_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?
+            Observer(builder: (_){
+                if(_stateOrder!.isError){
                    return Container(
                      height: MediaQuery.of(context).size.height,
                      child: Center(
@@ -247,73 +246,76 @@ class PageAddOrder extends StatefulWidget{
                    );
                 }
 
-                if(order.hasData){
-                  _order.update('post', (value) => order.data!.post);
-                  _order.update('date', (value) => order.data!.date);
-                    _order.update('startTime', (value) =>order.data!.startTime);
-                    _order.update('endTime', (value) =>order.data!.endTime);
-                  _order.update('carType', (value) => order.data!.carType);
-                  _order.update('carNumber', (value) => order.data!.carNumber);
-                  _order.update('carRegion', (value) => order.data!.carRegion);
-                  _order.update('carBrandId', (value) => order.data!.carBrandid);
-                  _order.update('carModelId', (value) => order.data!.carModelid);
-                  _order.update('color', (value) => order.data!.color);
-                  _order.update('clientPhone', (value) => order.data!.clientPhone);
-                  _order.update('clientFullname', (value) => order.data!.clientFullname);
-                  _order.update('totalPrice', (value) => order.data!.totalPrice);
-                  _order.update('sale', (value) => order.data!.sale);
-                  _order.update('workTime', (value) => order.data!.workTime);
-                  _order.update('status', (value) => order.data!.status);
-                  _order.update('adminComment', (value) => order.data!.adminComment);
-                  _order.update('clientComment', (value) => order.data!.clientComment);
-                  _order.update('ComplexesList', (value) => order.data!.complexes);
-                  _order.update('ServicesList', (value) => order.data!.services);
-                  _idOrder=order.data!.id;
-                  if(order.data!.clientFullname.split(' ').length==3){
-                    _surName=order.data!.clientFullname.split(' ')[1];
-                    _lastName=order.data!.clientFullname.split(' ')[0];
-                   _patronymicName=order.data!.clientFullname.split(' ')[2];
-                  }else if(order.data!.clientFullname.split(' ').length==2){
-                    _surName=order.data!.clientFullname.split(' ')[1];
-                    _lastName=order.data!.clientFullname.split(' ')[0];
-                  }else if(order.data!.clientFullname.split(' ').length==1){
-                    _lastName=order.data!.clientFullname.split(' ')[0];
+                if(!_stateOrder!.isLoading){
+                  if(!_stateOrder!.isInitData){
+                    print('Data get');
+                    _date=_stateOrder!.modelOrderShow!.date;
+                    _order.update('post', (value) => _stateOrder!.modelOrderShow!.post);
+                    _order.update('date', (value) => _stateOrder!.modelOrderShow!.date);
+                    _order.update('startTime', (value) =>_stateOrder!.modelOrderShow!.startTime);
+                    _order.update('endTime', (value) =>_stateOrder!.modelOrderShow!.endTime);
+                    _order.update('carType', (value) => _stateOrder!.modelOrderShow!.carType);
+                    _order.update('carNumber', (value) => _stateOrder!.modelOrderShow!.carNumber);
+                    _order.update('carRegion', (value) => _stateOrder!.modelOrderShow!.carRegion);
+                    _order.update('carBrandId', (value) => _stateOrder!.modelOrderShow!.carBrandid);
+                    _order.update('carModelId', (value) => _stateOrder!.modelOrderShow!.carModelid);
+                    _order.update('color', (value) => _stateOrder!.modelOrderShow!.color);
+                    _order.update('clientPhone', (value) => _stateOrder!.modelOrderShow!.clientPhone);
+                    _order.update('clientFullname', (value) => _stateOrder!.modelOrderShow!.clientFullname);
+                    _order.update('totalPrice', (value) => _stateOrder!.modelOrderShow!.totalPrice);
+                    _order.update('sale', (value) => _stateOrder!.modelOrderShow!.sale);
+                    _order.update('workTime', (value) => _stateOrder!.modelOrderShow!.workTime);
+                    _order.update('status', (value) => _stateOrder!.modelOrderShow!.status);
+                    _order.update('adminComment', (value) => _stateOrder!.modelOrderShow!.adminComment);
+                    _order.update('clientComment', (value) => _stateOrder!.modelOrderShow!.clientComment);
+                    _order.update('ComplexesList', (value) => _stateOrder!.modelOrderShow!.complexes);
+                    _order.update('ServicesList', (value) => _stateOrder!.modelOrderShow!.services);
+                    _idOrder=_stateOrder!.modelOrderShow!.id;
+                    if(_stateOrder!.modelOrderShow!.clientFullname.split(' ').length==3){
+                      _surName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[1];
+                      _lastName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[0];
+                      _patronymicName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[2];
+                    }else if(_stateOrder!.modelOrderShow!.clientFullname.split(' ').length==2){
+                      _surName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[1];
+                      _lastName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[0];
+                    }else if(_stateOrder!.modelOrderShow!.clientFullname.split(' ').length==1){
+                      _lastName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[0];
+                    }
+                    // //вызов списка работ
+                    _stateOrder!.modelOrderShow!.services.forEach((element) {
+                      _idServiceList.add(element['id']);
+                    });
+                    _stateOrder!.modelOrderShow!.complexes.forEach((element) {
+                      _idComplexList.add(element['id']);
+                    });
+                    _stateOrder!.getPrice(context: context, carType: _stateOrder!.modelOrderShow!.carType, idServiceList: _idServiceList, idComplexList: _idComplexList);
+                    _stateOrder!.isInitData=true;
                   }
-                  // //вызов списка работ
-                  order.data!.services.forEach((element) {
-                    _idServiceList.add(element['id']);
-                  });
-                  order.data!.complexes.forEach((element) {
-                    _idComplexList.add(element['id']);
-                  });
-                  _getPrice(edit:false,context: context, carType: order.data!.carType, servicesIds: _idServiceList, complexesIds:_idComplexList);
                   return Column(
                     children: [
                       ItemDate.editOrder(
-                        callback: (hide){
-                           if(hide!){
-                             _fabNotifi!.value=hide;
-                           }
-                        },
-                          timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:order.data!.date,time:'${TimeParser.parseIntToStringTime(order.data!.startTime)}-${TimeParser.parseIntToStringTime(order.data!.endTime)}',post:order.data!.post),
+                          callback: (hide){
+                            if(hide!){
+                              _fabNotifi!.value=hide;
+                            }
+                          },
+                          timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,time:'${TimeParser.parseIntToStringTime(_stateOrder!.modelOrderShow!.startTime)}-${TimeParser.parseIntToStringTime(_stateOrder!.modelOrderShow!.endTime)}',post:_stateOrder!.modelOrderShow!.post),
                       ItemCar.editOrder(callback:(hide){
                         if(hide!){
                           _fabNotifi!.value=hide;
                         }
-                      },modelOrderShow: order.data),
+                      },modelOrderShow: _stateOrder!.modelOrderShow),
                       ItemClient.editOrder(callback:(hide){
                         if(hide!){
                           _fabNotifi!.value=hide;
                         }
-                      },modelOrderShow: order.data),
-                      FutureBuilder<ModelCalculatePrice?>(
-                          future:RepositoryModule.userRepository().getPrice(context: context, carType:order.data!.carType, servicesIds:_idServiceList, complexesIds:_idComplexList),
-                          builder: (context,price){
-                            if(price.hasData){
-                              _notifier.value=price.data!;
+                      },modelOrderShow: _stateOrder!.modelOrderShow),
+                      Observer(
+                          builder: (_){
+                            if(!_stateOrder!.isLoadPrice){
+                              _notifier.value=_stateOrder!.modelCalculatePrice!;
                               _isLoading=false;
                             }
-
                             return Column(
                               children: [
                                 ItemListWork.editOrder(callback: (hide){
@@ -329,25 +331,25 @@ class PageAddOrder extends StatefulWidget{
                               ],
                             );
 
-                      }),
+                          }),
                       ItemComment.editOrder(callback:(hide){
                         if(hide!){
                           _fabNotifi!.value=hide;
                         }
-                      },modelOrderShow: order.data),
-                      ItemReview.editOrder(modelOrderShow: order.data,)
+                      },modelOrderShow: _stateOrder!.modelOrderShow),
+                      ItemReview.editOrder(modelOrderShow: _stateOrder!.modelOrderShow)
                     ],
                   );
+
                 }
                 return Container(
-                  height: MediaQuery.of(context).size.height,
+                    height: MediaQuery.of(context).size.height,
                     alignment: Alignment.center,
                     child: Center(child: CircularProgressIndicator(color: AppColors.colorIndigo)));
-
               }
             ):Column(
               children: [
-                ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,date:widget.date,time: widget.time,post: widget.post),
+                ItemDate(timeEndWash:widget.timeEndWash,timeStartWash:widget.timeStartWash,time: widget.time,post: widget.post),
                 ItemCar(),
                 ItemClient(),
                 ItemListWork(),
@@ -420,8 +422,18 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
+    print('initState');
+    _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
+      'carRegion':000,'color':'Черный','carBrandId':0,'carModelId':0,'clientFullname':'','clientPhone':'',
+      'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
+      'ServicesList':[]};
+    _stateOrder=StateOrder();
+   if( _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
+       _stateOrder!.getOrderShow(context: context, id:widget.idOrder!);
+    }
     if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
       _isEdit=false;
+      _date=widget.date;
       _order.update('post', (value) => widget.post);
       _order.update('date', (value) => widget.date);
       _order.update('startTime', (value) =>TimeParser.parseTimeForApi(widget.time!.split('-')[0]));
@@ -439,8 +451,10 @@ class PageAddOrder extends StatefulWidget{
   @override
   void dispose() {
     super.dispose();
+    print('Dispose');
     _notifier.dispose();
     _fabNotifi!.dispose();
+    _stateOrder!.dispose();
   }
 
   Future<bool?> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
@@ -722,11 +736,13 @@ class PageAddOrder extends StatefulWidget{
 
 class _ItemCommentState extends State<ItemComment> {
     TextEditingController? commentController;
+     FocusNode? myFocusNodeComment;
 
     @override
   void dispose() {
    super.dispose();
-   myFocusNodeComment.dispose();
+   myFocusNodeComment!.dispose();
+   commentController!.dispose();
   }
 
   @override
@@ -736,7 +752,7 @@ class _ItemCommentState extends State<ItemComment> {
    commentController=TextEditingController();
   }
 
-  late FocusNode myFocusNodeComment;
+
 
   @override
   Widget build(BuildContext context) {
@@ -850,7 +866,7 @@ class _ItemCommentState extends State<ItemComment> {
                           ),
                           _editStatusMain!=GlobalData.VIEW_MODE?GestureDetector(
                             onTap: (){
-                              myFocusNodeComment.requestFocus();
+                              myFocusNodeComment!.requestFocus();
                             },
                             child: Icon(
                               Icons.edit,
@@ -1571,7 +1587,6 @@ class _ItemClientState extends State<ItemClient> {
   @override
   void dispose() {
     super.dispose();
-    myFocusNodeTel.dispose();
     myFocusNodeTel.dispose();
     myFocusNodePatronymic.dispose();
     myFocusNodeName.dispose();
@@ -2489,6 +2504,14 @@ class _ItemCarState extends State<ItemCar> {
         }
      }
 
+     @override
+  void dispose() {
+    super.dispose();
+    focusEditColor.dispose();
+    editingControllerColor.dispose();
+    numCarController!.dispose();
+    regionCarController!.dispose();
+     }
 }
 
 
@@ -2496,15 +2519,14 @@ class _ItemCarState extends State<ItemCar> {
 
     class ItemDate extends StatefulWidget{
 
-      String? date;
       String? time;
       int? post;
       int timeStartWash;
       int timeEndWash;
       var callback=(bool? hide)=>hide;
 
-      ItemDate({required this.timeEndWash,required this.timeStartWash,required this.date,required this.post, required this.time});
-      ItemDate.editOrder({required this.callback,required this.timeEndWash,required this.timeStartWash,required this.date,required this.post, required this.time});
+      ItemDate({required this.timeEndWash,required this.timeStartWash,required this.post, required this.time});
+      ItemDate.editOrder({required this.callback,required this.timeEndWash,required this.timeStartWash,required this.post, required this.time});
 
   @override
   State<ItemDate> createState() => _ItemDateState();
@@ -2573,7 +2595,7 @@ class _ItemDateState extends State<ItemDate> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('${widget.date}',
+                              Text('${_date}',
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                       color: AppColors.textColorPhone,
@@ -2595,11 +2617,11 @@ class _ItemDateState extends State<ItemDate> {
                                           setState(() {
                                             _dateValue=date.toString().split(' ')[0];
                                             _order.update('date', (value) =>_dateValue);
-                                            widget.date=_dateValue;
+                                            _date=_dateValue;
                                           });
 
                                         },
-                                        currentTime: DateTime(int.parse(widget.date!.split('-')[0]),int.parse(widget.date!.split('-')[1]),int.parse(widget.date!.split('-')[2])), locale: LocaleType.ru);
+                                        currentTime: DateTime(int.parse(_date!.split('-')[0]),int.parse(_date!.split('-')[1]),int.parse(_date!.split('-')[2])), locale: LocaleType.ru);
                                   },
                                   child:
                                   Icon(
@@ -2803,7 +2825,7 @@ class _ItemDateState extends State<ItemDate> {
 
 class _WorkState extends State<Work> with TickerProviderStateMixin{
 
-  late AnimationController controller;
+   AnimationController? controller;
 
 
   @override
@@ -2865,7 +2887,7 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
            color: AppColors.colorLine):LinearProgressIndicator(
-         value: controller.value,
+         value: controller!.value,
          color: AppColors.colorIndigo,
        ):Container(),
        widget.modelCalculatePrice.type=='complex'&&getTextDetails(widget.listServices,widget.modelCalculatePrice.id).isEmpty?Container(
@@ -2897,13 +2919,13 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
       vsync: this,
       duration: const Duration(seconds: 3),
     );
-    controller.repeat(reverse: true);
+    controller!.repeat(reverse: true);
   }
 
   @override
   void dispose() {
+    controller!.dispose();
     super.dispose();
-    controller.dispose();
   }
 
   String getTextDetails(List<ModelService> list,int id){

@@ -41,47 +41,47 @@ class PageNotifi extends StatefulWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar:             AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.colorIndigo,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text('Уведомления',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                          fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                  )
+                ],
+              ),
+            ),
+          )
+
+        ],
+      ),
       backgroundColor: AppColors.colorBackgrondProfile,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              actions: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              color: AppColors.colorIndigo,
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text('Уведомления',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                                fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-
-              ],
-            ),
         Container(
           margin: EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
           child:Column(
@@ -542,5 +542,9 @@ class PageNotifi extends StatefulWidget{
     );
   }
 
-
- }
+  @override
+  void dispose() {
+    super.dispose();
+    print('Dispose');
+  }
+}

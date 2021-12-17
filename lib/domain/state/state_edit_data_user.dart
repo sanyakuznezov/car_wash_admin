@@ -27,7 +27,6 @@ abstract class StateEditDataUserBase with Store{
   final userDao = database.userataDao;
   final result=await userDao.getDataUser();
   userData=result!;
-  print('getDataUserLocal ${userData!.phone}');
   isLoad=false;
  }
 
