@@ -103,7 +103,6 @@ class MainServiseApi {
   }
 
   //редактирвание данных пользователя
-  //TODO добавить параметр- номер телефона
   Future<bool> uploadDataUser({required String phone,required String firstname, required String patronymic, required String lastname, required String email}) async {
     BlocVerifyUser blocVerifyUser = BlocVerifyUser();
     Map data = await blocVerifyUser.checkDataValidUser();
@@ -113,7 +112,8 @@ class MainServiseApi {
       'firstname': firstname,
       'lastname': lastname,
       'patronymic': patronymic,
-      'email': email
+      'email': email,
+      'phone':phone
     };
     await _dio.post(
         'personal/edit-profile',
@@ -343,6 +343,7 @@ class MainServiseApi {
   }
 
   //создание заказа
+  //TODO нет в апи полей personalFullname и personalId
   Future<bool?> addOrder({required Map<String,
       dynamic> map, required BuildContext context}) async {
     if (await StateNetwork.initConnectivity() == 2) {
@@ -353,6 +354,8 @@ class MainServiseApi {
       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
       Map data = await blocVerifyUser.checkDataValidUser();
       final value = {
+        'personalFullname':data['personalFullname'],
+        'personalId':data['personalId'],
         'cwId': data['cwid'],
         'pId': data['pid'],
         'token': data['token'],
@@ -401,11 +404,43 @@ class MainServiseApi {
               fontSize: 16.0
           );
         }
-        if (e.response != null) {
+        if (e.response!.statusCode == 400) {
           Fluttertoast.showToast(
-              msg: "${e.response!.data['errors']['startTime'] == null ? e
-                  .response!.data['errors']['post'] : e.response!
-                  .data['errors']['startTime']}",
+              msg: "Неверные параметры",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        if (e.response!.statusCode == 404) {
+          Fluttertoast.showToast(
+              msg: "Не найдены требуемые модели / сотрудник / автомойка",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+
+          if (e.response!.statusCode ==420 ) {
+            Fluttertoast.showToast(
+                msg: "Неверный токен",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          }
+        if (e.response!.statusCode == 500) {
+          Fluttertoast.showToast(
+              msg: "Ошибка сервера",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 3,
@@ -1069,6 +1104,7 @@ class MainServiseApi {
 
 
   //редактирование заказа
+  //TODO редактирование персонала?
   Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context,required int idOrder}) async {
     if (await StateNetwork.initConnectivity() == 2) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1127,19 +1163,7 @@ class MainServiseApi {
               fontSize: 16.0
           );
         }
-        if (e.response != null) {
-          Fluttertoast.showToast(
-              msg: "${e.response!.data['errors']['startTime'] == null ? e
-                  .response!.data['errors']['post'] : e.response!
-                  .data['errors']['startTime']}",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 3,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0
-          );
-        }
+
 
 
         if (e.response!.statusCode == 400) {

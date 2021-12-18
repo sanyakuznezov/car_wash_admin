@@ -49,6 +49,7 @@ import '../../../global_data.dart';
   ValueNotifier<bool>? _fabNotifi;
   String? _dateValue;
   String? _date;
+  bool _isEditTotalPrice=false;
 
 
 
@@ -62,6 +63,7 @@ import '../../../global_data.dart';
     _notifier.value=result!;
     if(edit){
       _fabNotifi!.value=true;
+      _isEditTotalPrice=true;
     }
     _isLoading=false;
     return result;
@@ -191,9 +193,9 @@ class PageAddOrder extends StatefulWidget{
                         _order.update('clientFullname', (value) =>'$_lastName $_surName $_patronymicName');
                         _order.update('ComplexesList', (value) => _idComplexList);
                         _order.update('ServicesList', (value) => _idServiceList);
-                        _editOrder(map: _order, context: context,id: _idOrder!);
+                         _editOrder(map: _order, context: context,id: _idOrder!);
                       }else{
-                        _validateTime(map: _order, context: context);
+                       _validateTime(map: _order, context: context);
                       }
 
                     },));
@@ -250,6 +252,8 @@ class PageAddOrder extends StatefulWidget{
                   if(!_stateOrder!.isInitData){
                     print('Data get');
                     _date=_stateOrder!.modelOrderShow!.date;
+                    _order.update('personalFullname', (value) => _stateOrder!.modelOrderShow!.personalFullname);
+                    _order.update('personalId', (value) =>_stateOrder!.modelOrderShow!.personalId);
                     _order.update('post', (value) => _stateOrder!.modelOrderShow!.post);
                     _order.update('date', (value) => _stateOrder!.modelOrderShow!.date);
                     _order.update('startTime', (value) =>_stateOrder!.modelOrderShow!.startTime);
@@ -257,8 +261,8 @@ class PageAddOrder extends StatefulWidget{
                     _order.update('carType', (value) => _stateOrder!.modelOrderShow!.carType);
                     _order.update('carNumber', (value) => _stateOrder!.modelOrderShow!.carNumber);
                     _order.update('carRegion', (value) => _stateOrder!.modelOrderShow!.carRegion);
-                    _order.update('carBrandId', (value) => _stateOrder!.modelOrderShow!.carBrandid);
-                    _order.update('carModelId', (value) => _stateOrder!.modelOrderShow!.carModelid);
+                    _order.update('carBrandId', (value) => _stateOrder!.modelOrderShow!.carBrandid==0?null:_stateOrder!.modelOrderShow!.carBrandid);
+                    _order.update('carModelId', (value) => _stateOrder!.modelOrderShow!.carModelid==0?null:_stateOrder!.modelOrderShow!.carModelid);
                     _order.update('color', (value) => _stateOrder!.modelOrderShow!.color);
                     _order.update('clientPhone', (value) => _stateOrder!.modelOrderShow!.clientPhone);
                     _order.update('clientFullname', (value) => _stateOrder!.modelOrderShow!.clientFullname);
@@ -270,6 +274,7 @@ class PageAddOrder extends StatefulWidget{
                     _order.update('clientComment', (value) => _stateOrder!.modelOrderShow!.clientComment);
                     _order.update('ComplexesList', (value) => _stateOrder!.modelOrderShow!.complexes);
                     _order.update('ServicesList', (value) => _stateOrder!.modelOrderShow!.services);
+                    print('totalPrice ${_order['totalPrice']}');
                     _idOrder=_stateOrder!.modelOrderShow!.id;
                     if(_stateOrder!.modelOrderShow!.clientFullname.split(' ').length==3){
                       _surName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[1];
@@ -423,8 +428,8 @@ class PageAddOrder extends StatefulWidget{
   void initState() {
     super.initState();
     print('initState');
-    _order={'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
-      'carRegion':000,'color':'Черный','carBrandId':0,'carModelId':0,'clientFullname':'','clientPhone':'',
+    _order={'personalFullname':'....','personalId':0,'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
+      'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
       'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
       'ServicesList':[]};
     _stateOrder=StateOrder();
@@ -442,10 +447,11 @@ class PageAddOrder extends StatefulWidget{
     if(_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
       _isEdit=true;
       _fabNotifi=ValueNotifier<bool>(false);
+
     }else if(_editStatusMain==GlobalData.ADD_ORDER_MODE){
       _fabNotifi=ValueNotifier<bool>(true);
     }
-    _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice: 0,sale: 0,saleName: 'test',workTime: 0,workTimeWithMultiplier: 0,list: []));
+    _notifier=ValueNotifier<ModelCalculatePrice>(ModelCalculatePrice(result: true,totalPrice:0,sale:0,saleName: 'test',workTime:0,workTimeWithMultiplier: 0,list: []));
   }
 
   @override
@@ -479,7 +485,7 @@ class PageAddOrder extends StatefulWidget{
     }
 
          if(result!){
-           _order.update('clientFullname', (value) =>'$_surName $_patronymicName $_lastName');
+           _order.update('clientFullname', (value) =>'$_lastName $_surName $_patronymicName');
            _order.update('ComplexesList', (value) => _idComplexList);
            _order.update('ServicesList', (value) => _idServiceList);
            _addOrder(map: map, context: context);
@@ -904,7 +910,7 @@ class _ItemCommentState extends State<ItemComment> {
 
 class _ItemPriceState extends State<ItemPrice> {
 
-    String? _selWorkerString='....';
+    String? _selWorkerString=_order['personalFullname'];
     late TextEditingController _textEditingController;
     late FocusNode _focusNode;
     String _finalPrice='';
@@ -920,10 +926,13 @@ class _ItemPriceState extends State<ItemPrice> {
        valueListenable: _notifier,
        builder: (context,snapshot,widget) {
          if(snapshot.result){
-           print('Total price ${_order['totalPrice'].toString()} ${(snapshot.totalPrice).toString()}');
            _order.update('sale', (value) => snapshot.sale);
            _order.update('workTime', (value) => snapshot.workTime);
-           _finalPrice=_editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?_order['totalPrice'].toString():(snapshot.totalPrice).toString();
+             _finalPrice=(snapshot.totalPrice).toString();
+             if(_isEditTotalPrice){
+               _order.update('totalPrice', (value) => _finalPrice);
+             }
+
 
          }
          return Column(
@@ -1091,7 +1100,7 @@ class _ItemPriceState extends State<ItemPrice> {
                                          keyboardType:
                                          _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.ADD_ORDER_MODE?TextInputType.number:TextInputType.none,
                                          decoration: InputDecoration(
-                                             hintText: _finalPrice,
+                                             hintText: _order['totalPrice'].toString(),
                                              hintStyle: TextStyle(
                                                  color: AppColors.textColorPhone,
                                                  fontWeight: FontWeight.bold,
@@ -1100,11 +1109,14 @@ class _ItemPriceState extends State<ItemPrice> {
                                              //contentPadding: EdgeInsets.all(SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
                                              border: InputBorder.none),
                                          onChanged: (text) {
+                                           _isEditTotalPrice=false;
                                            if (text.isNotEmpty) {
                                              _order.update('totalPrice', (value) => int.parse(text));
                                            }else{
                                              _order.update('totalPrice', (value) => _finalPrice);
                                            }
+                                           print('totalPrice edit ${_order['totalPrice']}');
+                                           _fabNotifi!.value=true;
                                          },
                                          controller: _textEditingController,
                                          focusNode: _focusNode,
@@ -1219,13 +1231,15 @@ class _ItemPriceState extends State<ItemPrice> {
                                                              _modelWorker = data;
                                                              _selWorkerString ='${data.lastname} ${data.firstname[0]}. ${data.patronymic[0]}.';
                                                            }
+                                                           _order.update('personalFullname',(value) =>_selWorkerString);
+                                                           _order.update('personalId', (value) => _modelWorker!.id);
                                                          });
                                                        },
                                                        list: value.data,
                                                        selWorker: _modelWorker!,
                                                      )));
                                            },
-                                           child: _editStatusMain!=GlobalData.VIEW_MODE?Icon(
+                                           child: _editStatusMain==GlobalData.ADD_ORDER_MODE?Icon(
                                              Icons.arrow_forward_ios,
                                              color: AppColors.colorIndigo,
                                            ):Container(),
@@ -1319,7 +1333,7 @@ class _ItemPriceState extends State<ItemPrice> {
   @override
   Widget build(BuildContext context) {
 
-
+  print('build list work');
    return Container(
      margin:  EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
      child: Column(
