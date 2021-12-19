@@ -6,9 +6,9 @@
 
     
    <application
-        android:label="car_wash_admin"
-        android:icon="@mipmap/ic_launcher_app"
-       android:roundIcon="@mipmap/ic_launcher_app_round">
+        android:label="StepCrm"
+        android:icon="@mipmap/ic_icon_app"
+       android:roundIcon="@mipmap/ic_icon_app_round">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

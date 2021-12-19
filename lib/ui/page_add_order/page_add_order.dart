@@ -320,6 +320,7 @@ class PageAddOrder extends StatefulWidget{
                             if(!_stateOrder!.isLoadPrice){
                               _notifier.value=_stateOrder!.modelCalculatePrice!;
                               _isLoading=false;
+                              _stateOrder!.isLoadPrice=true;
                             }
                             return Column(
                               children: [
@@ -341,7 +342,8 @@ class PageAddOrder extends StatefulWidget{
                         if(hide!){
                           _fabNotifi!.value=hide;
                         }
-                      },modelOrderShow: _stateOrder!.modelOrderShow),
+                      },
+                          modelOrderShow: _stateOrder!.modelOrderShow),
                       ItemReview.editOrder(modelOrderShow: _stateOrder!.modelOrderShow)
                     ],
                   );
@@ -460,7 +462,10 @@ class PageAddOrder extends StatefulWidget{
     print('Dispose');
     _notifier.dispose();
     _fabNotifi!.dispose();
+    _idServiceList.clear();
+    _idComplexList.clear();
     _stateOrder!.dispose();
+    _isEditTotalPrice=false;
   }
 
   Future<bool?> _validateTime({required Map<String,dynamic> map,required BuildContext context})async{
@@ -930,6 +935,7 @@ class _ItemPriceState extends State<ItemPrice> {
            _order.update('workTime', (value) => snapshot.workTime);
              _finalPrice=(snapshot.totalPrice).toString();
              if(_isEditTotalPrice){
+               print('TotalPrice in widget $_finalPrice');
                _order.update('totalPrice', (value) => _finalPrice);
              }
 
@@ -1115,7 +1121,6 @@ class _ItemPriceState extends State<ItemPrice> {
                                            }else{
                                              _order.update('totalPrice', (value) => _finalPrice);
                                            }
-                                           print('totalPrice edit ${_order['totalPrice']}');
                                            _fabNotifi!.value=true;
                                          },
                                          controller: _textEditingController,
@@ -1233,6 +1238,7 @@ class _ItemPriceState extends State<ItemPrice> {
                                                            }
                                                            _order.update('personalFullname',(value) =>_selWorkerString);
                                                            _order.update('personalId', (value) => _modelWorker!.id);
+                                                           print('personalFullname Edit ${_order['personalFullname']}');
                                                          });
                                                        },
                                                        list: value.data,
@@ -2900,7 +2906,8 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
        widget.modelCalculatePrice.type!='complex'?!widget.isLoad?Container(
            margin: EdgeInsets.fromLTRB(SizeUtil.getSize(7.3,GlobalData.sizeScreen!), 0, 0, 0),
            height: 1,
-           color: AppColors.colorLine):LinearProgressIndicator(
+           color: AppColors.colorLine):
+       LinearProgressIndicator(
          value: controller!.value,
          color: AppColors.colorIndigo,
        ):Container(),
@@ -2933,7 +2940,7 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
       vsync: this,
       duration: const Duration(seconds: 3),
     );
-    controller!.repeat(reverse: true);
+    //controller!.repeat(reverse: true);
   }
 
   @override

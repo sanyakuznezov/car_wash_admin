@@ -343,7 +343,6 @@ class MainServiseApi {
   }
 
   //создание заказа
-  //TODO нет в апи полей personalFullname и personalId
   Future<bool?> addOrder({required Map<String,
       dynamic> map, required BuildContext context}) async {
     if (await StateNetwork.initConnectivity() == 2) {
@@ -351,11 +350,12 @@ class MainServiseApi {
         backgroundColor: Colors.red,
         content: Text('Отсутствует подключение к сети...'),));
     } else {
+
       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
       Map data = await blocVerifyUser.checkDataValidUser();
       final value = {
-        'personalFullname':data['personalFullname'],
-        'personalId':data['personalId'],
+        'assignedPersonalFullname':map['personalFullname'],
+        'assignedPersonal':map['personalId'],
         'cwId': data['cwid'],
         'pId': data['pid'],
         'token': data['token'],

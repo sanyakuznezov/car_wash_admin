@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         GlobalData.sizeScreen=constraints.maxHeight;
             return  MaterialApp(
               title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 primarySwatch: Colors.indigo,
               ),
