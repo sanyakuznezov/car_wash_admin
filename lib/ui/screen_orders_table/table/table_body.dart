@@ -37,7 +37,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   late ScrollController _timeLineColumnsController;
   bool dragControll=false;
   final timeState=GlobalData.stateTime;
-  final numBoxes=GlobalData.numBoxes;
   int leave=0;
   Map? _map;
   Map? _mapOld;
@@ -49,6 +48,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   double paddingLeft=50.0;
   late AnimationController _controller;
   bool _isToPull=false;
+  List<String> timeLine=[];
 
 
 
@@ -124,6 +124,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
               );
             }
             index=-1;
+            timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
             return Stack(
                 children: [
                   Row(
@@ -137,8 +138,8 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                 physics: const AlwaysScrollableScrollPhysics(
                                   parent: BouncingScrollPhysics(),
                                 ),
-                                children: List.generate(GlobalData.times[snapshot.data].length, (index) {
-                                  return BoxTime(time: GlobalData.times[snapshot.data][index]);
+                                children: List.generate(timeLine.length, (index) {
+                                  return BoxTime(time: timeLine[index]);
                                 }),
                               ),
                             ),
@@ -152,17 +153,17 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                 parent: BouncingScrollPhysics(),
                               ),
                               child: SizedBox(
-                                width: _getWight(widget.modelDataTable.posts)*widget.modelDataTable.posts,
+                                width: _getWight(GlobalData.numBoxes!)*GlobalData.numBoxes!,
                                 child: ListView(
                                   controller: _restColumnsController,
                                   physics: const AlwaysScrollableScrollPhysics(
                                     parent: BouncingScrollPhysics(),
                                   ),
-                                  children: List.generate(GlobalData.times[snapshot.data].length - 1, (y) {
+                                  children: List.generate(timeLine.length - 1, (y) {
                                     return Row(
-                                      children: List.generate(widget.modelDataTable.posts, (x) {
+                                      children: List.generate(GlobalData.numBoxes!, (x) {
                                         return BoxOrder(
-                                          posts: widget.modelDataTable.posts,
+                                          posts: GlobalData.numBoxes!,
                                             index: index,
                                             callbackBox: (drag, x, y) {
                                               setState(() {
@@ -184,7 +185,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                     ],
                   ),
-
+                  //TODO настроить взависимости от режима работы мойки
                   //линия текущего времени
                   GlobalData.date==DateTime.now().toString().split(' ')[0]?StreamBuilder<String>(
                       stream:  AppModule.blocTable.streamTimer,
@@ -201,8 +202,8 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                   physics: const AlwaysScrollableScrollPhysics(
                                       parent: BouncingScrollPhysics()),
                                   child: SizedBox(
-                                      width: GlobalData.numBoxes!>1?_getWight(widget.modelDataTable.posts) *widget.modelDataTable.posts.toDouble():390,
-                                      height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                      width: GlobalData.numBoxes!>1?_getWight(GlobalData.numBoxes!) *GlobalData.numBoxes!.toDouble():390,
+                                      height: 80 * timeLine.length.toDouble(),
                                       child: Stack(
                                         children: [
                                           Positioned(
@@ -211,7 +212,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                                 margin: EdgeInsets.fromLTRB(55, 0, 0, 0),
                                                 color: Colors.indigo,
                                                 //widget.modelDataTable.posts.toDouble()
-                                                width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts.toDouble(),
+                                                width: _getWight(GlobalData.numBoxes!) * GlobalData.numBoxes!.toDouble(),
                                                 height: 2,
                                               ))
                                         ],
@@ -283,18 +284,18 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                     parent: BouncingScrollPhysics()),
                                 child: SizedBox(
                                   // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
-                                  width: _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts,
-                                  height: 80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                  width: _getWight(GlobalData.numBoxes!) * GlobalData.numBoxes!,
+                                  height: 80 *timeLine.length.toDouble(),
                                   child: SingleChildScrollView(
                                       controller: widget.scrollControllertop,
                                       scrollDirection: Axis.horizontal,
                                       physics: const AlwaysScrollableScrollPhysics(
                                           parent: BouncingScrollPhysics()),
                                       child: Row(
-                                        children: List.generate(widget.modelDataTable.posts, (i) {
+                                        children: List.generate(GlobalData.numBoxes!, (i) {
                                           return Container(
                                               width: GlobalData.numBoxes!>1?150:300,
-                                              child: DragTargetTable(80 * GlobalData.times[snapshot.data].length.toDouble(),
+                                              child: DragTargetTable(80 * timeLine.length.toDouble(),
                                                 post:i,
                                                 tableState: widget.tableState,
                                                 time: _time!,

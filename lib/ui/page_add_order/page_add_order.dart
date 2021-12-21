@@ -70,7 +70,7 @@ import '../../../global_data.dart';
   }
 
 
-
+//TODO реализовать подгрузку свобоных промеутков времемни с учетом реима работы мойки по выбранной дате
 class PageAddOrder extends StatefulWidget{
 
 
@@ -2850,7 +2850,6 @@ class _WorkState extends State<Work> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-
    return  Column(
      children: [
        Padding(

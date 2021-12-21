@@ -22,6 +22,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:http/http.dart' as http;
 
 class MainServiseApi {
 
@@ -957,8 +961,9 @@ class MainServiseApi {
     return null;
   }
 
-  Future<ModelOrderShowApi?> getOrderShow({required BuildContext context,required int id}) async{
 
+  @GenerateMocks([http.Client])
+  Future<ModelOrderShowApi?> getOrderShow({ required BuildContext context,required int id}) async{
     if (await StateNetwork.initConnectivity() == 2) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.red,
@@ -972,7 +977,6 @@ class MainServiseApi {
         'token': data['token']
       };
 
-      print('Id Order $id');
       try {
         final result = await _dio.get(
             'orders/show',
@@ -983,6 +987,7 @@ class MainServiseApi {
              contentType: 'application/x-www-form-urlencoded',
             )
         );
+
         return ModelOrderShowApi.fromApi(map: result.data);
 
       } on DioError catch (e) {

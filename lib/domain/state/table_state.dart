@@ -33,6 +33,7 @@ abstract class TableStateBase with Store{
   String msgError='';
 
   Timer? _timer;
+  int i=3;
 
   @action
   settingsRequest({required BuildContext context,required String date}){
@@ -111,7 +112,15 @@ abstract class TableStateBase with Store{
    modelDataTable=result;
    GlobalData.maxRecordRange=modelDataTable!.maxRecordRange;
    GlobalData.numBoxes=modelDataTable!.posts;
+   GlobalData.endDayMin=1260;
+   modelDataTable!.endDayMin=1260;
    isLoading=false;
+  }
+
+
+
+  d(){
+    return i>=10?i=3:i++;
   }
 
 }

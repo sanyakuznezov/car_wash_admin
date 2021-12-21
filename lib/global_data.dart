@@ -11,6 +11,7 @@
    static double bodyHeightFeedBackWidget=0;
    static String? timeStart;
    static String? timeEnd;
+   static int? endDayMin;
    static int? post;
    static int? id;
    static int? idOrder;
@@ -535,6 +536,7 @@
      '24:00'
    ];
 
+   //расчет кооф. сдвига по оси Y в зависимости от шага времени
    static List<Map> timeStepsConstant=[
      {'coof':1.33, 'time':60,'shift':104},
      {'coof':2.67, 'time':30,'shift':50},

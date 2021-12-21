@@ -49,6 +49,7 @@ dependencies:
   mobx: ^2.0.5
   flutter_mobx: ^2.0.2
   mobx_codegen: ^2.0.4
+
   
 
 
@@ -59,6 +60,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   floor_generator: ^1.2.0
+  mockito: ^5.0.16
   build_runner: ^2.1.5
 
 # For information on the generic Dart part of this file, see the

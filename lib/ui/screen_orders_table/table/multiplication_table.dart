@@ -268,7 +268,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                     end: 0.0,
                                   ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn)),
                                   child: TableHead(
-                                    posts: _tableState!.modelDataTable!.posts,
+                                    posts:  GlobalData.numBoxes!,
                                     scrollController: _headController,
                                   ),
                                 );
@@ -404,6 +404,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                       setState(() {
                                         GlobalData.date = date.toString().split(' ')[0];
                                         dateValue =dateFormat(date.weekday, date.month, date.day);
+                                        _tableState!.getSettings(context: context, date: GlobalData.date!);
                                       });
                                     },
                                         currentTime: DateTime(int.parse(GlobalData.date!.split('-')[0]),int.parse(GlobalData.date!.split('-')[1]),int.parse(GlobalData.date!.split('-')[2])), locale: LocaleType.ru);

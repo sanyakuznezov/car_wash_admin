@@ -137,8 +137,9 @@ class TimeParser{
   //парсим время переходящее на другой день
   static parsingTime(String time){
     int p=parseHourForTimeLine(time);
-    if(p>1440){
-      p=1440;
+    int? t=GlobalData.endDayMin;
+    if(p>t!){
+      p=t;
     }
     return parseIntToStringTime(p);
   }
@@ -155,12 +156,13 @@ class TimeParser{
     return index* 60 + minute;
   }
 
-
-  static parseHourEndCollision(double y,double timeStep,int bodyHeaght){
+  //проверка пересечения времени окончания заказа с другим заказом
+  static parseHourEndCollision(double y,double timeStep,int bodyHeight){
     var r=y/timeStep;
-    var result=r+bodyHeaght/timeStep;
+    var result=r+bodyHeight/timeStep;
     return result.toInt()-20;
   }
+  //проверка пересечения времени начала заказа с другим заказом
   static parseHourStartCollision(String time){
     String timeSplit = time.split(' ')[1];
     int hour = int.parse(timeSplit.split(':')[0]);
@@ -285,6 +287,7 @@ class TimeParser{
 
   }
 
+  //проверяет текущее время относительно выбранного промежутка
   static bool isTimeValidate(String timeTable){
       int t=DateTime.now().hour*60+DateTime.now().minute;
       int t1=int.parse(timeTable.split('-')[0].split(':')[0])*60+int.parse(timeTable.split('-')[0].split(':')[1]);
@@ -336,6 +339,22 @@ class TimeParser{
     date.add(int.parse(time.split('-')[1]));
     date.add(int.parse(time.split('-')[2]));
     return date;
+  }
+
+  //возвращает массив времени в зависимости от графика работы мойки
+  static List<String> getTimeTable(List<String> allTime, int startDayMin,int endDayMin){
+    List<String> result=[];
+    for(int i=0;allTime.length>i;i++){
+      if(startDayMin<=parseHourForTimeLine(allTime[i])){
+        result.add(allTime[i]);
+         if(endDayMin==parseHourForTimeLine(allTime[i])){
+           break;
+         }
+      }
+    }
+
+
+    return result;
   }
 }
 
