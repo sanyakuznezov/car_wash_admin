@@ -9,6 +9,7 @@ import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/domain/state/state_add_order.dart';
 import 'package:car_wash_admin/domain/state/state_order.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_addorder.dart';
@@ -429,7 +430,6 @@ class PageAddOrder extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-    print('initState');
     _order={'personalFullname':'....','personalId':0,'date':'','post':0,'startTime':'','endTime':'','carType':1,'carNumber':'A000AA',
       'carRegion':000,'color':'Черный','carBrandId':null,'carModelId':null,'clientFullname':'','clientPhone':'',
       'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
@@ -2557,7 +2557,8 @@ class _ItemDateState extends State<ItemDate> {
    String? _timeStart;
    String? _timeEnd;
    bool _isSelected=true;
-   List<String> _timeArray=GlobalData.time_4;
+   late StateAddOrder _stateAddOrder;
+
 
 
 
@@ -2624,31 +2625,84 @@ class _ItemDateState extends State<ItemDate> {
                                   )),
                               _editStatusMain!=GlobalData.VIEW_MODE?Padding(
                                 padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
-                                child: GestureDetector(
-                                  onTap: (){
-                                     //date picker
-                                    DatePicker.showDatePicker(context,
-                                        showTitleActions: true,
-                                        minTime: DateTime(TimeParser.parseMinRecordTime()[0],TimeParser.parseMinRecordTime()[1],TimeParser.parseMinRecordTime()[2]),
-                                        maxTime: DateTime(TimeParser.parseMaxRecordTime()[0],TimeParser.parseMaxRecordTime()[1],TimeParser.parseMaxRecordTime()[2]),
-                                        onChanged: (date) {
-                                        },
-                                        onConfirm: (date) {
-                                          setState(() {
-                                            _dateValue=date.toString().split(' ')[0];
-                                            _order.update('date', (value) =>_dateValue);
-                                            _date=_dateValue;
-                                          });
+                                child:
 
-                                        },
-                                        currentTime: DateTime(int.parse(_date!.split('-')[0]),int.parse(_date!.split('-')[1]),int.parse(_date!.split('-')[2])), locale: LocaleType.ru);
+
+                                Observer(
+                                  builder: (_){
+                                    if(_stateAddOrder.isLoad){
+                                        return SizedBox(
+                                            width: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                                            height: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: SizeUtil.getSize(0.2,GlobalData.sizeScreen!),
+                                                color: AppColors
+                                                    .colorBackgrondProfile));
+
+                                    }else{
+                                      return Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: (){
+                                              //date picker
+                                              DatePicker.showDatePicker(context,
+                                                  showTitleActions: true,
+                                                  minTime: DateTime(TimeParser.parseMinRecordTime()[0],TimeParser.parseMinRecordTime()[1],TimeParser.parseMinRecordTime()[2]),
+                                                  maxTime: DateTime(TimeParser.parseMaxRecordTime()[0],TimeParser.parseMaxRecordTime()[1],TimeParser.parseMaxRecordTime()[2]),
+                                                  onChanged: (date) {
+                                                  },
+                                                  onConfirm: (date) {
+                                                    setState(() {
+                                                      _dateValue=date.toString().split(' ')[0];
+                                                      _order.update('date', (value) =>_dateValue);
+                                                      _date=_dateValue;
+                                                      _stateAddOrder.isWorkDay(context: context, date: _date!, idOrder:0, post: _order['post']);
+                                                    });
+
+                                                  },
+                                                  currentTime: DateTime(int.parse(_date!.split('-')[0]),int.parse(_date!.split('-')[1]),int.parse(_date!.split('-')[2])), locale: LocaleType.ru);
+                                            },
+                                            child:
+                                            Icon(
+                                              Icons.edit,
+                                              color: AppColors.colorBackgrondProfile,
+                                              size: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
+                                            ),
+                                          ),
+                                          _stateAddOrder.isErrorDay?GestureDetector(
+                                                        onTap: () {
+                                                          Fluttertoast.showToast(
+                                                              msg:
+                                                                  _stateAddOrder
+                                                                      .msgError,
+                                                              toastLength: Toast
+                                                                  .LENGTH_SHORT,
+                                                              gravity:
+                                                                  ToastGravity
+                                                                      .CENTER,
+                                                              timeInSecForIosWeb:
+                                                                  2,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              textColor:
+                                                                  Colors.black,
+                                                              fontSize: 16.0);
+                                                        },
+                                                        child: Icon(
+                                                          Icons.error,
+                                                          color: Colors.red,
+                                                          size: SizeUtil.getSize(
+                                                              2.2,
+                                                              GlobalData
+                                                                  .sizeScreen!),
+                                                        ))
+                                                    : Container()
+                                              ],
+                                      );
+
+                                    }
                                   },
-                                  child:
-                                  Icon(
-                                    Icons.edit,
-                                    color: AppColors.colorBackgrondProfile,
-                                    size: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
-                                  ),
+
                                 ),
                               ):Container(),
                             ],
@@ -2684,33 +2738,83 @@ class _ItemDateState extends State<ItemDate> {
                                       fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!))),
                               _editStatusMain!=GlobalData.VIEW_MODE?Padding(
                                 padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.0,GlobalData.sizeScreen!),0,0,0),
-                                child: GestureDetector(
-                                  onTap: (){
-                                    showMaterialModalBottomSheet(
-                                        backgroundColor: Colors.white,
-                                        context: context, builder:
-                                        (context)=>ContainerBottomSheetEditTime(
-                                      onTimeSelect: (tStart,tEnd){
-                                        setState(() {
-                                          if(_timeStart!=tStart||_timeEnd!=tEnd){
-                                            _timeStart=tStart;
-                                            _timeEnd=tEnd;
-                                            _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
-                                            _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
-                                            widget.callback(true);
+                                child:
+                                Observer(
+                                    builder: (_){
+                                      if(_stateAddOrder.isLoad){
+                                        return SizedBox(
+                                          width: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                                            height: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: SizeUtil.getSize(0.2,GlobalData.sizeScreen!),
+                                                color: AppColors
+                                                    .colorBackgrondProfile));
+                                      } else {
+                                        if(!_stateAddOrder.isErrorDay){
+                                          if (!_stateAddOrder.isError) {
+                                            return GestureDetector(
+                                                onTap: (){
+                                                  showMaterialModalBottomSheet(
+                                                      backgroundColor: Colors.white,
+                                                      context: context, builder:
+                                                      (context)=>ContainerBottomSheetEditTime(
+                                                    modelTimeFreeIntervals: _stateAddOrder.modelTimeFreeIntervals,
+                                                    onTimeSelect: (tStart,tEnd){
+                                                      setState(() {
+                                                        if(_timeStart!=tStart||_timeEnd!=tEnd){
+                                                          _timeStart=tStart;
+                                                          _timeEnd=tEnd;
+                                                          _order.update('startTime', (value) => TimeParser.parseTimeForApi(_timeStart!));
+                                                          _order.update('endTime', (value) =>  TimeParser.parseTimeForApi(_timeEnd!));
+                                                          widget.callback(true);
+                                                        }
+                                                      });
+                                                    },
+                                                    time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
+                                                },
+                                                child:Icon(
+                                                  Icons.edit,
+                                                  color: AppColors
+                                                      .colorBackgrondProfile,
+                                                  size: SizeUtil.getSize(
+                                                      3.0, GlobalData.sizeScreen!),
+                                                ));
+                                          } else {
+                                            return GestureDetector(
+                                                onTap: () {
+                                                  Fluttertoast.showToast(
+                                                      msg: _stateAddOrder.msgError,
+                                                      toastLength: Toast
+                                                          .LENGTH_SHORT,
+                                                      gravity: ToastGravity
+                                                          .CENTER,
+                                                      timeInSecForIosWeb: 2,
+                                                      backgroundColor: Colors
+                                                          .white,
+                                                      textColor: Colors.black,
+                                                      fontSize: 16.0
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.error, color: Colors.red,
+                                                  size: SizeUtil.getSize(2.2,
+                                                      GlobalData.sizeScreen!),));
                                           }
-                                        });
-                                      },
-                                      time: '$_timeStart-$_timeEnd',timeStart: widget.timeStartWash,timeEnd: widget.timeEndWash,));
-                                  },
-                                  child:
-                                  Icon(
-                                    Icons.edit,
-                                    color: AppColors.colorBackgrondProfile,
-                                    size: SizeUtil.getSize(3.0,GlobalData.sizeScreen!),
-                                  ),
-                                ),
-                              ):Container()
+
+                                        }else{
+                                          return Container(
+                                            width: SizeUtil.getSize(5.0,
+                                                GlobalData.sizeScreen!),
+                                            height: SizeUtil.getSize(2.2,
+                                                GlobalData.sizeScreen!),
+                                          );
+                                        }
+                                      }
+                                    }
+
+
+
+                              )):Container()
                             ],
                           ),
                         ),
@@ -2779,6 +2883,7 @@ class _ItemDateState extends State<ItemDate> {
                                                   widget.post=value+1;
                                                   _order.update('post', (v) => value+1);
                                                   widget.callback(true);
+                                                  _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder:0, post: _order['post']);
                                                 }
                                               });
 
@@ -2815,6 +2920,13 @@ class _ItemDateState extends State<ItemDate> {
     );
 
   }
+
+   @override
+   void initState() {
+     super.initState();
+     _stateAddOrder=StateAddOrder();
+     _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder: 0, post: _order['post']);
+   }
 
    _getListPosts(){
      List<int> posts=[];

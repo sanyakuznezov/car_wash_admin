@@ -1328,7 +1328,7 @@ class MainServiseApi {
       final value = {
         'currentOrderId':idOrder,
         'cwId': data['cwid'],
-        'date ': date,
+        'date': date,
         'post': post,
 
       };

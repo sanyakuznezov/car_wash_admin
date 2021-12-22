@@ -8,7 +8,7 @@
    List<dynamic> intervals;
 
    ModelTimeFreeIntervalsApi.fromApi({required Map<String,dynamic> map}):
-       message=map[''],
-       intervals=map[''];
+       message=map['message'],
+       intervals=map['intervals'];
 
 }

@@ -1,7 +1,8 @@
 
 
 
-  import 'package:car_wash_admin/utils/size_util.dart';
+  import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
+import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,11 +84,12 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
   final int timeStart;
   final int timeEnd;
   var onTimeSelect=(String? tStart,String tEnd)=>tStart,tEnd;
+  ModelTimeFreeIntervals? modelTimeFreeIntervals;
   
 
   @override
   State<ContainerBottomSheetEditTime> createState() => _ContainerBottomSheetEditTimeState();
-   ContainerBottomSheetEditTime({required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
+   ContainerBottomSheetEditTime({this.modelTimeFreeIntervals,required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
 }
 
 
@@ -107,7 +109,9 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
    _m=widget.time.split('-')[0].split(':')[1];
    _m1=widget.time.split('-')[1].split(':')[1];
    _h1=widget.time.split('-')[1].split(':')[0];
-
+    widget.modelTimeFreeIntervals!.intervals.forEach((element) {
+       print('Interval $element');
+    });
   }
 
   @override
