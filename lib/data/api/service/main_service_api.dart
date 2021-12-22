@@ -11,6 +11,7 @@ import 'package:car_wash_admin/data/api/model/model_order_show_api.dart';
 import 'package:car_wash_admin/data/api/model/model_sale_api.dart';
 import 'package:car_wash_admin/data/api/model/model_service_api.dart';
 import 'package:car_wash_admin/data/api/model/model_time_api.dart';
+import 'package:car_wash_admin/data/api/model/model_time_free_intervals_api.dart';
 import 'package:car_wash_admin/data/api/model/model_worker_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
@@ -962,7 +963,6 @@ class MainServiseApi {
   }
 
 
-  @GenerateMocks([http.Client])
   Future<ModelOrderShowApi?> getOrderShow({ required BuildContext context,required int id}) async{
     if (await StateNetwork.initConnectivity() == 2) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1317,6 +1317,74 @@ class MainServiseApi {
     return null;
   }
 
+  Future<ModelTimeFreeIntervalsApi?> getTimeFreeInterval({required String date,required BuildContext context,required int idOrder,required int post}) async {
+    if (await StateNetwork.initConnectivity() == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Отсутствует подключение к сети...'),));
+    } else {
+      BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+      Map data = await blocVerifyUser.checkDataValidUser();
+      final value = {
+        'currentOrderId':idOrder,
+        'cwId': data['cwid'],
+        'date ': date,
+        'post': post,
 
+      };
+
+      try {
+        final result = await _dio
+            .post('common/free-time-intervals',
+            data: value,
+            options: Options(
+              sendTimeout: 5000,
+              receiveTimeout: 10000,
+              contentType: 'application/x-www-form-urlencoded',
+            ));
+        return ModelTimeFreeIntervalsApi.fromApi(map: result.data);
+      } on DioError catch (e) {
+        if (e.type == DioErrorType.receiveTimeout ||
+            e.type == DioErrorType.sendTimeout) {
+          Fluttertoast.showToast(
+              msg: "Сервер не отвечает, повторите попытку",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+
+        if (e.response!.statusCode == 404) {
+          Fluttertoast.showToast(
+              msg: "Не найдены автомойка / настройки автомойки",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+
+        if (e.response!.statusCode == 500) {
+          Fluttertoast.showToast(
+              msg: "Произошла ошибка сервера",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+          );
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
 
 }

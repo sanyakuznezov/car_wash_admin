@@ -10,6 +10,7 @@ import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_time.dart';
+import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
@@ -39,4 +40,5 @@ abstract class UserRepository{
   Future<bool?> deleteOrder({required BuildContext context,required int id});
   Future<bool?> editOrder({required Map<String, dynamic> map, required BuildContext context,required int idOrder});
   Future<bool?> editOrderJournal({required String endAt,required String startAt,required BuildContext context,required int idOrder,required int post});
+  Future<ModelTimeFreeIntervals?> getTimeFreeInterval({required String date,required BuildContext context,required int idOrder,required int post});
   }

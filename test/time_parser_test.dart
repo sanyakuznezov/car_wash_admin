@@ -1,14 +1,9 @@
 
 
 
-import 'package:car_wash_admin/data/api/service/main_service_api.dart';
 import 'package:car_wash_admin/global_data.dart';
-import 'package:car_wash_admin/internal/dependencies/app_module.dart';
-import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 
 
 

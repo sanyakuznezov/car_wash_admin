@@ -6,6 +6,7 @@ import 'package:car_wash_admin/data/mapper/mapper_data_table.dart';
 import 'package:car_wash_admin/data/mapper/mapper_calculate_price.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_service.dart';
 import 'package:car_wash_admin/data/mapper/mapper_data_worker.dart';
+import 'package:car_wash_admin/data/mapper/mapper_intervals_free_time.dart';
 import 'package:car_wash_admin/data/mapper/mapper_list_brandcar.dart';
 import 'package:car_wash_admin/data/mapper/mapper_model_order_show.dart';
 import 'package:car_wash_admin/data/mapper/mapper_order.dart';
@@ -20,6 +21,7 @@ import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/domain/model/model_sale.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/model/model_time.dart';
+import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
 import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
@@ -170,5 +172,10 @@ class ApiUtil{
        }
      });
      return list;
+    }
+
+    Future<ModelTimeFreeIntervals?> getTimeFreeInterval({required String date,required BuildContext context,required int idOrder,required int post}) async {
+      final result= await _mainServiseApi.getTimeFreeInterval(date: date, context: context, idOrder: idOrder, post: post);
+      return MapperIntervalsFree.fromApi(modelTimeFreeIntervalsApi:result!);
     }
 }
