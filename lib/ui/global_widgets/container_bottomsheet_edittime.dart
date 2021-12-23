@@ -2,6 +2,7 @@
 
 
   import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
+import 'package:car_wash_admin/domain/state/state_add_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../app_colors.dart';
 import '../../global_data.dart';
@@ -77,19 +80,22 @@ import '../../global_data.dart';
 
 
 
-
+//TODO сделать валидацию интервала времени по доступному
 class ContainerBottomSheetEditTime extends StatefulWidget{
 
   final String time;
   final int timeStart;
   final int timeEnd;
+  String date;
+  int post;
   var onTimeSelect=(String? tStart,String tEnd)=>tStart,tEnd;
   ModelTimeFreeIntervals? modelTimeFreeIntervals;
+
   
 
   @override
   State<ContainerBottomSheetEditTime> createState() => _ContainerBottomSheetEditTimeState();
-   ContainerBottomSheetEditTime({this.modelTimeFreeIntervals,required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
+   ContainerBottomSheetEditTime({required this.date,required this.post,this.modelTimeFreeIntervals,required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
 }
 
 
@@ -101,17 +107,17 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
    String _timeEnd='';
    bool _isValidate=true;
    bool _edit=false;
+   StateAddOrder? stateAddOrder;
+   ModelTimeFreeIntervals? modelTimeFreeIntervalsNextDay;
 
    @override
   void initState() {
    super.initState();
+   stateAddOrder=StateAddOrder();
    _h=widget.time.split('-')[0].split(':')[0];
    _m=widget.time.split('-')[0].split(':')[1];
    _m1=widget.time.split('-')[1].split(':')[1];
    _h1=widget.time.split('-')[1].split(':')[0];
-    widget.modelTimeFreeIntervals!.intervals.forEach((element) {
-       print('Interval $element');
-    });
   }
 
   @override
@@ -120,7 +126,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
       alignment: Alignment.center,
         padding: EdgeInsets.all(20),
     width: MediaQuery.of(context).size.width,
-    height: SizeUtil.getSize(25.0,GlobalData.sizeScreen!),
+    height: SizeUtil.getSize(29.0,GlobalData.sizeScreen!),
     decoration: BoxDecoration(
     color: Colors.white,
     borderRadius: new BorderRadius.only(
@@ -128,112 +134,181 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
     topRight: const  Radius.circular(20.0))
     ),
       child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-      Text('Время начала',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: AppColors.textColorPhone,
-              fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-          )),
-              Text('Время окончания',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: AppColors.textColorPhone,
-                      fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                  )),
-            ],
-          ),
-          SizedBox(
-            height: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              TimeStart(widget.time,widget.timeStart,onTimeHour: (hour){
-                _h=hour!;
-                _edit=true;
-                _isValidate=true;
-              },
-              onTimeMin: (min){
-                setState(() {
-                  _m=min!;
-                  _isValidate=true;
-                });
-
-              },),
-              TimeEnd(widget.time,
-              onTimeMin: (min){
-                _m1=min!;
-                _isValidate=true;
-
-              },
-              onTimeHour: (hour){
-                _h1=hour!;
-                _isValidate=true;
-
-              },
-                  edit:_edit)
-            ],
-          ),
-          SizedBox(
-            height: SizeUtil.getSize(5.0,GlobalData.sizeScreen!),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child:
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child:  Text('ОТМЕНА',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text('Время начала',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
-                        color: Colors.black,
-                      ),),
-
-                  )),
-              Expanded(
-                  child: GestureDetector(
-                    onTap: (){
-                      _timeEnd='$_h1:$_m1';
-                      _timeStart='$_h:$_m';
-                      if(_timeEnd==_timeStart){
-                        _isValidate=false;
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text('Заказ не может быть равен суткам')));
-                      }
-
-                      if(_isValidate){
-                        Navigator.pop(context);
-                        widget.onTimeSelect(_timeStart,_timeEnd);
-                      }
-
-                    },
-                    child:  Text('ПРОДОЛЖИТЬ',
+                          color: AppColors.textColorPhone,
+                          fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                      )),
+                  Text('Время окончания',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
-                        color: Colors.blue,
+                          color: AppColors.textColorPhone,
+                          fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                      )),
+                ],
+              ),
+              SizedBox(
+                height: SizeUtil.getSize(2.0,GlobalData.sizeScreen!),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TimeStart(widget.time,widget.timeStart,onTimeHour: (hour){
+                    _h=hour!;
+                    _edit=true;
+                    _isValidate=true;
+                  },
+                    onTimeMin: (min){
+                      setState(() {
+                        _m=min!;
+                        _isValidate=true;
+                      });
 
-                      ),),
-                  )
+                    },),
+                  TimeEnd(widget.time,
+                      onTimeMin: (min){
+                        _m1=min!;
+                        _isValidate=true;
+
+                      },
+                      onTimeHour: (hour){
+                        _h1=hour!;
+                        _isValidate=true;
+
+                      },
+                      edit:_edit)
+                ],
+              ),
+              Observer(
+                builder:(_){
+                  if(stateAddOrder!.isLoad){
+                    if(stateAddOrder!.isErrorDay){
+                      _isValidate=false;
+                      Fluttertoast.showToast(
+                          msg: "Заказ перехит на нерабочий день",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 3,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                      );
+                    }
+                    return Container(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: SizeUtil.getSize(2.3,GlobalData.sizeScreen!),
+                          ),
+                          SizedBox(
+                            width:SizeUtil.getSize(2,GlobalData.sizeScreen!),
+                            height: SizeUtil.getSize(2,GlobalData.sizeScreen!),
+                            child: CircularProgressIndicator(color: AppColors.textColorHint,
+                            strokeWidth: 2,),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(SizeUtil.getSize(1,GlobalData.sizeScreen!)),
+                            child: Text('Проверка выбранного промежутка времени...',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: SizeUtil.getSize(2,GlobalData.sizeScreen!),
+                                color: AppColors.textColorHint,
+                              ),),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                 return Column(
+                   children: [
+                     SizedBox(
+                       height: SizeUtil.getSize(5.0,GlobalData.sizeScreen!),
+                     ),
+                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            child:
+                            GestureDetector(
+                              onTap: (){
+                                Navigator.pop(context);
+                              },
+                              child:  Text('ОТМЕНА',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                                  color: Colors.black,
+                                ),),
+
+                            )),
+                        Expanded(
+                            child: GestureDetector(
+                              onTap: (){
+                                _timeEnd='$_h1:$_m1';
+                                _timeStart='$_h:$_m';
+                                if(_timeEnd==_timeStart){
+                                  _isValidate=false;
+                                 // Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: "Заказ не может быть равен суткам",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 3,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  );
+                                }
+                                if(TimeParser.parseHourForTimeLine(_timeStart)>TimeParser.parseHourForTimeLine(_timeEnd)){
+                                    _isValidate=false;
+                                    stateAddOrder!.isWorkDay(context: context, date: widget.date, idOrder: 0, post:widget.post);
+
+
+                                }
+                                if(!TimeParser.validateCurrentTime(intervalsFree:widget.modelTimeFreeIntervals!.intervals,currentTimeStart: _timeStart,currentTimeEnd: _timeEnd)){
+                                  _isValidate=false;
+                                  Fluttertoast.showToast(
+                                      msg: "Время занято другим заказом",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 3,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  );
+                                }
+
+                                if(_isValidate){
+                                  Navigator.pop(context);
+                                  widget.onTimeSelect(_timeStart,_timeEnd);
+                                }
+
+                              },
+                              child:  Text('ПРОДОЛЖИТЬ',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                                  color: Colors.blue,
+
+                                ),),
+                            )
+                        )
+                      ],
+                ),
+                   ],
+                 );}
               )
-            ],
-          )
 
-        ],
-      ),
-        );
+            ],
+          ));
+
+
   }
 
   bool isTime(String start,String end){

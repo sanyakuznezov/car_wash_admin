@@ -356,5 +356,22 @@ class TimeParser{
 
     return result;
   }
+
+
+  static bool validateCurrentTime({required List<dynamic> intervalsFree,required String currentTimeStart,required String currentTimeEnd}){
+     bool _isFree=false;
+     int i=-1;
+     List<Map<String,int>> mapIntervalsInt=[];
+     int curStartInt=parseHourForTimeLine(currentTimeStart);
+     int curEndInt=parseHourForTimeLine(currentTimeEnd);
+     intervalsFree.forEach((element) {
+       i++;
+        mapIntervalsInt.add({'start':parseHourForTimeLine(element.split(' - ')[0]),'end':parseHourForTimeLine(element.split(' - ')[1])});
+        if(mapIntervalsInt[i]['start']!<=curStartInt&&mapIntervalsInt[i]['end']!>=curEndInt){
+           _isFree=true;
+        }
+     });
+     return _isFree;
+  }
 }
 

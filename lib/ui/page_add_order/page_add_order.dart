@@ -2758,6 +2758,8 @@ class _ItemDateState extends State<ItemDate> {
                                                       backgroundColor: Colors.white,
                                                       context: context, builder:
                                                       (context)=>ContainerBottomSheetEditTime(
+                                                        date: _order['date'],
+                                                    post: _order['post'],
                                                     modelTimeFreeIntervals: _stateAddOrder.modelTimeFreeIntervals,
                                                     onTimeSelect: (tStart,tEnd){
                                                       setState(() {

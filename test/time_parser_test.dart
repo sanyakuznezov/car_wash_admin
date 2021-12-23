@@ -24,11 +24,9 @@ void main(){
       expect(TimeParser.parseHourForTimeLine('01:00'),60);
     });
 
-    test('getTimeTable', (){
-       print('${TimeParser.parseHourForTimeLine('23:00')}');
-       TimeParser.getTimeTable(GlobalData.times[0] as List<String>, 120, 1320).forEach((element) {
-         print('$element');
-       });
+    test('validateCrrentTime', (){
+          List<String> t=['00:00 - 05:59','11:31 - 18:59','19:26 - 23:59'];
+         print('isFree ${TimeParser.validateCurrentTime(intervalsFree: t,currentTimeStart: '14:35',currentTimeEnd: '19:30')}');
     });
 
   });

@@ -7,7 +7,7 @@ import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobx/mobx.dart';
 part 'state_add_order.g.dart';
-  //TODO реализовать алгоритм загрузки свободных промежутков времени на выбранную дату
+
  class StateAddOrder= StateAddOrderBase with _$StateAddOrder;
 
   abstract class StateAddOrderBase with Store{
@@ -23,6 +23,7 @@ part 'state_add_order.g.dart';
    @observable
    String msgError='';
    ModelDataTable? modelDataTable;
+
 
 
 
