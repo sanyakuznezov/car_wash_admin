@@ -41,7 +41,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   int _leave = 0;
   double _y=0;
   double _scrollY = 0;
- List<Map> _offsetsOrder = [];
+  List<Map> _offsetsOrder = [];
   double? startY;
   int? endCollision;
   int? startCollision;
@@ -53,12 +53,19 @@ class StateDragTargetTable extends State<DragTargetTable> {
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
   String? _date;
+  int? _timeSchedule;
+  int? minuteAdjustment;
 
 
 
 
   @override
   Widget build(BuildContext context) {
+    //определяем масштаб времени с учетом графика работы мойки
+     minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
+    _timeSchedule=TimeParser.shiftTime(
+         time:  GlobalData.startDayMin!+minuteAdjustment!,
+         timeStep: widget.timeStep).toInt();
     return Center(
       child: DragTarget<int>(
         builder: (BuildContext context, List<dynamic> accepted,List<dynamic> rejected) {
@@ -80,17 +87,13 @@ class StateDragTargetTable extends State<DragTargetTable> {
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
                           //TODO настрить шаг времени и время начала работы мойки
-                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
-                              time: 0+60,
-                              timeStep: 0)))){
+                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy+_timeSchedule!))){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
                                   editStatus:GlobalData.ADD_ORDER_MODE,
                                   timeEndWash:1440,
                                   timeStartWash: 0,
-                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
-                                    time: 0+60,
-                                    timeStep: 0)),date:GlobalData.date,)));
+                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
                           }else{
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
                           }
@@ -102,9 +105,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                 timeEndWash: 1440,
                                 timeStartWash: 0,
                                 post:widget.post+1,
-                                time:TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
-                                    time: 600+60,
-                                    timeStep: 0)),
+                                time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),
                                 date:GlobalData.date,)));
                         }
 
@@ -273,7 +274,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
                                             child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['start_date'].split(' ')[1]}':
-                                              '${TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt(), widget.timeStep).split(' ')[1]}',
+                                              '${TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt()+_timeSchedule!, widget.timeStep).split(' ')[1]}',
                                               style: TextStyle(
                                                   color: Colors.white
                                               ),),
@@ -294,8 +295,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 color: isCollision?Colors.red.withOpacity(0.5):Colors.black12,
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
-                                            child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['expiration_date'].split(' ')[1]}': '${TimeParser.parseReverseTimeEnd(
-                                                _y.toInt() + _scrollY.toInt(),
+                                            child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['expiration_date'].split(' ')[1]}':'${TimeParser.parseReverseTimeEnd(
+                                                _y.toInt() + _scrollY.toInt()+_timeSchedule!,
                                                 GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep).split(' ')[1]}',
                                             style: TextStyle(
                                               color: Colors.white
@@ -320,10 +321,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
               GlobalData.timeStart=widget.orderList[data]['start_date'];
               GlobalData.timeEnd=widget.orderList[data]['expiration_date'];
             }else{
-              GlobalData.timeStart = TimeParser.parseReverseTimeStart(
-                  _y.toInt() + _scrollY.toInt(), widget.timeStep);
-              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(
-                  _y.toInt() + _scrollY.toInt(),
+              GlobalData.timeStart = TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt()+_timeSchedule!, widget.timeStep);
+              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(_y.toInt() + _scrollY.toInt()+_timeSchedule!,
                   GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
             }
             GlobalData.post=widget.post+1;
@@ -372,6 +371,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   void initState() {
     super.initState();
     _date=DateTime.now().toString().split(' ')[0];
+
   }
 
   @override
@@ -398,7 +398,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
   }
 
   //сдвиг координаты для позиции заказов в звисимости от размера экрана
-  //TODO отреулирвать размещение заказов с учетом времени рабты мойки
   getY(int index,int start,int end,int timeStep){
     double s=110+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
     if(start>end){
@@ -411,20 +410,17 @@ class StateDragTargetTable extends State<DragTargetTable> {
     }else if(GlobalData.sizeScreen!>700&&GlobalData.sizeScreen!<800){
       return s+4;
     }else{
-      return s+TimeParser.shiftTime(
-          time: 0+60,
-          timeStep: 0);
+      return s-_timeSchedule!;
     }
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени
-  //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемоо заказа
+  //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемого заказа
   _isColision(List<Map> orders,int b1,int b2){
       for(int i=0;orders.length>i;i++){
         if(orders[i]['start']<b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>b2){
           return true;
         }
-
         if(orders[i]['start']>orders[i]['end']){
          if( b1<=orders[i]['end']){
            return true;

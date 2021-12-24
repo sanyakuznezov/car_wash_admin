@@ -124,9 +124,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
               );
             }
             index=-1;
-            //TODO uncomment
-           // timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
-            timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,0,1440);
+            timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
             return Stack(
                 children: [
                   Row(
@@ -194,8 +192,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       builder: (context,time){
                         if(time.data!=null){
                           startY=c1+TimeParser.shiftTime(
-                             //TODO время начала работы применить из настроек мойки
-                              time: TimeParser.parseHourForTimeLine(time.data!,0),
+                              time: TimeParser.parseHourForTimeLine(time.data!,widget.modelDataTable.startDayMin),
                               timeStep: snapshot.data);
                           return Container(
                               margin: EdgeInsets.fromLTRB(0, 9, 0, 0),

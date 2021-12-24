@@ -12,6 +12,7 @@
    static String? timeStart;
    static String? timeEnd;
    static int? endDayMin;
+   static int? startDayMin;
    static int? post;
    static int? id;
    static int? idOrder;

@@ -101,9 +101,9 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
                               if(snapshot.data==1){
                                 return GestureDetector(
                                   onTap:(){
-                                    print('$email $lastname $firstname $name $phone');
+
                                     if (_isEdit) {
-                                      _editPhone('+7$phone',lastname,
+                                      _editPhone(phone,lastname,
                                           name,
                                           firstname,
                                           email);
@@ -189,7 +189,6 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
                                 height: SizeUtil.getSize(5.0, GlobalData.sizeScreen!),
                                 child: Observer(
                                     builder: (_) {
-                                      print('FutureBuilder');
                                       if (_stateEditDataUser!.isLoad) {
                                         return Center(
                                             child: SizedBox(
