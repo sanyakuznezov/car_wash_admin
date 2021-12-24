@@ -124,7 +124,9 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
               );
             }
             index=-1;
-            timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
+            //TODO uncomment
+           // timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
+            timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,0,1440);
             return Stack(
                 children: [
                   Row(
@@ -185,14 +187,15 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                     ],
                   ),
-                  //TODO настроить взависимости от режима работы мойки
                   //линия текущего времени
-                  GlobalData.date==DateTime.now().toString().split(' ')[0]?StreamBuilder<String>(
+                  GlobalData.date==DateTime.now().toString().split(' ')[0]?
+                  StreamBuilder<String>(
                       stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
                         if(time.data!=null){
                           startY=c1+TimeParser.shiftTime(
-                              time_start: TimeParser.parseHourForTimeLine(time.data!),
+                             //TODO время начала работы применить из настроек мойки
+                              time: TimeParser.parseHourForTimeLine(time.data!,0),
                               timeStep: snapshot.data);
                           return Container(
                               margin: EdgeInsets.fromLTRB(0, 9, 0, 0),

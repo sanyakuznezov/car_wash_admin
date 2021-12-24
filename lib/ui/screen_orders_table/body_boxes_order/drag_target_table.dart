@@ -64,7 +64,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         builder: (BuildContext context, List<dynamic> accepted,List<dynamic> rejected) {
           _offsetsOrder.clear();
           _editState=0;
-          _timeParse=TimeParser.parseHourForTimeLine(widget.time);
+          _timeParse=TimeParser.parseStringTimeToInt(widget.time);
           return Container(
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
               alignment: Alignment.center,
@@ -77,26 +77,35 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                     },
                       onDoubleTapDown:(y){
-
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
-                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy))){
+                          //TODO настрить шаг времени и время начала работы мойки
+                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
+                              time: 0+60,
+                              timeStep: 0)))){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
                                   editStatus:GlobalData.ADD_ORDER_MODE,
-                                  timeEndWash: 1440,
+                                  timeEndWash:1440,
                                   timeStartWash: 0,
-                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
+                                    time: 0+60,
+                                    timeStep: 0)),date:GlobalData.date,)));
                           }else{
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
                           }
                         }else{
+                          //TODO настрить шаг времени и время начала работы мойки
                           Navigator.push(context, SlideTransitionSize(
                               PageAddOrder(
                                 editStatus:GlobalData.ADD_ORDER_MODE,
                                 timeEndWash: 1440,
                                 timeStartWash: 0,
-                                post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy),date:GlobalData.date,)));
+                                post:widget.post+1,
+                                time:TimePosition.getTime(y.localPosition.dy+TimeParser.shiftTime(
+                                    time: 600+60,
+                                    timeStep: 0)),
+                                date:GlobalData.date,)));
                         }
 
                       }
@@ -388,9 +397,10 @@ class StateDragTargetTable extends State<DragTargetTable> {
     return result*GlobalData.timeStepsConstant[timeStep]['coof'];
   }
 
-  //сдвиг координаты для позииии заказов в звисимости от размера экрана
+  //сдвиг координаты для позиции заказов в звисимости от размера экрана
+  //TODO отреулирвать размещение заказов с учетом времени рабты мойки
   getY(int index,int start,int end,int timeStep){
-    double s=110+TimeParser.shiftTime(time_start: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
+    double s=110+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
     if(start>end){
       if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
           s=-110;
@@ -401,7 +411,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
     }else if(GlobalData.sizeScreen!>700&&GlobalData.sizeScreen!<800){
       return s+4;
     }else{
-      return s;
+      return s+TimeParser.shiftTime(
+          time: 0+60,
+          timeStep: 0);
     }
   }
 

@@ -37,8 +37,8 @@ class ContainerBottomSheet extends StatefulWidget{
 
   @override
   Widget build(BuildContext context) {
-    if(TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])>GlobalData.endDayMin||
-        TimeParser.parseHourForTimeLine(widget.timeEnd.split(' ')[1])<TimeParser.parseHourForTimeLine(widget.timeStart.split(' ')[1])){
+    if(TimeParser.parseStringTimeToInt(widget.timeEnd.split(' ')[1])>GlobalData.endDayMin||
+        TimeParser.parseStringTimeToInt(widget.timeEnd.split(' ')[1])<TimeParser.parseStringTimeToInt(widget.timeStart.split(' ')[1])){
       _isCarryoverOrder=true;
       _textMain='Запись находится между двумя днями. Изменения разрешены только на странице редактирования';
     }else{

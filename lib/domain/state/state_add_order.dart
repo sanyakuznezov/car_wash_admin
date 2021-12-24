@@ -14,23 +14,21 @@ part 'state_add_order.g.dart';
 
    @observable
    bool isLoad=false;
-   @observable
    bool isError=false;
    @observable
    bool isErrorDay=false;
    @observable
+   bool successRequest=false;
+   @observable
    ModelTimeFreeIntervals? modelTimeFreeIntervals;
    @observable
-   String msgError='';
+   String msgError='Ошибка...';
    ModelDataTable? modelDataTable;
 
 
 
 
    Future<void> getTimeIntervalsFree({required BuildContext context,required String date,required int idOrder,required int post}) async{
-    print('getTimeIntervalsFree $idOrder $post $date');
-    isLoad=true;
-    isError=false;
     final result=await RepositoryModule.userRepository().getTimeFreeInterval(date: date, context: context, idOrder: idOrder, post: post).catchError((error){
      isError=true;
      isLoad=false;
@@ -42,32 +40,35 @@ part 'state_add_order.g.dart';
      msgError='Ошибка загрузки доступных интервалов времени';
     }else{
      modelTimeFreeIntervals=result;
+     successRequest=true;
     }
    }
 
    Future<void> isWorkDay({required BuildContext context,required String date,required int idOrder,required int post})async{
+    print('Date $date Post $post');
     isLoad=true;
-    isErrorDay=false;
+    isError=false;
     final result=await RepositoryModule.userRepository().getDataSetting(context: context, date: date)
         .catchError((error){
-     isErrorDay=true;
+     isError=true;
      isLoad=false;
      msgError='Ошибка получения данных';
     });
     if(result==null){
-     isErrorDay=true;
+     isError=true;
      isLoad=false;
      msgError='Ошибка получения данных';
     }
     modelDataTable=result;
-    isLoad=false;
     if(!modelDataTable!.isWorkDay){
      isErrorDay=true;
+     isLoad=false;
      msgError='Не рабочий день';
     }else{
      getTimeIntervalsFree(context: context, date: date, idOrder: idOrder, post: post);
     }
 
    }
+
 
  }

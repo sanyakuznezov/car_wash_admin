@@ -107,7 +107,7 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
                     color: AppColors.colorIndigo,
                     onPressed: (){
                       if(_hour.isNotEmpty&&_min.isNotEmpty){
-                        widget.order.update('startTime', (val) => TimeParser.parseHourForTimeLine('$_hour:$_min'));
+                        widget.order.update('startTime', (val) => TimeParser.parseStringTimeToInt('$_hour:$_min'));
                         _sendOrder(context,widget.order);
                       }
 

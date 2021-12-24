@@ -1,13 +1,14 @@
 
 
 
-  import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
+  import 'dart:async';
+
+import 'package:car_wash_admin/domain/model/model_time_free_intervals.dart';
 import 'package:car_wash_admin/domain/state/state_add_order.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -41,7 +42,6 @@ import '../../global_data.dart';
        result=i;
      }
    });
-   print('getTHS $result');
    return result;
   }
 
@@ -87,6 +87,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
   final int timeStart;
   final int timeEnd;
   String date;
+  int idOrder;
   int post;
   var onTimeSelect=(String? tStart,String tEnd)=>tStart,tEnd;
   ModelTimeFreeIntervals? modelTimeFreeIntervals;
@@ -95,7 +96,7 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
 
   @override
   State<ContainerBottomSheetEditTime> createState() => _ContainerBottomSheetEditTimeState();
-   ContainerBottomSheetEditTime({required this.date,required this.post,this.modelTimeFreeIntervals,required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
+   ContainerBottomSheetEditTime({required this.idOrder,required this.date,required this.post,this.modelTimeFreeIntervals,required this.onTimeSelect,required this.timeStart,required this.timeEnd,required this.time});
 }
 
 
@@ -187,18 +188,6 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
               Observer(
                 builder:(_){
                   if(stateAddOrder!.isLoad){
-                    if(stateAddOrder!.isErrorDay){
-                      _isValidate=false;
-                      Fluttertoast.showToast(
-                          msg: "Заказ перехит на нерабочий день",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 3,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          fontSize: 16.0
-                      );
-                    }
                     return Container(
                       child: Column(
                         children: [
@@ -223,6 +212,64 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
                         ],
                       ),
                     );
+                  }else{
+                    if(stateAddOrder!.isError){
+                      Fluttertoast.showToast(
+                          msg: stateAddOrder!.msgError,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 3,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                      );
+                      Navigator.pop(context);
+                    }
+                    if(stateAddOrder!.isErrorDay){
+                      _isValidate=false;
+                      Fluttertoast.showToast(
+                          msg: "Заказ переходит на нерабочий день",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 3,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                      );
+                    }else{
+                      if(stateAddOrder!.successRequest){
+                        if(!TimeParser.validateCurrentTimeNextDay(intervalsFreeNextDay:stateAddOrder!.modelTimeFreeIntervals!.intervals,
+                            intervalsFree:widget.modelTimeFreeIntervals!.intervals,
+                            currentTimeStart: _timeStart,currentTimeEnd: _timeEnd)){
+                          _isValidate=false;
+                          Fluttertoast.showToast(
+                              msg: "Время занято другим заказом",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0
+                          );
+                        }else{
+                          Fluttertoast.showToast(
+                              msg: "Время свободно",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0
+                          );
+                          _isValidate=true;
+                          Timer.periodic(Duration(seconds: 1), (timer) {
+                            Navigator.pop(context);
+                            widget.onTimeSelect(_timeStart,_timeEnd);
+                            timer.cancel();
+                          });
+                        }
+                      }
+                    }
                   }
                  return Column(
                    children: [
@@ -265,9 +312,13 @@ class ContainerBottomSheetEditTime extends StatefulWidget{
                                       fontSize: 16.0
                                   );
                                 }
-                                if(TimeParser.parseHourForTimeLine(_timeStart)>TimeParser.parseHourForTimeLine(_timeEnd)){
+                                if(TimeParser.parseStringTimeToInt(_timeStart)>TimeParser.parseStringTimeToInt(_timeEnd)){
                                     _isValidate=false;
-                                    stateAddOrder!.isWorkDay(context: context, date: widget.date, idOrder: 0, post:widget.post);
+                                    int year=int.parse(widget.date.split('-')[0]);
+                                    int mount=int.parse(widget.date.split('-')[1]);
+                                    int dey=int.parse(widget.date.split('-')[2]);
+                                    String dateNextDay=DateTime(year,mount,dey).add(Duration(days:1)).toString().split(' ')[0];
+                                    stateAddOrder!.isWorkDay(context: context, date: dateNextDay, idOrder:widget.idOrder, post:widget.post);
 
 
                                 }

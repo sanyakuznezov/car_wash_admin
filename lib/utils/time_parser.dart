@@ -1,14 +1,16 @@
 
 
- import '../global_data.dart';
+ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import '../global_data.dart';
 
 class TimeParser{
 
-  static double shiftTime({required int time_start,required int timeStep}){
+  static double shiftTime({required int time,required int timeStep}){
      double t=GlobalData.timeStepsConstant[timeStep]['coof'];
      int i=GlobalData.timeStepsConstant[timeStep]['time'];
      int? s=0;
-     s=time_start-i;
+     s=time-i;
      return s*t;
    }
 
@@ -127,16 +129,22 @@ class TimeParser{
     int minute = int.parse(timeSplit.split(':')[1]);
     return hour * 60 + minute;
   }
-
-  static parseHourForTimeLine(String time) {
+  //TODO переименвать
+  static parseStringTimeToInt(String time) {
     int hour = int.parse(time.split(':')[0]);
     int minute = int.parse(time.split(':')[1]);
     return hour * 60 + minute;
   }
+   //ToDO test time для линии времени
+  static parseHourForTimeLine(String time,int timeStart) {
+    int hour = int.parse(time.split(':')[0]);
+    int minute = int.parse(time.split(':')[1]);
+    return (hour * 60 + minute)-timeStart;
+  }
 
   //парсим время переходящее на другой день
   static parsingTime(String time){
-    int p=parseHourForTimeLine(time);
+    int p=parseStringTimeToInt(time);
     int? t=GlobalData.endDayMin;
     if(p>t!){
       p=t;
@@ -345,9 +353,9 @@ class TimeParser{
   static List<String> getTimeTable(List<String> allTime, int startDayMin,int endDayMin){
     List<String> result=[];
     for(int i=0;allTime.length>i;i++){
-      if(startDayMin<=parseHourForTimeLine(allTime[i])){
+      if(startDayMin<=parseStringTimeToInt(allTime[i])){
         result.add(allTime[i]);
-         if(endDayMin==parseHourForTimeLine(allTime[i])){
+         if(endDayMin==parseStringTimeToInt(allTime[i])){
            break;
          }
       }
@@ -362,16 +370,39 @@ class TimeParser{
      bool _isFree=false;
      int i=-1;
      List<Map<String,int>> mapIntervalsInt=[];
-     int curStartInt=parseHourForTimeLine(currentTimeStart);
-     int curEndInt=parseHourForTimeLine(currentTimeEnd);
+     int curStartInt=parseStringTimeToInt(currentTimeStart);
+     int curEndInt=parseStringTimeToInt(currentTimeEnd);
      intervalsFree.forEach((element) {
        i++;
-        mapIntervalsInt.add({'start':parseHourForTimeLine(element.split(' - ')[0]),'end':parseHourForTimeLine(element.split(' - ')[1])});
+        mapIntervalsInt.add({'start':parseStringTimeToInt(element.split(' - ')[0]),'end':parseStringTimeToInt(element.split(' - ')[1])});
         if(mapIntervalsInt[i]['start']!<=curStartInt&&mapIntervalsInt[i]['end']!>=curEndInt){
            _isFree=true;
         }
      });
      return _isFree;
+  }
+
+  static bool validateCurrentTimeNextDay({required List<dynamic> intervalsFreeNextDay,required List<dynamic> intervalsFree,required String currentTimeStart,required String currentTimeEnd}){
+    bool _isFree=false;
+    bool _isFreeNextDay=false;
+    bool _result=false;
+    int i=intervalsFree.length-1;
+    Map<String,int> mapIntervalsInt={};
+    Map<String,int> mapIntervalsIntNextDay={};
+    int curStartInt=parseStringTimeToInt(currentTimeStart);
+    int curEndInt=parseStringTimeToInt(currentTimeEnd);
+    mapIntervalsInt.addAll({'start':parseStringTimeToInt(intervalsFree[i].split(' - ')[0]),'end':parseStringTimeToInt(intervalsFree[i].split(' - ')[1])});
+    if(mapIntervalsInt['start']!<=curStartInt&&mapIntervalsInt['end']==1439){
+      _isFree=true;
+    }
+    mapIntervalsIntNextDay.addAll({'start':parseStringTimeToInt(intervalsFreeNextDay[0].split(' - ')[0]),'end':parseStringTimeToInt(intervalsFreeNextDay[0].split(' - ')[1])});
+    if(mapIntervalsIntNextDay['start']==0&&mapIntervalsIntNextDay['end']!>=curEndInt){
+      _isFreeNextDay=true;
+    }
+     if(_isFree&&_isFreeNextDay){
+       _result=true;
+     }
+    return _result;
   }
 }
 

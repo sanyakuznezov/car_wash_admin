@@ -51,7 +51,7 @@ import '../../../global_data.dart';
   String? _dateValue;
   String? _date;
   bool _isEditTotalPrice=false;
-
+  int _id=0;
 
 
 
@@ -97,6 +97,9 @@ class PageAddOrder extends StatefulWidget{
   PageAddOrder({required this.editStatus,this.idOrder,required this.timeEndWash,required this.timeStartWash,required this.post,required this.date,required this.time}){
     isVisibleFAB=false;
     _editStatusMain=editStatus;
+    if(_editStatusMain==GlobalData.EDIT_MODE){
+      _id=idOrder!;
+    }
   }
 
 
@@ -2656,7 +2659,7 @@ class _ItemDateState extends State<ItemDate> {
                                                       _dateValue=date.toString().split(' ')[0];
                                                       _order.update('date', (value) =>_dateValue);
                                                       _date=_dateValue;
-                                                      _stateAddOrder.isWorkDay(context: context, date: _date!, idOrder:0, post: _order['post']);
+                                                      _stateAddOrder.isWorkDay(context: context, date: _date!, idOrder:_id, post: _order['post']);
                                                     });
 
                                                   },
@@ -2758,6 +2761,7 @@ class _ItemDateState extends State<ItemDate> {
                                                       backgroundColor: Colors.white,
                                                       context: context, builder:
                                                       (context)=>ContainerBottomSheetEditTime(
+                                                        idOrder: _id,
                                                         date: _order['date'],
                                                     post: _order['post'],
                                                     modelTimeFreeIntervals: _stateAddOrder.modelTimeFreeIntervals,
@@ -2885,7 +2889,7 @@ class _ItemDateState extends State<ItemDate> {
                                                   widget.post=value+1;
                                                   _order.update('post', (v) => value+1);
                                                   widget.callback(true);
-                                                  _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder:0, post: _order['post']);
+                                                  _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder:_id, post: _order['post']);
                                                 }
                                               });
 
@@ -2927,7 +2931,10 @@ class _ItemDateState extends State<ItemDate> {
    void initState() {
      super.initState();
      _stateAddOrder=StateAddOrder();
-     _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder: 0, post: _order['post']);
+     if(_editStatusMain!=GlobalData.VIEW_MODE){
+       _stateAddOrder.getTimeIntervalsFree(context: context, date: _date!, idOrder: _id, post: _order['post']);
+     }
+
    }
 
    _getListPosts(){

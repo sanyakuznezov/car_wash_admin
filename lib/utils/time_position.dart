@@ -6,7 +6,6 @@
 class TimePosition{
 
   static getTime(double y){
-
     if(GlobalData.stateTime==0){
         return getTimeStep_1(y);
       }else if(GlobalData.stateTime==1){
