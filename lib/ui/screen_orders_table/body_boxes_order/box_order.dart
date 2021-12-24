@@ -1,6 +1,8 @@
 
 
 
+import 'dart:async';
+
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,8 @@ class BoxOrder extends StatefulWidget{
 
  class StateBoxOrder extends State<BoxOrder>{
 
+   final containerKey = GlobalKey();
+   double? x, y;
 
 
   @override
@@ -39,6 +43,7 @@ class BoxOrder extends StatefulWidget{
                   ? Align(
                       alignment: Alignment.topCenter,
                       child: Container(
+                          key: containerKey,
                         margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
                         color: Colors.grey,
                         height: 0.5,
@@ -50,6 +55,7 @@ class BoxOrder extends StatefulWidget{
                 child: Container(
                   width: 0.5,
                   color: Colors.grey[200],
+
                 ),
               ),
               Align(
@@ -60,7 +66,11 @@ class BoxOrder extends StatefulWidget{
                   height: 0.5,
                 ),
               ),
-
+              FutureBuilder(
+                  future: _offset(containerKey),
+                  builder: (context,data){
+                    return Container();
+                  }),
             ],
           ),
         );
@@ -85,6 +95,16 @@ class BoxOrder extends StatefulWidget{
 
   }
 
+   Future<void> _offset(GlobalKey key) async {
+    Timer.periodic(Duration(seconds: 3), (timer) {
+      RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
+      Offset position = box.localToGlobal(Offset.zero);
+      y = position.dy;
+      print('Offset line box $y');
+      timer.cancel();
+    });
+
+   }
 
   parseHour(String time){
     String timeSplit=time.split(' ')[1];
@@ -94,6 +114,7 @@ class BoxOrder extends StatefulWidget{
   }
 
  }
+
 
 
 

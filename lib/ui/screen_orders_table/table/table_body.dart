@@ -49,6 +49,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   late AnimationController _controller;
   bool _isToPull=false;
   List<String> timeLine=[];
+  final _keyLineChekShift=GlobalKey();
 
 
 
@@ -184,6 +185,21 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       ),
 
                     ],
+                  ),
+
+                  Positioned(
+                    top:37,
+                    child: Container(
+                      key: _keyLineChekShift,
+                      width: _getWight(GlobalData.numBoxes!) *GlobalData.numBoxes!.toDouble(),
+                      height: 0.5,
+                      child: FutureBuilder(
+                      future: _offset(_keyLineChekShift),
+                        builder: (context,data){
+                          return Container();
+                        },
+                      ),
+                    ),
                   ),
                   //линия текущего времени
                   GlobalData.date==DateTime.now().toString().split(' ')[0]?
@@ -437,7 +453,15 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   }
 }
+Future<void> _offset(GlobalKey key) async {
+  Timer.periodic(Duration(seconds: 3), (timer) {
+    RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
+    Offset position = box.localToGlobal(Offset.zero);
+    print('Offset line box table ${position.dy}');
+    timer.cancel();
+  });
 
+}
 
   //показать индекс из списка заказов по id
   getIndex(int id,List<Map> order){

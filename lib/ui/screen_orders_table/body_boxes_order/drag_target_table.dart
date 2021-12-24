@@ -405,13 +405,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
           s=-110;
       }
     }
-    if(GlobalData.sizeScreen!<700){
-      return s-4;
-    }else if(GlobalData.sizeScreen!>700&&GlobalData.sizeScreen!<800){
-      return s+4;
-    }else{
-      return s-_timeSchedule!;
-    }
+    return s-_timeSchedule!;
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени
