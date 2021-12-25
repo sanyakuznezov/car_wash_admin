@@ -26,6 +26,9 @@ class DragTargetTable extends StatefulWidget{
   int timeStep;
   String time;
   TableState? tableState;
+  double yLine=0.0;
+  double yBox=0.0;
+  double? shiftY;
   var accept=(String? start,String? end,int? postNum)=>start,end,postNum;
 
   @override
@@ -34,7 +37,9 @@ class DragTargetTable extends StatefulWidget{
     return StateDragTargetTable();
   }
 
-  DragTargetTable(this.bodyHeaght,{required this.tableState,required this.orderList,required this.post,required this.timeStep,required this.accept,required this.time});
+  DragTargetTable(this.bodyHeaght,{required this.yBox,required this.yLine,required this.tableState,required this.orderList,required this.post,required this.timeStep,required this.accept,required this.time}){
+   shiftY=yBox-yLine;
+  }
 }
 
 class StateDragTargetTable extends State<DragTargetTable> {
@@ -190,7 +195,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             //проверяем переходящий заказ с предыдущего дня если да то начало заказа с 00:00
                             startY=getY(a,TimeParser.parseHour(widget.orderList[a]['start_date']),TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             sizeBody=_sizeBody(a,TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
-                            endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
+                            endCollision=TimeParser.parseHourEndCollision( startY!+_timeSchedule!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
                             startCollision=TimeParser.parseHourStartCollision(widget.orderList[a]['start_date']);
                             if(widget.orderList[a]['enable']==1){
                               _offsetsOrder.add({'start':startCollision,'end':endCollision,'id':widget.orderList[a]['id']});
@@ -202,7 +207,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             }
                             //Рзмещение заказов по таблице
                             return Positioned(
-                                top: startY,
+                                top: startY!+widget.shiftY!,
                                 left: 5,
                                 child: widget.orderList[a]['enable']==1?BodyCard(
                                   lengthOrders: widget.orderList.length,
@@ -250,7 +255,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                                   //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY-35,
+                                      top: y.data + _scrollY,
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -348,7 +353,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -399,7 +404,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
   //сдвиг координаты для позиции заказов в звисимости от размера экрана
   getY(int index,int start,int end,int timeStep){
-    double s=110+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
+    double s=111+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
     if(start>end){
       if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
           s=-110;

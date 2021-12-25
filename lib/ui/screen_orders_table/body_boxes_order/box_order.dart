@@ -12,7 +12,7 @@ import '../../../global_data.dart';
 class BoxOrder extends StatefulWidget{
 
 
-  var callbackBox =(bool? drag,double? x,double? y)=>drag,x,y;
+  var callbackBox =(double? y)=>y;
   int posts;
   BoxOrder({this.index,Key? key,required this.posts,required this.callbackBox}):super(key:key);
 
@@ -29,7 +29,6 @@ class BoxOrder extends StatefulWidget{
  class StateBoxOrder extends State<BoxOrder>{
 
    final containerKey = GlobalKey();
-   double? x, y;
 
 
   @override
@@ -43,7 +42,6 @@ class BoxOrder extends StatefulWidget{
                   ? Align(
                       alignment: Alignment.topCenter,
                       child: Container(
-                          key: containerKey,
                         margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
                         color: Colors.grey,
                         height: 0.5,
@@ -61,16 +59,18 @@ class BoxOrder extends StatefulWidget{
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
+                  key: containerKey,
                   margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
                   color: Colors.grey,
                   height: 0.5,
                 ),
               ),
-              FutureBuilder(
+
+              widget.index==0?FutureBuilder(
                   future: _offset(containerKey),
                   builder: (context,data){
                     return Container();
-                  }),
+                  }):Container(),
             ],
           ),
         );
@@ -96,13 +96,15 @@ class BoxOrder extends StatefulWidget{
   }
 
    Future<void> _offset(GlobalKey key) async {
-    Timer.periodic(Duration(seconds: 3), (timer) {
-      RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
-      Offset position = box.localToGlobal(Offset.zero);
-      y = position.dy;
-      print('Offset line box $y');
-      timer.cancel();
-    });
+      Timer.periodic(Duration(milliseconds: 500), (timer) {
+        if(key.currentContext!.findRenderObject()!=null){
+          RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
+          Offset position = box.localToGlobal(Offset.zero);
+          widget.callbackBox(position.dy);
+        }
+        timer.cancel();
+      });
+
 
    }
 

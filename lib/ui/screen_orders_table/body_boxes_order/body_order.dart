@@ -261,8 +261,9 @@ class StateBodyCard extends State<BodyCard>{
    // t2-время окончания заказа t3-время начала заказ
   _isCarryoverOrder(String t2,String t3){
     var r=TimeParser.parseHour(t2);
-    var r1=TimeParser.parseHour(t3);
-    if(r<r1){
+    var r2=TimeParser.parseHour(t3);
+    var r3=GlobalData.endDayMin;
+    if(r>r3||r<r2){
       return true;
     }
     return false;

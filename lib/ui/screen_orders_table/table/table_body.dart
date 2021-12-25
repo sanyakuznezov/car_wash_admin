@@ -35,7 +35,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   late ScrollController _centerColumnsController;
   late ScrollController _timeColumnsController;
   late ScrollController _timeLineColumnsController;
-  bool dragControll=false;
   final timeState=GlobalData.stateTime;
   int leave=0;
   Map? _map;
@@ -50,6 +49,11 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   bool _isToPull=false;
   List<String> timeLine=[];
   final _keyLineChekShift=GlobalKey();
+  late ValueNotifier<double> _notifierCheckY;
+  late ValueNotifier<Map> _notifierMapOffset;
+  bool _isRebuild=false;
+  int indexForBox=-1;
+  Map<String,double> offsetsY=Map();
 
 
 
@@ -60,6 +64,8 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   void initState() {
     super.initState();
     getTime();
+    _notifierCheckY=ValueNotifier<double>(0);
+    _notifierMapOffset=ValueNotifier<Map>({});
     _controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
     _controllers = LinkedScrollControllerGroup();
@@ -73,7 +79,17 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   }
 
-
+  //определяет коордынату контрольной полосы для определения сдвига
+  Future<void> _offset(GlobalKey key)async {
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
+      if(key.currentContext!.findRenderObject()!=null){
+        RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
+        Offset position = box.localToGlobal(Offset.zero);
+        _notifierCheckY.value=position.dy;
+      }
+      timer.cancel();
+    });
+  }
 
 
 
@@ -89,7 +105,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
     });
 
   }
-
 
   //ширина столбцов в зависимости от количества постов
   double _getWight(int posts){
@@ -114,7 +129,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
-    int index=-1;
     return StreamBuilder<dynamic>(
           stream: AppModule.blocTable.stateTime,
             builder: (context,snapshot){
@@ -124,14 +138,34 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                 child: CircularProgressIndicator(color: Colors.indigo),
               );
             }
-            index=-1;
+            indexForBox=-1;
+            _isRebuild=false;
             timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
             return Stack(
                 children: [
-                  Row(
-                    children: [
-                      // Сетка талицы с нумерацией постов и временной шкалой
-                     SizedBox(
+                  // Опредеяем позицию конрольной линии для определения смещения по оси Y
+                  Positioned(
+                    top:120,
+                    child: Container(
+                      key: _keyLineChekShift,
+                      width: _getWight(GlobalData.numBoxes!) *GlobalData.numBoxes!.toDouble(),
+                      height: 0.5,
+                      child: FutureBuilder(
+                        future: _offset(_keyLineChekShift),
+                        builder: (context,data){
+                          return Container();
+                        },
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder<double>(
+                    valueListenable: _notifierCheckY,
+                    builder: (context,offsetYLine,child){
+                      if(offsetYLine!=0){
+                        return Row(
+                          children: [
+                            // Сетка талицы с нумерацией постов и временной шкалой
+                            SizedBox(
                               width: 50,
                               child:
                               ListView(
@@ -144,63 +178,58 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                 }),
                               ),
                             ),
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                          child: SingleChildScrollView(
-                             controller: widget.scrollController,
-                              scrollDirection: Axis.horizontal,
-                              physics: const AlwaysScrollableScrollPhysics(
-                                parent: BouncingScrollPhysics(),
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                                child: SingleChildScrollView(
+                                    controller: widget.scrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const AlwaysScrollableScrollPhysics(
+                                      parent: BouncingScrollPhysics(),
+                                    ),
+                                    child: SizedBox(
+                                      width: _getWight(GlobalData.numBoxes!)*GlobalData.numBoxes!,
+                                      child: ListView(
+                                        controller: _restColumnsController,
+                                        physics: const AlwaysScrollableScrollPhysics(
+                                          parent: BouncingScrollPhysics(),
+                                        ),
+                                        children: List.generate(timeLine.length - 1, (y) {
+                                          indexForBox++;
+                                          return Row(
+                                            children: List.generate(GlobalData.numBoxes!, (x) {
+                                              return BoxOrder(
+                                                  posts: GlobalData.numBoxes!,
+                                                  index: indexForBox,
+                                                  callbackBox: (yBox) {
+                                                    if(!_isRebuild){
+                                                      print('callbackBox');
+                                                      _notifierMapOffset.value={'yLine':offsetYLine,'yBox':yBox};
+                                                      _isRebuild=true;
+                                                    }
+                                                  });
+                                            }
+
+                                            ),
+
+                                          );
+                                        }),
+                                      )
+                                      ,
+                                    )
+                                ),
                               ),
-                              child: SizedBox(
-                                width: _getWight(GlobalData.numBoxes!)*GlobalData.numBoxes!,
-                                child: ListView(
-                                  controller: _restColumnsController,
-                                  physics: const AlwaysScrollableScrollPhysics(
-                                    parent: BouncingScrollPhysics(),
-                                  ),
-                                  children: List.generate(timeLine.length - 1, (y) {
-                                    return Row(
-                                      children: List.generate(GlobalData.numBoxes!, (x) {
-                                        return BoxOrder(
-                                          posts: GlobalData.numBoxes!,
-                                            index: index,
-                                            callbackBox: (drag, x, y) {
-                                              setState(() {
-                                                dragControll = true;
-                                              });
-                                            });
-                                      }
+                            ),
 
-                                      ),
+                          ],
+                        );
+                      }else{
+                        return Container();
+                      }
+                    },
 
-                                    );
-                                  }),
-                                )
-                                ,
-                              )
-                          ),
-                        ),
-                      ),
-
-                    ],
                   ),
 
-                  Positioned(
-                    top:37,
-                    child: Container(
-                      key: _keyLineChekShift,
-                      width: _getWight(GlobalData.numBoxes!) *GlobalData.numBoxes!.toDouble(),
-                      height: 0.5,
-                      child: FutureBuilder(
-                      future: _offset(_keyLineChekShift),
-                        builder: (context,data){
-                          return Container();
-                        },
-                      ),
-                    ),
-                  ),
                   //линия текущего времени
                   GlobalData.date==DateTime.now().toString().split(' ')[0]?
                   StreamBuilder<String>(
@@ -241,97 +270,111 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
 
                   //Столбцы таблицы
-                  StreamBuilder<Map>(
-                      stream:  AppModule.blocTable.dragS,
-                      builder: (context,value){
-                        if(value.data!=null){
-                          if(value.data!['action']==1){
-                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                            _map={
-                              'id':widget.orderList[i]['id'],
-                              'enable':1,
-                              'start_date':widget.orderList[i]['start_date'],
-                              'expiration_date':widget.orderList[i]['expiration_date'],
-                              'post':widget.orderList[i]['post'],
-                              'orderBody':widget.orderList[i]['orderBody'],
-                            };
-                            if(!_isToPull){
-                              _mapOld={
-                                'id':widget.orderList[i]['id'],
-                                'enable':1,
-                                'start_date':widget.orderList[i]['start_date'],
-                                'expiration_date':widget.orderList[i]['expiration_date'],
-                                'post':widget.orderList[i]['post'],
-                                'orderBody':widget.orderList[i]['orderBody'],
-                              };
-                              _isToPull=true;
-                            }
-                            widget.orderList[i].update('enable', (value) =>0);
+                  ValueListenableBuilder<Map>(
+                    valueListenable: _notifierMapOffset,
+                    builder: (context,mapOffset,child){
+                      if(mapOffset.isNotEmpty){
+                        return StreamBuilder<Map>(
+                            stream:  AppModule.blocTable.dragS,
+                            builder: (context,value){
+                              if(value.data!=null){
+                                if(value.data!['action']==1){
+                                  int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                                  _map={
+                                    'id':widget.orderList[i]['id'],
+                                    'enable':1,
+                                    'start_date':widget.orderList[i]['start_date'],
+                                    'expiration_date':widget.orderList[i]['expiration_date'],
+                                    'post':widget.orderList[i]['post'],
+                                    'orderBody':widget.orderList[i]['orderBody'],
+                                  };
+                                  if(!_isToPull){
+                                    _mapOld={
+                                      'id':widget.orderList[i]['id'],
+                                      'enable':1,
+                                      'start_date':widget.orderList[i]['start_date'],
+                                      'expiration_date':widget.orderList[i]['expiration_date'],
+                                      'post':widget.orderList[i]['post'],
+                                      'orderBody':widget.orderList[i]['orderBody'],
+                                    };
+                                    _isToPull=true;
+                                  }
+                                  widget.orderList[i].update('enable', (value) =>0);
 
-                          }else if(value.data!['action']==3){
-                            int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                            widget.orderList[i].update('start_date', (v) => value.data!['start']);
-                            widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
-                            widget.orderList[i].update('post', (v) => value.data!['post']);
-                          }else if(value.data!['action']==5){
-                            int i=getIndex(value.data!['id'],widget.orderList);
-                            widget.orderList[i].update('start_date', (v) => value.data!['start']);
-                            widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
-                            widget.orderList[i].update('post', (v) => value.data!['post']);
-                          }else if(value.data!['action']==6){
-                              int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
-                              widget.orderList[i].update('enable', (value) =>0);
-                              _mapOld!.update('id', (value) =>widget.orderList.length);
-                               widget.orderList.add(_mapOld!);
-                               AppModule.blocTable.streamSinkDrag.add({'action':0,'index':0});
-                            _isToPull=false;
+                                }else if(value.data!['action']==3){
+                                  int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                                  widget.orderList[i].update('start_date', (v) => value.data!['start']);
+                                  widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
+                                  widget.orderList[i].update('post', (v) => value.data!['post']);
+                                }else if(value.data!['action']==5){
+                                  int i=getIndex(value.data!['id'],widget.orderList);
+                                  widget.orderList[i].update('start_date', (v) => value.data!['start']);
+                                  widget.orderList[i].update('expiration_date', (v) => value.data!['end']);
+                                  widget.orderList[i].update('post', (v) => value.data!['post']);
+                                }else if(value.data!['action']==6){
+                                  int i=getIndex(widget.orderList[value.data!['index']]['id'],widget.orderList);
+                                  widget.orderList[i].update('enable', (value) =>0);
+                                  _mapOld!.update('id', (value) =>widget.orderList.length);
+                                  widget.orderList.add(_mapOld!);
+                                  AppModule.blocTable.streamSinkDrag.add({'action':0,'index':0});
+                                  _isToPull=false;
 
-                          }
-                        }
+                                }
+                              }
 
-                        return Padding(
-                          padding: EdgeInsets.fromLTRB(paddingLeft, 0, 0, 0),
-                          child: Container(
-                              margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
-                              child: SingleChildScrollView(
-                                controller: _centerColumnsController,
-                                scrollDirection: Axis.vertical,
-                                physics: const AlwaysScrollableScrollPhysics(
-                                    parent: BouncingScrollPhysics()),
-                                child: SizedBox(
-                                  // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
-                                  width: _getWight(GlobalData.numBoxes!) * GlobalData.numBoxes!,
-                                  height: 80 *timeLine.length.toDouble(),
-                                  child: SingleChildScrollView(
-                                      controller: widget.scrollControllertop,
-                                      scrollDirection: Axis.horizontal,
+                              return Padding(
+                                padding: EdgeInsets.fromLTRB(paddingLeft, 0, 0, 0),
+                                child: Container(
+                                    margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                                    child: SingleChildScrollView(
+                                      controller: _centerColumnsController,
+                                      scrollDirection: Axis.vertical,
                                       physics: const AlwaysScrollableScrollPhysics(
                                           parent: BouncingScrollPhysics()),
-                                      child: Row(
-                                        children: List.generate(GlobalData.numBoxes!, (i) {
-                                          return Container(
-                                              width: GlobalData.numBoxes!>1?150:300,
-                                              child: DragTargetTable(80 * timeLine.length.toDouble(),
-                                                post:i,
-                                                tableState: widget.tableState,
-                                                time: _time!,
-                                                orderList: widget.orderList,
-                                                timeStep: snapshot.data,
-                                               accept: (start,end,postNum){
-                                                AppModule.blocTable.streamSinkDrag.add({'action':2});
-                                                  _map!.update('start_date', (value) => start);
-                                                  _map!.update('expiration_date', (value) => end);
-                                                  _map!.update('post', (value) => postNum);
-                                                  _map!.update('id', (value) =>widget.orderList.length);
-                                                widget.orderList.add(_map!);
-                                              },));
-                                        }),
-                                      )
-                                  ),
-                                ),
-                              )),
-                        );
-                      }),
+                                      child: SizedBox(
+                                        // _getWight(widget.modelDataTable.posts) * widget.modelDataTable.posts
+                                        width: _getWight(GlobalData.numBoxes!) * GlobalData.numBoxes!,
+                                        height: 80 *timeLine.length.toDouble(),
+                                        child: SingleChildScrollView(
+                                            controller: widget.scrollControllertop,
+                                            scrollDirection: Axis.horizontal,
+                                            physics: const AlwaysScrollableScrollPhysics(
+                                                parent: BouncingScrollPhysics()),
+                                            child: Row(
+                                              children: List.generate(GlobalData.numBoxes!, (i) {
+                                                return Container(
+                                                    width: GlobalData.numBoxes!>1?150:300,
+                                                    child: DragTargetTable(
+                                                      80 * timeLine.length.toDouble(),
+                                                      yBox: mapOffset['yBox'],
+                                                      yLine: mapOffset['yLine'],
+                                                      post:i,
+                                                      tableState: widget.tableState,
+                                                      time: _time!,
+                                                      orderList: widget.orderList,
+                                                      timeStep: snapshot.data,
+                                                      accept: (start,end,postNum){
+                                                        AppModule.blocTable.streamSinkDrag.add({'action':2});
+                                                        _map!.update('start_date', (value) => start);
+                                                        _map!.update('expiration_date', (value) => end);
+                                                        _map!.update('post', (value) => postNum);
+                                                        _map!.update('id', (value) =>widget.orderList.length);
+                                                        widget.orderList.add(_map!);
+                                                      },));
+                                              }),
+                                            )
+                                        ),
+                                      ),
+                                    )),
+                              );
+                            });
+                      }else{
+                        return Container();
+                      }
+                    },
+
+
+                  ),
 
                   //Датчики для скроллов таблицы
 
@@ -453,15 +496,9 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   }
 }
-Future<void> _offset(GlobalKey key) async {
-  Timer.periodic(Duration(seconds: 3), (timer) {
-    RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
-    Offset position = box.localToGlobal(Offset.zero);
-    print('Offset line box table ${position.dy}');
-    timer.cancel();
-  });
 
-}
+
+
 
   //показать индекс из списка заказов по id
   getIndex(int id,List<Map> order){
