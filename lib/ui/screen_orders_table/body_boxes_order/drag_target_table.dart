@@ -64,12 +64,13 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
 
 
+
   @override
   Widget build(BuildContext context) {
     //определяем масштаб времени с учетом графика работы мойки
      minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
     _timeSchedule=TimeParser.shiftTime(
-         time:  GlobalData.startDayMin!+minuteAdjustment!,
+         time:  GlobalData.startDayMin!+minuteAdjustment!+3,
          timeStep: widget.timeStep).toInt();
     return Center(
       child: DragTarget<int>(
@@ -255,7 +256,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                                   //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY,
+                                      top: y.data + _scrollY-40,
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -279,7 +280,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
                                             child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['start_date'].split(' ')[1]}':
-                                              '${TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt()+_timeSchedule!, widget.timeStep).split(' ')[1]}',
+                                              '${TimeParser.parseReverseTimeStart(_y.toInt() +5+ _scrollY.toInt()+_timeSchedule!, widget.timeStep).split(' ')[1]}',
                                               style: TextStyle(
                                                   color: Colors.white
                                               ),),
@@ -301,7 +302,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
                                             child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['expiration_date'].split(' ')[1]}':'${TimeParser.parseReverseTimeEnd(
-                                                _y.toInt() + _scrollY.toInt()+_timeSchedule!,
+                                                _y.toInt() +5+_scrollY.toInt()+_timeSchedule!,
                                                 GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep).split(' ')[1]}',
                                             style: TextStyle(
                                               color: Colors.white
@@ -326,8 +327,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
               GlobalData.timeStart=widget.orderList[data]['start_date'];
               GlobalData.timeEnd=widget.orderList[data]['expiration_date'];
             }else{
-              GlobalData.timeStart = TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt()+_timeSchedule!, widget.timeStep);
-              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(_y.toInt() + _scrollY.toInt()+_timeSchedule!,
+              GlobalData.timeStart = TimeParser.parseReverseTimeStart(_y.toInt()+5 + _scrollY.toInt()+_timeSchedule!, widget.timeStep);
+              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(_y.toInt() +5+ _scrollY.toInt()+_timeSchedule!,
                   GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
             }
             GlobalData.post=widget.post+1;
@@ -353,7 +354,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y-2+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+3+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -404,13 +405,16 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
   //сдвиг координаты для позиции заказов в звисимости от размера экрана
   getY(int index,int start,int end,int timeStep){
-    double s=111+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
+    double s=110+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
     if(start>end){
       if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
           s=-110;
       }
     }
-    return s-_timeSchedule!;
+    double u=s/110;
+    double p=u*0.2;
+    print('Coordinate ${widget.orderList[index]['start_date'].split(' ')[1]} $p');
+    return (s-_timeSchedule!)+p;
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени

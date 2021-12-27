@@ -222,10 +222,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                       return Stack(
                         children: [
                           Container(
-                            margin: EdgeInsets.fromLTRB(
-                                0, SizeUtil.getSize(12, GlobalData.sizeScreen!),
-                                0,
-                                0),
+                            margin: EdgeInsets.fromLTRB(0,90, 0, 0),
                             height: MediaQuery.of(context).size.height,
                             color: Colors.white,
                             child: TableBody(

@@ -145,7 +145,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                 children: [
                   // Опредеяем позицию конрольной линии для определения смещения по оси Y
                   Positioned(
-                    top:120,
+                    top:116,
                     child: Container(
                       key: _keyLineChekShift,
                       width: _getWight(GlobalData.numBoxes!) *GlobalData.numBoxes!.toDouble(),
