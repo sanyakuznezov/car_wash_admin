@@ -129,6 +129,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
+    _isRebuild=false;
     return StreamBuilder<dynamic>(
           stream: AppModule.blocTable.stateTime,
             builder: (context,snapshot){
@@ -139,7 +140,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
               );
             }
             indexForBox=-1;
-            _isRebuild=false;
             timeLine=TimeParser.getTimeTable(GlobalData.times[snapshot.data] as List<String>,widget.modelDataTable.startDayMin,widget.modelDataTable.endDayMin);
             return Stack(
                 children: [

@@ -58,8 +58,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
   String? _date;
-  int? _timeSchedule;
-  int? minuteAdjustment;
+   int? _timeSchedule=0;
+  // int? minuteAdjustment;
 
 
 
@@ -68,10 +68,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
   @override
   Widget build(BuildContext context) {
     //определяем масштаб времени с учетом графика работы мойки
-     minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
-    _timeSchedule=TimeParser.shiftTime(
-         time:  GlobalData.startDayMin!+minuteAdjustment!+3,
-         timeStep: widget.timeStep).toInt();
+    // minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
+    // _timeSchedule=TimeParser.shiftTime(
+    //      time:  GlobalData.startDayMin!+minuteAdjustment!+3,
+    //      timeStep: widget.timeStep).toInt();
+    print('build');
     return Center(
       child: DragTarget<int>(
         builder: (BuildContext context, List<dynamic> accepted,List<dynamic> rejected) {
@@ -399,22 +400,23 @@ class StateDragTargetTable extends State<DragTargetTable> {
     }else{
       result=end.toDouble()-start.toDouble();
     }
-
-    return result*GlobalData.timeStepsConstant[timeStep]['coof'];
+     double u=result/GlobalData.timeStepsConstant[timeStep]['time'];
+     double o=u*0.25;
+    print('Time ${widget.orderList[index]['start_date'].split(' ')[1]} $o');
+    return (result-o)*GlobalData.timeStepsConstant[timeStep]['coof'];
   }
 
   //сдвиг координаты для позиции заказов в звисимости от размера экрана
   getY(int index,int start,int end,int timeStep){
-    double s=110+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
+    double s=108+TimeParser.shiftTime(time: TimeParser.parseHour(widget.orderList[index]['start_date']),timeStep: timeStep);
     if(start>end){
       if(widget.orderList[index]['start_date'].split(' ')[0]!=GlobalData.date){
-          s=-110;
+          s=-108;
       }
     }
-    double u=s/110;
-    double p=u*0.2;
-    print('Coordinate ${widget.orderList[index]['start_date'].split(' ')[1]} $p');
-    return (s-_timeSchedule!)+p;
+    double u=s/108;
+    double p=u*0.25;
+    return s+p;
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени

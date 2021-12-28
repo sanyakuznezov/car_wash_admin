@@ -539,10 +539,10 @@
 
    //расчет кооф. сдвига по оси Y в зависимости от шага времени
    static List<Map> timeStepsConstant=[
-     {'coof':1.33, 'time':60,'shift':104},
-     {'coof':2.67, 'time':30,'shift':50},
-     {'coof':5.33,'time':15,'shift':26},
-     {'coof':16.0, 'time':5,'shift':8.6}];
+     {'coof':1.33, 'time':60,'shift':102},
+     {'coof':2.66, 'time':30,'shift':52},
+     {'coof':5.32,'time':15,'shift':27},
+     {'coof':15.962, 'time':5,'shift':12.2}];
 
   //test order data
   static List<Map> dataOrdersList =[
