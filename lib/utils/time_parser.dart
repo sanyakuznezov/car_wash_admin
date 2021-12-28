@@ -9,10 +9,15 @@ class TimeParser{
   static double shiftTime({required int time,required int timeStep}){
      double t=GlobalData.timeStepsConstant[timeStep]['coof'];
      int i=GlobalData.timeStepsConstant[timeStep]['time'];
-     int? s=0;
-     s=time-i;
-     return s*t;
+     return (time-i)*t;
    }
+
+  static double shiftTimeSchedule({required int time,required int timeStep}){
+    double t=GlobalData.timeStepsConstant[timeStep]['coof'];
+    int i=GlobalData.timeStepsConstant[timeStep]['time'];
+    return (time+1.2-i)*t;
+  }
+
 
    static parseSkrethTime(int y,int timeStep,String timeStart){
     var u=parseHour(timeStart);

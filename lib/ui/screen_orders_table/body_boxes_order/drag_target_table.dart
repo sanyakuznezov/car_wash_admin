@@ -58,8 +58,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
   final double c3=SizeUtil.getSize(1.23,GlobalData.sizeScreen!);
   int? _timeParse;
   String? _date;
-   int? _timeSchedule=0;
-  // int? minuteAdjustment;
+   double? _timeSchedule=0;
+   int? minuteAdjustment;
 
 
 
@@ -68,11 +68,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
   @override
   Widget build(BuildContext context) {
     //определяем масштаб времени с учетом графика работы мойки
-    // minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
-    // _timeSchedule=TimeParser.shiftTime(
-    //      time:  GlobalData.startDayMin!+minuteAdjustment!+3,
-    //      timeStep: widget.timeStep).toInt();
-    print('build');
+    minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
+    _timeSchedule=TimeParser.shiftTimeSchedule(time:  GlobalData.startDayMin!+minuteAdjustment!,timeStep: widget.timeStep);
     return Center(
       child: DragTarget<int>(
         builder: (BuildContext context, List<dynamic> accepted,List<dynamic> rejected) {
@@ -100,7 +97,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   editStatus:GlobalData.ADD_ORDER_MODE,
                                   timeEndWash:1440,
                                   timeStartWash: 0,
-                                  post:widget.post+1,time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
+                                  post:widget.post+1,
+                                  time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
                           }else{
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
                           }
@@ -209,7 +207,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             }
                             //Рзмещение заказов по таблице
                             return Positioned(
-                                top: startY!+widget.shiftY!,
+                                top: startY!+widget.shiftY!-_timeSchedule!,
                                 left: 5,
                                 child: widget.orderList[a]['enable']==1?BodyCard(
                                   lengthOrders: widget.orderList.length,
@@ -281,7 +279,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
                                             child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['start_date'].split(' ')[1]}':
-                                              '${TimeParser.parseReverseTimeStart(_y.toInt() +5+ _scrollY.toInt()+_timeSchedule!, widget.timeStep).split(' ')[1]}',
+                                              '${TimeParser.parseReverseTimeStart(_y.toInt()+ _scrollY.toInt()+_timeSchedule!.toInt(), widget.timeStep).split(' ')[1]}',
                                               style: TextStyle(
                                                   color: Colors.white
                                               ),),
@@ -303,7 +301,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                                 borderRadius: BorderRadius.circular(10)
                                             ),
                                             child: Text(_isWashingOrder?'${widget.orderList[GlobalData.id!]['expiration_date'].split(' ')[1]}':'${TimeParser.parseReverseTimeEnd(
-                                                _y.toInt() +5+_scrollY.toInt()+_timeSchedule!,
+                                                _y.toInt()+_scrollY.toInt()+_timeSchedule!.toInt(),
                                                 GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep).split(' ')[1]}',
                                             style: TextStyle(
                                               color: Colors.white
@@ -328,8 +326,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
               GlobalData.timeStart=widget.orderList[data]['start_date'];
               GlobalData.timeEnd=widget.orderList[data]['expiration_date'];
             }else{
-              GlobalData.timeStart = TimeParser.parseReverseTimeStart(_y.toInt()+5 + _scrollY.toInt()+_timeSchedule!, widget.timeStep);
-              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(_y.toInt() +5+ _scrollY.toInt()+_timeSchedule!,
+              GlobalData.timeStart = TimeParser.parseReverseTimeStart(_y.toInt() + _scrollY.toInt()+_timeSchedule!.toInt(), widget.timeStep);
+              GlobalData.timeEnd = TimeParser.parseReverseTimeEnd(_y.toInt() + _scrollY.toInt()+_timeSchedule!.toInt(),
                   GlobalData.bodyHeightFeedBackWidget.toInt(), widget.timeStep);
             }
             GlobalData.post=widget.post+1;
@@ -355,7 +353,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y-2+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+3+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y-5+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -400,10 +398,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
     }else{
       result=end.toDouble()-start.toDouble();
     }
-     double u=result/GlobalData.timeStepsConstant[timeStep]['time'];
-     double o=u*0.25;
-    print('Time ${widget.orderList[index]['start_date'].split(' ')[1]} $o');
-    return (result-o)*GlobalData.timeStepsConstant[timeStep]['coof'];
+    return result*GlobalData.constantForBody[timeStep]['coof'];
   }
 
   //сдвиг координаты для позиции заказов в звисимости от размера экрана
