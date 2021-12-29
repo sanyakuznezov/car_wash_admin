@@ -69,7 +69,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   Widget build(BuildContext context) {
     //определяем масштаб времени с учетом графика работы мойки
     minuteAdjustment=GlobalData.timeStepsConstant[GlobalData.stateTime]['time'];
-    _timeSchedule=TimeParser.shiftTimeSchedule(time:  GlobalData.startDayMin!+minuteAdjustment!,timeStep: widget.timeStep);
+    _timeSchedule=TimeParser.shiftTimeSchedule(time:minuteAdjustment!,timeStep: widget.timeStep,startDayMin: GlobalData.startDayMin!);
     return Center(
       child: DragTarget<int>(
         builder: (BuildContext context, List<dynamic> accepted,List<dynamic> rejected) {
@@ -195,7 +195,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             //проверяем переходящий заказ с предыдущего дня если да то начало заказа с 00:00
                             startY=getY(a,TimeParser.parseHour(widget.orderList[a]['start_date']),TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             sizeBody=_sizeBody(a,TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
-                            endCollision=TimeParser.parseHourEndCollision( startY!+_timeSchedule!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
+                            endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
                             startCollision=TimeParser.parseHourStartCollision(widget.orderList[a]['start_date']);
                             if(widget.orderList[a]['enable']==1){
                               _offsetsOrder.add({'start':startCollision,'end':endCollision,'id':widget.orderList[a]['id']});
@@ -353,7 +353,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y-5+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y-5+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y-5+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -418,6 +418,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемого заказа
   _isColision(List<Map> orders,int b1,int b2){
       for(int i=0;orders.length>i;i++){
+        print('Colission start order ${orders[i]['start']}-$b1 end order ${orders[i]['end']}-$b2');
         if(orders[i]['start']<b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>b2){
           return true;
         }

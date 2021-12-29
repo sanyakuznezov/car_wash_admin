@@ -12,10 +12,16 @@ class TimeParser{
      return (time-i)*t;
    }
 
-  static double shiftTimeSchedule({required int time,required int timeStep}){
+  static double shiftTimeSchedule({required int time,required int timeStep, required int startDayMin}){
+    int timeM=time+startDayMin;
     double t=GlobalData.timeStepsConstant[timeStep]['coof'];
     int i=GlobalData.timeStepsConstant[timeStep]['time'];
-    return (time+1.2-i)*t;
+    if(startDayMin==0){
+      return 0;
+    }else{
+      return (timeM+1.2-i)*t;
+    }
+
   }
 
 
