@@ -14,12 +14,12 @@ class TimeParser{
 
   static double shiftTimeSchedule({required int time,required int timeStep, required int startDayMin}){
     int timeM=time+startDayMin;
-    double t=GlobalData.timeStepsConstant[timeStep]['coof'];
-    int i=GlobalData.timeStepsConstant[timeStep]['time'];
+    double t=GlobalData.constantForYPosition[timeStep]['coof'];
+    int i=GlobalData.constantForYPosition[timeStep]['time'];
     if(startDayMin==0){
       return 0;
     }else{
-      return (timeM+1.2-i)*t;
+      return (timeM-i)*t;
     }
 
   }
@@ -66,7 +66,7 @@ class TimeParser{
     if(y<14){
       y=14;
     }
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -101,7 +101,7 @@ class TimeParser{
 
  //переводим время окончания заказа из числа в строку при окончании перетягивания и делаем кратным пяти
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
-    var r=y/GlobalData.timeStepsConstant[timeStep]['coof']-10;
+    var r=y/GlobalData.timeStepsConstant[timeStep]['coof'];
     var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
@@ -176,10 +176,10 @@ class TimeParser{
   }
 
   //проверка пересечения времени окончания заказа с другим заказом
-  static parseHourEndCollision(double y,double timeStep,int bodyHeight){
-    var r=y/timeStep;
-    var result=r+bodyHeight/timeStep;
-    return result.toInt()-20;
+  static parseHourEndCollision(int r,double timeStep,int bodyHeight){
+    // var r=y/timeStep;
+     var result=r+bodyHeight/timeStep;
+    return result.toInt();
   }
   //проверка пересечения времени начала заказа с другим заказом
   static parseHourStartCollision(String time){
@@ -204,14 +204,14 @@ class TimeParser{
 
 
   static parseTimeStartFeedBack(double y,int timeStep){
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof']-5;
+    var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
     return result.toInt();
   }
 
   static parseTimeEndFeedBack(double y,int bodyHeaght,int timeStep){
     double k=GlobalData.timeStepsConstant[timeStep]['coof'];
     var r=y/k;
-    var result=r+bodyHeaght/k-5;
+    var result=r+bodyHeaght/k;
     return result.toInt();
   }
 

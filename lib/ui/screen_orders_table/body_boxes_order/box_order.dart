@@ -97,12 +97,13 @@ class BoxOrder extends StatefulWidget{
 
    Future<void> _offset(GlobalKey key) async {
       Timer.periodic(Duration(milliseconds: 500), (timer) {
+        timer.cancel();
         if(key.currentContext!.findRenderObject()!=null){
           RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
           Offset position = box.localToGlobal(Offset.zero);
           widget.callbackBox(position.dy);
         }
-        timer.cancel();
+
       });
 
 

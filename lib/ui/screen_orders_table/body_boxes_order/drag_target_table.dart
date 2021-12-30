@@ -195,9 +195,9 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             //проверяем переходящий заказ с предыдущего дня если да то начало заказа с 00:00
                             startY=getY(a,TimeParser.parseHour(widget.orderList[a]['start_date']),TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
                             sizeBody=_sizeBody(a,TimeParser.parseHour(widget.orderList[a]['start_date']), TimeParser.parseHour(widget.orderList[a]['expiration_date']),widget.timeStep);
-                            endCollision=TimeParser.parseHourEndCollision( startY!, GlobalData.timeStepsConstant[widget.timeStep]['coof'],sizeBody!.toInt());
+                            endCollision=TimeParser.parseHourEndCollision(TimeParser.parseHour(widget.orderList[a]['start_date']), GlobalData.constantForCollision[widget.timeStep]['coof'],sizeBody!.toInt());
                             startCollision=TimeParser.parseHourStartCollision(widget.orderList[a]['start_date']);
-                            if(widget.orderList[a]['enable']==1){
+                             if(widget.orderList[a]['enable']==1){
                               _offsetsOrder.add({'start':startCollision,'end':endCollision,'id':widget.orderList[a]['id']});
                             }
                             if(GlobalData.edit_mode){
@@ -255,7 +255,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                                   //позиция тени во время перетаскивания заказа
                                   return y.data != null ? Positioned(
-                                      top: y.data + _scrollY-40,
+                                      top: y.data + _scrollY-25,
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -345,7 +345,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
         //слушает карточку во время перетягивания
         onMove: (e) {
           GlobalData.accept=false;
-          _y = e.offset.dy-120;
+          _y = e.offset.dy-135;
           AppModule.blocTable.streamSinkFeedback.add(_y);
           if (_leave != 2) {
             setState(() {
@@ -353,7 +353,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y-5+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y-5+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
+            getYTest(_y);
+            isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
             isCollision=false;
@@ -412,6 +413,10 @@ class StateDragTargetTable extends State<DragTargetTable> {
     double u=s/108;
     double p=u*0.25;
     return s+p;
+  }
+
+  getYTest(double y){
+    print('${TimeParser.parseReverseTimeStart(_y.toInt()+ _scrollY.toInt()+_timeSchedule!.toInt(), widget.timeStep).split(' ')[1]}');
   }
 
   //проверяем пересечение с границами соседних заказов а так же линии времени

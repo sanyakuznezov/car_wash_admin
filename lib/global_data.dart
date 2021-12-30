@@ -549,7 +549,20 @@
      {'coof':1.323, 'time':60,'shift':102},
      {'coof':2.66, 'time':30,'shift':52},
      {'coof':5.33,'time':15,'shift':27},
-     {'coof':16, 'time':5,'shift':12.2}];
+     {'coof':16.0, 'time':5,'shift':12.2}];
+//расчет кооф. времени при перетаскивнии заказов
+   static List<Map> constantForCollision=[
+     {'coof':1.31111, 'time':60,'shift':102},
+     {'coof':2.62222, 'time':30,'shift':52},
+     {'coof':5.3,'time':15,'shift':27},
+     {'coof':16.0, 'time':5,'shift':12.2}];
+
+   //расчет кооф. для размещения заказов при определенном графике
+   static List<Map> constantForYPosition=[
+     {'coof':1.33333, 'time':60,'shift':102},
+     {'coof':2.66666, 'time':30,'shift':52},
+     {'coof':5.33333,'time':15,'shift':27},
+     {'coof':16.0, 'time':5,'shift':12.2}];
 
   //test order data
   static List<Map> dataOrdersList =[

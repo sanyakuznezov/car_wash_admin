@@ -39,9 +39,8 @@ void main(){
     });
 
     test('parseHourForTimeLineTest', (){
-      print('time  ${TimePosition.getTime(100+TimeParser.shiftTime(
-          time: 600+60,
-          timeStep: 0))}');
+      print('time  ${TimeParser.parseHourEndCollision(1140, GlobalData.constantForCollision[3]['coof'],400)}');
+
     });
   });
 
