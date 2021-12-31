@@ -66,7 +66,7 @@ class TimeParser{
     if(y<14){
       y=14;
     }
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
+    var result=y/GlobalData.timeConstantReverse[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();
@@ -101,8 +101,8 @@ class TimeParser{
 
  //переводим время окончания заказа из числа в строку при окончании перетягивания и делаем кратным пяти
  static parseReverseTimeEnd(int y,int bodyHeaght,int timeStep){
-    var r=y/GlobalData.timeStepsConstant[timeStep]['coof'];
-    var result=r+bodyHeaght/GlobalData.timeStepsConstant[timeStep]['coof'];
+    var r=y/GlobalData.timeConstantReverse[timeStep]['coof'];
+    var result=r+bodyHeaght/GlobalData.timeConstantReverse[timeStep]['coof'];
     if(isMultipleOfFive(result)){
       var a=result/10;
       int b=a.toInt();

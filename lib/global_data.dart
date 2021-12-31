@@ -544,6 +544,13 @@
      {'coof':5.32,'time':15,'shift':27},
      {'coof':15.962, 'time':5,'shift':12.2}];
 
+   //расчет кооф. для колизии перетаскиваемого тела заказа
+   static List<Map> timeConstantReverse=[
+     {'coof':1.33, 'time':60,'shift':102},
+     {'coof':2.66, 'time':30,'shift':52},
+     {'coof':5.32,'time':15,'shift':27},
+     {'coof':16.0 , 'time':5,'shift':12.2}];
+
    //расчет кооф. для размера тела заказа в зависимости от шага времени
    static List<Map> constantForBody=[
      {'coof':1.323, 'time':60,'shift':102},

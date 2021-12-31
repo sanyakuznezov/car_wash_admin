@@ -136,11 +136,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                 AppModule.blocTable.streamSinkDrag.add({'action':6,'index':widget.orderList.length-1});
                               },
                                 onAccept: (id){
-                                  // AppModule.blocTable.streamSinkDrag.add({'action':3,
-                                  //   'index':widget.orderList.length-1,
-                                  // 'start':GlobalData.timeStart,
-                                  // 'end':GlobalData.timeEnd,
-                                  // 'post':GlobalData.post});
                                   widget.tableState!.editOrderJournal(endAt: GlobalData.timeEnd!.split(' ')[1], startAt: GlobalData.timeStart!.split(' ')[1], context: context, idOrder: GlobalData.idOrder!, post: GlobalData.post!);
 
                                 },
@@ -170,11 +165,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                  AppModule.blocTable.streamSinkDrag.add({'action':4});
                                },
                                  onAccept: (id){
-                                   // AppModule.blocTable.streamSinkDrag.add({'action':5,
-                                   //   'id':GlobalData.id,
-                                   //   'start':GlobalData.timeStart,
-                                   //   'end':GlobalData.timeEnd,
-                                   //   'post':GlobalData.post});
                                    widget.tableState!.editOrderJournal(endAt: TimeParser.parsingTime(GlobalData.timeEnd!.split(' ')[1]), startAt: GlobalData.timeStart!.split(' ')[1], context: context, idOrder: GlobalData.idOrder!, post: GlobalData.post!);
 
                                  },
