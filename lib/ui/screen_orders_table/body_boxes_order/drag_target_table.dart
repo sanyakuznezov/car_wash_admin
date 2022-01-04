@@ -90,7 +90,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                       onDoubleTapDown:(y){
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
-                          //TODO настрить шаг времени и время начала работы мойки
+                          //TODO время начала и окончания работы мойки
+                          //TODO расчитать время при нажатии на ячейку в которой обозначена линия времени окончания работы мойки
                           if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy+_timeSchedule!))){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
@@ -103,7 +104,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
                           }
                         }else{
-                          //TODO настрить шаг времени и время начала работы мойки
+                          //TODO время начала и окончания работы мойки
                           Navigator.push(context, SlideTransitionSize(
                               PageAddOrder(
                                 editStatus:GlobalData.ADD_ORDER_MODE,

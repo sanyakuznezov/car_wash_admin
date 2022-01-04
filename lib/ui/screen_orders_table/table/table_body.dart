@@ -35,6 +35,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   late ScrollController _centerColumnsController;
   late ScrollController _timeColumnsController;
   late ScrollController _timeLineColumnsController;
+  late ScrollController _timeLineEndTimeDayColumnsController;
   final timeState=GlobalData.stateTime;
   int leave=0;
   Map? _map;
@@ -47,7 +48,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   double paddingLeft=50.0;
   late AnimationController _controller;
   bool _isToPull=false;
-  List<String> timeLine=[];
+   List<String> timeLine=[];
   final _keyLineChekShift=GlobalKey();
   late ValueNotifier<double> _notifierCheckY;
   late ValueNotifier<Map> _notifierMapOffset;
@@ -73,6 +74,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
     _centerColumnsController=_controllers.addAndGet();
     _timeColumnsController=_controllers.addAndGet();
     _timeLineColumnsController=_controllers.addAndGet();
+    _timeLineEndTimeDayColumnsController=_controllers.addAndGet();
     _centerColumnsController.addListener(() {
       AppModule.blocTable.streamSinkScroll.add(_centerColumnsController.offset);
     });
@@ -124,6 +126,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
     _centerColumnsController.dispose();
     _timeColumnsController.dispose();
     _timeLineColumnsController.dispose();
+    _timeLineEndTimeDayColumnsController.dispose();
    // AppModule.blocTable.disponseDragStream();
   }
 
@@ -203,7 +206,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                                   index: indexForBox,
                                                   callbackBox: (yBox) {
                                                     if(!_isRebuild){
-                                                      print('callbackBox');
                                                       _notifierMapOffset.value={'yLine':offsetYLine,'yBox':yBox};
                                                       _isRebuild=true;
                                                     }
@@ -230,7 +232,9 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
                   ),
 
-                  //линия текущего времени
+
+
+            //линия текущего времени
                   GlobalData.date==DateTime.now().toString().split(' ')[0]?
                   StreamBuilder<String>(
                       stream:  AppModule.blocTable.streamTimer,
@@ -269,6 +273,50 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       }):Container(),
 
 
+                //линия- конец рабочего дня
+                  //ToDo показывем линию окончания рабочео дня только если время заканчивается не на ноль
+                  Container(
+                      child: SingleChildScrollView(
+                          controller: _timeLineEndTimeDayColumnsController,
+                          scrollDirection: Axis.vertical,
+                          physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          child: SizedBox(
+                              width: GlobalData.numBoxes! > 1
+                                  ? _getWight(GlobalData.numBoxes!) *
+                                  GlobalData.numBoxes!.toDouble()
+                                  : 390,
+                              height: 80 * timeLine.length.toDouble(),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                      top: c1+TimeParser.shiftTime(
+                                          time: TimeParser.parseHourForTimeLineEndDay(widget.modelDataTable.endDayMin,widget.modelDataTable.startDayMin),
+                                          timeStep: snapshot.data),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding:  EdgeInsets.fromLTRB(13.0,0,0,0),
+                                            child: Text('${TimeParser.parseTimeIntToString(widget.modelDataTable.endDayMin)}',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
+                                            ),),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.fromLTRB(13, 0, 0, 0),
+                                            color: Colors.red,
+                                            //widget.modelDataTable.posts.toDouble()
+                                            width: _getWight(GlobalData.numBoxes!) *
+                                                GlobalData.numBoxes!.toDouble(),
+                                            height: 1.5,
+                                          ),
+                                        ],
+                                      ))
+                                ],
+                              )))),
                   //Столбцы таблицы
                   ValueListenableBuilder<Map>(
                     valueListenable: _notifierMapOffset,

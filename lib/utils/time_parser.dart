@@ -153,6 +153,29 @@ class TimeParser{
     return (hour * 60 + minute)-timeStart;
   }
 
+  static parseTimeIntToString(int time){
+    var a = time/60;
+    var i=a.toString().split('.')[0];
+    var m=time.toInt()-int.parse(i)*60;
+    String hour='';
+    String minute='';
+    if(int.parse(i)<10){
+      hour='0$i';
+    }else{
+      hour=i;
+    }
+    if(m<10){
+      minute='0$m';
+    }else{
+      minute=m.toString();
+    }
+    return '$hour:$minute';
+  }
+   //line end day work
+  static parseHourForTimeLineEndDay(int time,int timeStart) {
+    return time-timeStart;
+  }
+
   //парсим время переходящее на другой день
   static parsingTime(String time){
     int p=parseStringTimeToInt(time);
@@ -362,17 +385,18 @@ class TimeParser{
 
   //возвращает массив времени в зависимости от графика работы мойки
   static List<String> getTimeTable(List<String> allTime, int startDayMin,int endDayMin){
+    print('Data in $startDayMin $endDayMin');
     List<String> result=[];
     for(int i=0;allTime.length>i;i++){
       if(startDayMin<=parseStringTimeToInt(allTime[i])){
         result.add(allTime[i]);
-         if(endDayMin==parseStringTimeToInt(allTime[i])){
+         if(endDayMin<=parseStringTimeToInt(allTime[i])){
            break;
          }
       }
     }
 
-
+    print('Result day work ${result.length}');
     return result;
   }
 

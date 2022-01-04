@@ -23,10 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
-import 'package:http/http.dart' as http;
 
 class MainServiseApi {
 
@@ -37,8 +33,7 @@ class MainServiseApi {
   );
 
   //авторизаия
-  Future<ApiUserData> authorizationUser(
-      {required String email, required String pass}) async {
+  Future<ApiUserData> authorizationUser({required String email, required String pass}) async {
     final value = {'email': email, 'password': pass};
     final response = await _dio.post(
         'auth/login',

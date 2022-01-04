@@ -170,7 +170,7 @@ class ApiUtil{
        if(element['startDate'].split(' ')[0]==selectedDate||element['endDate'].split(' ')[0]==selectedDate){
          list.add(ModelOrderApi.fromApi(map: element));
        }
-     });
+   });
      return list;
     }
 
