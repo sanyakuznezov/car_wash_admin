@@ -60,6 +60,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
   String? _date;
    double? _timeSchedule=0;
    int? minuteAdjustment;
+   bool _validateTime=false;
 
 
 
@@ -88,37 +89,50 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                     },
                       onDoubleTapDown:(y){
+                      _validateTime=true;
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
                           //TODO время начала и окончания работы мойки
                           //TODO расчитать время при нажатии на ячейку в которой обозначена линия времени окончания работы мойки
-                          if(TimeParser.isTimeValidate(TimePosition.getTime(y.localPosition.dy+_timeSchedule!))){
+                          if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime)){
+                              _validateTime=false;
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Выбранное время вне графика')));
+                          }
+
+                          if(!TimeParser.isTimeValidate(y.localPosition.dy+_timeSchedule!,GlobalData.stateTime)){
+                            _validateTime=false;
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
+                          }
+                          if(_validateTime){
                             Navigator.push(context, SlideTransitionSize(
                                 PageAddOrder(
                                   editStatus:GlobalData.ADD_ORDER_MODE,
-                                  timeEndWash:1440,
-                                  timeStartWash: 0,
+                                  timeEndWash:GlobalData.endDayMin!,
+                                  timeStartWash: GlobalData.startDayMin!,
                                   post:widget.post+1,
                                   time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
-                          }else{
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Время истекло')));
-                          }
                         }else{
-                          //TODO время начала и окончания работы мойки
-                          Navigator.push(context, SlideTransitionSize(
-                              PageAddOrder(
-                                editStatus:GlobalData.ADD_ORDER_MODE,
-                                timeEndWash: 1440,
-                                timeStartWash: 0,
-                                post:widget.post+1,
-                                time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),
-                                date:GlobalData.date,)));
+                          if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime!)){
+                            _validateTime=false;
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Выбранное время вне графика')));
+                          }
+
+                          if(_validateTime){
+                            Navigator.push(context, SlideTransitionSize(
+                                PageAddOrder(
+                                  editStatus:GlobalData.ADD_ORDER_MODE,
+                                  timeEndWash:GlobalData.endDayMin!,
+                                  timeStartWash: GlobalData.startDayMin!,
+                                  post:widget.post+1,
+                                  time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
+                          }
+
                         }
 
-                      }
+                      }}},
 
 
-                    },
+
 
                       onTap: () {
                       if (GlobalData.edit_mode) {

@@ -17,9 +17,7 @@ void main(){
       expect(TimeParser.parseIntToStringTime(120),'02:00');
     });
 
-    test('method isTimeValidate', (){
-      expect(TimeParser.isTimeValidate('21:00-22:00'),true);
-    });
+
 
     test('parseHourForTimeLine', (){
       expect(TimeParser.parseStringTimeToInt('01:00'),60);
@@ -38,8 +36,8 @@ void main(){
          print('isFree ${TimeParser.validateCurrentTime(intervalsFree: t,currentTimeStart: '18:35',currentTimeEnd: '02:30')}');
     });
 
-    test('parseHourForTimeLineTest', (){
-      print('time  ${TimeParser.parseHourEndCollision(1140, GlobalData.constantForCollision[3]['coof'],400)}');
+    test('isTimeValidate', (){
+      print('time  ${TimeParser.isTimeValidate(55,2)}');
 
     });
   });

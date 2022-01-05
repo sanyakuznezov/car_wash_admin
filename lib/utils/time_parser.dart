@@ -146,31 +146,14 @@ class TimeParser{
     int minute = int.parse(time.split(':')[1]);
     return hour * 60 + minute;
   }
-   //ToDO test time для линии времени
+   //ToDO test time для линии времени ля разных шагов времени не точно работает
   static parseHourForTimeLine(String time,int timeStart) {
     int hour = int.parse(time.split(':')[0]);
     int minute = int.parse(time.split(':')[1]);
     return (hour * 60 + minute)-timeStart;
   }
 
-  static parseTimeIntToString(int time){
-    var a = time/60;
-    var i=a.toString().split('.')[0];
-    var m=time.toInt()-int.parse(i)*60;
-    String hour='';
-    String minute='';
-    if(int.parse(i)<10){
-      hour='0$i';
-    }else{
-      hour=i;
-    }
-    if(m<10){
-      minute='0$m';
-    }else{
-      minute=m.toString();
-    }
-    return '$hour:$minute';
-  }
+
    //line end day work
   static parseHourForTimeLineEndDay(int time,int timeStart) {
     return time-timeStart;
@@ -328,12 +311,25 @@ class TimeParser{
     return min;
 
   }
-
+  //TODO не правильно учитывается ша времени
   //проверяет текущее время относительно выбранного промежутка
-  static bool isTimeValidate(String timeTable){
-      int t=DateTime.now().hour*60+DateTime.now().minute;
-      int t1=int.parse(timeTable.split('-')[0].split(':')[0])*60+int.parse(timeTable.split('-')[0].split(':')[1]);
-      return t<t1;
+  static bool isTimeValidate(double timeTable,int timeStep){
+      int thisTime=DateTime.now().hour*60+DateTime.now().minute;
+      int i=GlobalData.timeStepsConstant[timeStep]['time'];
+      double t=GlobalData.timeStepsConstant[timeStep]['coof'];
+      double resultTimeParse=(timeTable/t+i)-i;
+      print('isTimeValidate $thisTime < $resultTimeParse timeConst $i');
+      return thisTime<resultTimeParse;
+
+  }
+  //TODO не правильно учитывается ша времени
+  //проверяет время окончания рабочего относительно выбранного промежутка
+  static bool isTimeValidateEndTimeDay(double timeTable,int endTimeDay,int timeStep){
+    double t=GlobalData.timeStepsConstant[timeStep]['coof'];
+    int i=GlobalData.timeStepsConstant[timeStep]['time'];
+    double resultTimeParse=(timeTable/t+i)-i;
+    print('isTimeValidateEndTimeDay $endTimeDay > $resultTimeParse');
+     return endTimeDay>resultTimeParse;
   }
 
 
@@ -385,7 +381,6 @@ class TimeParser{
 
   //возвращает массив времени в зависимости от графика работы мойки
   static List<String> getTimeTable(List<String> allTime, int startDayMin,int endDayMin){
-    print('Data in $startDayMin $endDayMin');
     List<String> result=[];
     for(int i=0;allTime.length>i;i++){
       if(startDayMin<=parseStringTimeToInt(allTime[i])){
@@ -396,7 +391,6 @@ class TimeParser{
       }
     }
 
-    print('Result day work ${result.length}');
     return result;
   }
 
@@ -438,6 +432,15 @@ class TimeParser{
        _result=true;
      }
     return _result;
+  }
+
+   //проверка начала часа
+  static isTimeNotEven(String timeEndDay){
+    if(timeEndDay.split(':')[1]=='00'){
+      return true;
+    }else{
+      return false;
+    }
   }
 }
 

@@ -274,8 +274,8 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
 
 
                 //линия- конец рабочего дня
-                  //ToDo показывем линию окончания рабочео дня только если время заканчивается не на ноль
-                  Container(
+                  //ToDo показывем линию окончания рабочеuuо дня только если время заканчивается не на ноль
+                  !TimeParser.isTimeNotEven(TimeParser.parseIntToStringTime(widget.modelDataTable.endDayMin))?Container(
                       child: SingleChildScrollView(
                           controller: _timeLineEndTimeDayColumnsController,
                           scrollDirection: Axis.vertical,
@@ -298,17 +298,29 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                         children: [
                                           Padding(
                                             padding:  EdgeInsets.fromLTRB(13.0,0,0,0),
-                                            child: Text('${TimeParser.parseTimeIntToString(widget.modelDataTable.endDayMin)}',
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
-                                            ),),
+                                            child: Row(
+                                              children: [
+                                                Text('${TimeParser.parseIntToStringTime(widget.modelDataTable.endDayMin)}',
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
+                                                ),),
+                                                Padding(
+                                                  padding: EdgeInsets.fromLTRB(14.0,0,0,0),
+                                                  child: Text('Конец рабочего дня',
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: SizeUtil.getSize(1.5,GlobalData.sizeScreen!)
+                                                    ),),
+                                                )
+                                              ],
+                                            ),
                                           ),
                                           Container(
                                             margin: EdgeInsets.fromLTRB(13, 0, 0, 0),
                                             color: Colors.red,
-                                            //widget.modelDataTable.posts.toDouble()
                                             width: _getWight(GlobalData.numBoxes!) *
                                                 GlobalData.numBoxes!.toDouble(),
                                             height: 1.5,
@@ -316,7 +328,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                                         ],
                                       ))
                                 ],
-                              )))),
+                              )))):Container(),
                   //Столбцы таблицы
                   ValueListenableBuilder<Map>(
                     valueListenable: _notifierMapOffset,
