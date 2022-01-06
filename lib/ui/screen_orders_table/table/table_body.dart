@@ -240,7 +240,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
                         if(time.data!=null){
-                          startY=c1+TimeParser.shiftTime(
+                          startY=c1+TimeParser.shiftTimeForTimeLine(
                               time: TimeParser.parseHourForTimeLine(time.data!,widget.modelDataTable.startDayMin),
                               timeStep: snapshot.data);
                           return Container(
@@ -290,7 +290,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               child: Stack(
                                 children: [
                                   Positioned(
-                                      top: c1+TimeParser.shiftTime(
+                                      top: c1+TimeParser.shiftTimeForTimeLine(
                                           time: TimeParser.parseHourForTimeLineEndDay(widget.modelDataTable.endDayMin,widget.modelDataTable.startDayMin),
                                           timeStep: snapshot.data),
                                       child: Column(

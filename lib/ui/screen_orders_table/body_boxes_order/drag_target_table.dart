@@ -112,6 +112,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   post:widget.post+1,
                                   time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
                         }else{
+                            _validateTime=true;
                           if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime)){
                             _validateTime=false;
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Выбранное время вне графика')));
@@ -128,7 +129,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                           }
 
                         }
-
+                         print('Tap $_validateTime');
                       }}},
 
 
