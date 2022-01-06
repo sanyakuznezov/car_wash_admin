@@ -5,6 +5,7 @@
   import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_order_show.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
   part 'state_order.g.dart';
@@ -50,5 +51,14 @@ abstract class StateOrderBase with Store{
     isLoading=false;
   }
 
+   validateTime(int endDayTime,String time){
+     int t1=int.parse(time.split('-')[0].split(':')[0])*60;
+     int t2=int.parse(time.split('-')[1].split(':')[0])*60;
+     if(t1<endDayTime&&t2>endDayTime){
+       return '${time.split('-')[0]}-${TimeParser.parseIntToStringTime(endDayTime)}';
+     }else{
+      return time;
+     }
+   }
 
 }

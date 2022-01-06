@@ -254,7 +254,6 @@ class PageAddOrder extends StatefulWidget{
 
                 if(!_stateOrder!.isLoading){
                   if(!_stateOrder!.isInitData){
-                    print('Data get');
                     _date=_stateOrder!.modelOrderShow!.date;
                     _order.update('personalFullname', (value) => _stateOrder!.modelOrderShow!.personalFullname);
                     _order.update('personalId', (value) =>_stateOrder!.modelOrderShow!.personalId);
@@ -438,6 +437,7 @@ class PageAddOrder extends StatefulWidget{
       'totalPrice':0,'sale':0,'workTime':0,'status':10,'adminComment':'','clientComment':'','ComplexesList':[],
       'ServicesList':[]};
     _stateOrder=StateOrder();
+    widget.time=_stateOrder!.validateTime(widget.timeEndWash,widget.time!);
    if( _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE){
        _stateOrder!.getOrderShow(context: context, id:widget.idOrder!);
     }

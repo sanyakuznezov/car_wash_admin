@@ -112,7 +112,7 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   post:widget.post+1,
                                   time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
                         }else{
-                          if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime!)){
+                          if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime)){
                             _validateTime=false;
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Выбранное время вне графика')));
                           }

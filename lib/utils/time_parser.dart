@@ -7,7 +7,7 @@ import '../global_data.dart';
 class TimeParser{
 
   static double shiftTime({required int time,required int timeStep}){
-     double t=GlobalData.timeStepsConstant[timeStep]['coof'];
+     double t=GlobalData.constantForTimeLine[timeStep]['coof'];
      int i=GlobalData.timeStepsConstant[timeStep]['time'];
      return (time-i)*t;
    }

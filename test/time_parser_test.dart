@@ -38,7 +38,16 @@ void main(){
 
     test('isTimeValidate', (){
       print('time  ${TimeParser.isTimeValidate(55,2)}');
-
+        String time='18:25-19:30';
+        int timeEndDay=1110;
+        int t1=int.parse(time.split('-')[0].split(':')[0])*60;
+        int t2=int.parse(time.split('-')[1].split(':')[0])*60;
+        if(t1<timeEndDay&&t2>timeEndDay){
+          time='${time.split('-')[0]}-${TimeParser.parseIntToStringTime(timeEndDay)}';
+          print('Time $time');
+        }else{
+          print("Time $time");
+        }
     });
   });
 
