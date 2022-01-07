@@ -43,7 +43,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   bool read=false;
   late Timer _timer;
   String? _time;
-  final double c1=108;
+  final double c1=100;
   double? startY;
   double paddingLeft=50.0;
   late AnimationController _controller;

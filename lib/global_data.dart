@@ -575,8 +575,15 @@
    static List<Map> constantForTimeLine=[
      {'coof':1.33333, 'time':60,'shift':102},
      {'coof':2.66666, 'time':30,'shift':52},
-     {'coof':5.33333,'time':15,'shift':27},
-     {'coof':15.9975, 'time':5,'shift':12.2}];
+     {'coof':5.334,'time':15,'shift':27},
+     {'coof':16.0005, 'time':5,'shift':12.2}];
+
+   //расчет кооф. для тапов по таблице линии времени при определенном графике
+   static List<Map> constantForTimeTapTable=[
+     {'coof':1.35, 'time':60},
+     {'coof':2.67, 'time':30},
+     {'coof':5.335,'time':15},
+     {'coof':16.0, 'time':5}];
 
   //test order data
   static List<Map> dataOrdersList =[

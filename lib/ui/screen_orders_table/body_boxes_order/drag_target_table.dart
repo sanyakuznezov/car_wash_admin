@@ -89,10 +89,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                     },
                       onDoubleTapDown:(y){
+                        print('Tap 1 $_validateTime');
                       _validateTime=true;
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
-                          //TODO время начала и окончания работы мойки
+
                           //TODO расчитать время при нажатии на ячейку в которой обозначена линия времени окончания работы мойки
                           if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime)){
                               _validateTime=false;
@@ -111,8 +112,8 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   timeStartWash: GlobalData.startDayMin!,
                                   post:widget.post+1,
                                   time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
-                        }else{
-                            _validateTime=true;
+                        }
+                      }else{
                           if(!TimeParser.isTimeValidateEndTimeDay(y.localPosition.dy+_timeSchedule!,GlobalData.endDayMin!,GlobalData.stateTime)){
                             _validateTime=false;
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Выбранное время вне графика')));
@@ -127,10 +128,11 @@ class StateDragTargetTable extends State<DragTargetTable> {
                                   post:widget.post+1,
                                   time:TimePosition.getTime(y.localPosition.dy+_timeSchedule!),date:GlobalData.date,)));
                           }
-
                         }
-                         print('Tap $_validateTime');
-                      }}},
+
+
+
+                      }},
 
 
 

@@ -331,10 +331,9 @@ class TimeParser{
   //TODO не правильно учитывается ша времени
   //проверяет время окончания рабочего относительно выбранного промежутка
   static bool isTimeValidateEndTimeDay(double timeTable,int endTimeDay,int timeStep){
-    double t=GlobalData.timeStepsConstant[timeStep]['coof'];
+    double t=GlobalData.constantForTimeTapTable[timeStep]['coof'];
     int i=GlobalData.timeStepsConstant[timeStep]['time'];
     double resultTimeParse=(timeTable/t+i)-i;
-    print('isTimeValidateEndTimeDay $endTimeDay > $resultTimeParse');
      return endTimeDay>resultTimeParse;
   }
 
