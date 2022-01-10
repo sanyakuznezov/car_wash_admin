@@ -574,7 +574,7 @@
    //расчет кооф. для размещения линии времени при определенном графике
    static List<Map> constantForTimeLine=[
      {'coof':1.33333, 'time':60,'shift':102},
-     {'coof':2.66666, 'time':30,'shift':52},
+     {'coof':2.64, 'time':30,'shift':52},
      {'coof':5.334,'time':15,'shift':27},
      {'coof':16.0005, 'time':5,'shift':12.2}];
 

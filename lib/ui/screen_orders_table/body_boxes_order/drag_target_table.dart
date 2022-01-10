@@ -89,7 +89,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
 
                     },
                       onDoubleTapDown:(y){
-                        print('Tap 1 $_validateTime');
                       _validateTime=true;
                       if(!GlobalData.edit_mode){
                         if(_date==GlobalData.date){
