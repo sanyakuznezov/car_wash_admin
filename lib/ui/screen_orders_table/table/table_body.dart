@@ -84,7 +84,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   //определяет коордынату контрольной полосы для определения сдвига
   Future<void> _offset(GlobalKey key)async {
     Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if(key.currentContext!.findRenderObject()!=null){
+      if(key.currentContext!=null){
         RenderBox? box = key.currentContext!.findRenderObject() as RenderBox;
         Offset position = box.localToGlobal(Offset.zero);
         _notifierCheckY.value=position.dy;

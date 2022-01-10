@@ -284,85 +284,93 @@ class TimePosition{
     }else if(y>4110&&y<4190){
       return '12:45-13:00';
     }else if(y>4190&&y<4270){
-      return '13:00-13:45';
+      return '13:00-13:15';
     }else if(y>4270&&y<4350){
-      return '13:45-14:00';
+      return '13:15-13:30';
     }else if(y>4350&&y<4430){
-      return '14:00-14:15';
+      return '13:30-13:45';
     }else if(y>4430&&y<4510){
-      return '14:15-14:30';
+      return '13:45-14:00';
     }else if(y>4510&&y<4590){
-      return '14:30-14:45';
+      return '14:00-14:15';
     }else if(y>4590&&y<4670){
-      return '14:45-15:00';
+      return '14:15-14:30';
     }else if(y>4670&&y<4750){
-      return '15:00-15:15';
+      return '14:30-14:45';
     }else if(y>4750&&y<4830){
-      return '15:15-15:30';
+      return '14:45-15:00';
     }else if(y>4830&&y<4910){
-      return '15:30-15:45';
+      return '15:00-15:15';
     }else if(y>4910&&y<4990){
-      return '15:45-16:00';
+      return '15:15-15:30';
     }else if(y>4990&&y<5070){
-      return '16:00-16:15';
+      return '15:30-15:45';
     }else if(y>5070&&y<5150){
-      return '16:15-16:30';
+      return '15:45-16:00';
     }else if(y>5150&&y<5230){
-      return '16:30-16:45';
+      return '16:00-16:15';
     }else if(y>5230&&y<5310){
-      return '16:45-17:00';
+      return '16:15-16:30';
     }else if(y>5310&&y<5390){
-      return '17:00-17:15';
+      return '16:30-16:45';
     }else if(y>5390&&y<5470){
-      return '17:15-17:30';
+      return '16:45-17:00';
     }else if(y>5470&&y<5550){
-      return '17:30-17:45';
+      return '17:00-17:15';
     }else if(y>5550&&y<5630){
-      return '17:45-18:00';
+      return '17:15-17:30';
     }else if(y>5630&&y<5710){
-      return '18:00-18:15';
+      return '17:30-17:45';
     }else if(y>5710&&y<5790){
-      return '18:15-18:30';
+      return '17:45-18:00';
     }else if(y>5790&&y<5870){
-      return '18:30-18:45';
+      return '18:00-18:15';
     }else if(y>5870&&y<5950){
-      return '18:45-19:00';
+      return '18:15-18:30';
     }else if(y>5950&&y<6030){
-      return '19:00-19:15';
+      return '18:30-18:45';
     }else if(y>6030&&y<6110){
-      return '19:15-19:30';
+      return '18:45-19:00';
     }else if(y>6110&&y<6190){
-      return '19:30-19:45';
+      return '19:00-19:15';
     }else if(y>6190&&y<6270){
-      return '19:45-20:00';
+      return '19:15-19:30';
     }else if(y>6270&&y<6350){
-      return '20:00-20:15';
+      return '19:30-19:45';
     }else if(y>6350&&y<6430){
-      return '20:15-20:30';
+      return '19:45-20:00';
     }else if(y>6430&&y<6510){
-      return '20:30-20:45';
+      return '20:00-20:15';
     }else if(y>6510&&y<6590){
-      return '20:45-21:00';
+      return '20:15-20:30';
     }else if(y>6590&&y<6670){
-      return '21:00-21:15';
+      return '20:30-20:45';
     }else if(y>6670&&y<6750){
-      return '21:15-21:30';
+      return '20:45-21:00';
     }else if(y>6750&&y<6830){
-      return '21:30-21:45';
+      return '21:00-21:15';
     }else if(y>6830&&y<6910){
-      return '21:45-22:00';
+      return '21:15-21:30';
     }else if(y>6910&&y<6990){
-      return '22:00-22:15';
+      return '21:30-21:45';
     }else if(y>6990&&y<7070){
-      return '22:15-22:30';
+      return '21:45-22:00';
     }else if(y>7070&&y<7150){
-      return '22:30-22:45';
+      return '22:00-22:15';
     }else if(y>7150&&y<7230){
-      return '22:45-23:00';
+      return '22:15-22:30';
     }else if(y>7230&&y<7310){
-      return '23:00-23:15';
+      return '22:30-22:45';
     }else if(y>7310&&y<7390){
-      return '23:15-24:00';
+      return '22:45-23:00';
+    }else if(y>7390&&y<7470){
+      return '23:00-23:15';
+    }else if(y>7470&&y<7550){
+      return '23:15-23:30';
+    }else if(y>7550&&y<7630){
+      return '23:30-23:45';
+    }else if(y>7630&&y<7710){
+      return '23:45-24:00';
     }else{
       return '';
     }
@@ -407,9 +415,9 @@ class TimePosition{
       return '01:15-01:20';
     }else if(y>1310&&y<1390){
       return '01:20-01:25';
-    }else if(y>1390&&y<1479){
+    }else if(y>1390&&y<1470){
       return '01:25-01:30';
-    }else if(y>1479&&y<1550){
+    }else if(y>1470&&y<1550){
       return '01:30-01:35';
     }else if(y>1550&&y<1630){
       return '01:35-01:40';
@@ -595,7 +603,7 @@ class TimePosition{
       return '09:05-09:10';
     }else if(y>8830&&y<8910){
       return '09:10-09:15';
-    }else if(y>8910&&y<8910){
+    }else if(y>8910&&y<8990){
       return '09:15-09:20';
     }else if(y>8990&&y<9070){
       return '09:20-09:25';
@@ -608,179 +616,181 @@ class TimePosition{
     }else if(y>9310&&y<9390){
       return '09:40-09:45';
     }else if(y>9390&&y<9470){
-      return '09:50-09:55';
+      return '09:45-09:50';
     }else if(y>9470&&y<9550){
-      return '09:55-10:00';
+      return '09:50-09:55';
     }else if(y>9550&&y<9630){
-      return '10:00-10:05';
+      return '09:55-10:00';
     }else if(y>9630&&y<9710){
-      return '10:05-10:10';
+      return '10:00-10:05';
     }else if(y>9710&&y<9790){
-      return '10:10-10:15';
+      return '10:05-10:10';
     }else if(y>9790&&y<9870){
-      return '10:15-10:20';
+      return '10:10-10:15';
     }else if(y>9870&&y<9950){
-      return '10:20-10:25';
+      return '10:15-10:20';
     }else if(y>9950&&y<10030){
-      return '10:25-10:30';
+      return '10:20-10:25';
     }else if(y>10030&&y<10110){
-      return '10:30-10:35';
+      return '10:25-10:30';
     }else if(y>10110&&y<10190){
-      return '10:35-10:40';
+      return '10:30-10:35';
     }else if(y>10190&&y<10270){
-      return '10:40-10:45';
+      return '10:35-10:40';
     }else if(y>10270&&y<10350){
-      return '10:45-10:50';
+      return '10:40-10:45';
     }else if(y>10350&&y<10430){
-      return '10:50-10:55';
+      return '10:45-10:50';
     }else if(y>10430&&y<10510){
-      return '10:55-11:00';
+      return '10:50-10:55';
     }else if(y>10510&&y<10590){
-      return '11:00-11:05';
+      return '10:55-11:00';
     }else if(y>10590&&y<10670){
-      return '11:05-11:10';
+      return '11:00-11:05';
     }else if(y>10670&&y<10750){
-      return '11:10-11:15';
+      return '11:05-11:10';
     }else if(y>10750&&y<10830){
-      return '11:15-11:20';
+      return '11:10-11:15';
     }else if(y>10830&&y<10910){
-      return '11:20-11:25';
+      return '11:15-11:20';
     }else if(y>10910&&y<10990){
-      return '11:25-11:30';
+      return '11:20-11:25';
     }else if(y>10990&&y<11070){
-      return '11:30-11:35';
+      return '11:25-11:30';
     }else if(y>11070&&y<11150){
-      return '11:35-11:40';
+      return '11:30-11:35';
     }else if(y>11150&&y<11230){
-      return '11:40-11:45';
+      return '11:35-11:40';
     }else if(y>11230&&y<11310){
-      return '11:45-11:50';
+      return '11:40-11:45';
     }else if(y>11310&&y<11390){
-      return '11:50-11:55';
+      return '11:45-11:50';
     }else if(y>11390&&y<11470){
-      return '11:55-12:00';
+      return '11:50-11:55';
     }else if(y>11470&&y<11550){
-      return '12:00-12:05';
+      return '11:55-12:00';
     }else if(y>11550&&y<11630){
-      return '12:05-12:10';
+      return '12:00-12:05';
     }else if(y>11630&&y<11710){
-      return '12:10-12:15';
+      return '12:05-12:10';
     }else if(y>11710&&y<11790){
-      return '12:15-12:20';
+      return '12:10-12:15';
     }else if(y>11790&&y<11870){
-      return '12:20-12:25';
+      return '12:15-12:20';
     }else if(y>11870&&y<11950){
-      return '12:25-12:30';
+      return '12:20-12:25';
     }else if(y>11950&&y<12030){
-      return '12:30-12:35';
+      return '12:25-12:30';
     }else if(y>12030&&y<12110){
-      return '12:35-12:40';
+      return '12:30-12:35';
     }else if(y>12110&&y<12190){
-      return '12:40-12:45';
+      return '12:35-12:40';
     }else if(y>12190&&y<12270){
-      return '12:45-12:50';
+      return '12:40-12:45';
     }else if(y>12270&&y<12350){
-      return '12:50-12:55';
+      return '12:45-12:50';
     }else if(y>12350&&y<12430){
-      return '12:55-13:00';
+      return '12:50-12:55';
     }else if(y>12430&&y<12510){
-      return '13:00-13:05';
+      return '12:55-13:00';
     }else if(y>12510&&y<12590){
-      return '13:05-13:10';
+      return '13:00-13:05';
     }else if(y>12590&&y<12670){
-      return '13:10-13:15';
+      return '13:05-13:10';
     }else if(y>12670&&y<12750){
-      return '13:15-13:20';
+      return '13:10-13:15';
     }else if(y>12750&&y<12830){
-      return '13:20-13:25';
+      return '13:15-13:20';
     }else if(y>12830&&y<12910){
-      return '13:25-13:30';
+      return '13:20-13:25';
     }else if(y>12910&&y<12990){
-      return '13:30-13:35';
+      return '13:25-13:30';
     }else if(y>12990&&y<13070){
-      return '13:35-13:40';
+      return '13:30-13:35';
     }else if(y>13070&&y<13150){
-      return '13:40-13:45';
+      return '13:35-13:40';
     }else if(y>13150&&y<13230){
-      return '13:45-13:50';
+      return '13:40-13:45';
     }else if(y>13230&&y<13310){
-      return '13:50-13:55';
+      return '13:45-13:50';
     }else if(y>13310&&y<13390){
-      return '13:55-14:00';
+      return '13:50-13:55';
     }else if(y>13390&&y<13470){
-      return '14:00-14:05';
+      return '13:55-14:00';
     }else if(y>13470&&y<13550){
-      return '14:05-14:10';
+      return '14:00-14:05';
     }else if(y>13550&&y<13630){
-      return '14:10-14:15';
+      return '14:05-14:10';
     }else if(y>13630&&y<13710){
-      return '14:15-14:30';
+      return '14:10-14:15';
     }else if(y>13710&&y<13790){
-      return '14:30-14:35';
+      return '14:15-14:20';
     }else if(y>13790&&y<13870){
-      return '14:35-14:40';
+      return '14:20-14:25';
     }else if(y>13870&&y<13950){
-      return '14:40-14:45';
+      return '14:25-14:30';
     }else if(y>13950&&y<14030){
-      return '14:45-14:50';
+      return '14:30-14:35';
     }else if(y>14030&&y<14110){
-      return '14:50-14:55';
+      return '14:35-14:40';
     }else if(y>14110&&y<14190){
-      return '14:55-15:00';
+      return '14:40-14:45';
     }else if(y>14190&&y<14270){
-      return '15:00-15:05';
+      return '14:45-14:50';
     }else if(y>14270&&y<14350){
-      return '15:05-15:10';
+      return '14:50-14:55';
     }else if(y>14350&&y<14430){
-      return '15:10-15:15';
+      return '14:55-15:00';
     }else if(y>14430&&y<14510){
-      return '15:15-15:20';
+      return '15:00-15:05';
     }else if(y>14510&&y<14590){
-      return '15:20-15:25';
+      return '15:05-15:10';
     }else if(y>14590&&y<14670){
-      return '15:25-15:30';
+      return '15:10-15:15';
     }else if(y>14670&&y<14750){
-      return '15:30-15:35';
+      return '15:15-15:20';
     }else if(y>14750&&y<14830){
-      return '15:35-15:40';
+      return '15:20-15:25';
     }else if(y>14830&&y<14910){
-      return '15:40-15:45';
+      return '15:25-15:30';
     }else if(y>14910&&y<14990){
-      return '15:45-15:50';
+      return '15:30-15:35';
     }else if(y>14990&&y<15070){
-      return '15:50-15:55';
+      return '15:35-15:40';
     }else if(y>15070&&y<15150){
-      return '15:55-16:00';
+      return '15:40-15:45';
     }else if(y>15150&&y<15230){
-      return '16:00-16:05';
+      return '15:45-15:50';
     }else if(y>15230&&y<15310){
-      return '16:05-16:10';
+      return '15:50-15:55';
     }else if(y>15310&&y<15390){
-      return '16:10-16:15';
+      return '15:55-16:00';
     }else if(y>15390&&y<15470){
-      return '16:15-16:20';
+      return '16:00-16:05';
     }else if(y>15470&&y<15550){
-      return '16:20-16:25';
+      return '16:05-16:10';
     }else if(y>15550&&y<15630){
-      return '16:25-16:30';
+      return '16:10-16:15';
     }else if(y>15630&&y<15710){
-    return '16:30-16:35';
+    return '16:15-16:20';
     }else if(y>15710&&y<15790){
-    return '16:35-16:40';
+    return '16:20-16:25';
     }else if(y>15790&&y<15870){
-    return '16:40-16:45';
+    return '16:25-16:30';
     }else if(y>15870&&y<15950){
-    return '16:45-16:50';
+    return '16:30-16:35';
     }else if(y>15950&&y<16030){
-    return '16:50-16:55';
+    return '16:35-16:40';
     }else if(y>16030&&y<16110){
-    return '16:55-17:00';
+    return '16:40-16:45';
     }else if(y>16110&&y<16190){
-    return '17:00-17:05';
+    return '16:45-16:50';
     }else if(y>16190&&y<16270){
-    return '17:05-17:10';
+    return '16:50-16:55';
     }else if(y>16270&&y<16350){
-    return '17:10-17:15';
+    return '16:55-17:00';
+
+    //TODO time edit
     }else if(y>16350&&y<16430){
     return '17:15-17:20';
     }else if(y>16430&&y<16510){

@@ -324,7 +324,6 @@ class TimeParser{
       int i=GlobalData.timeStepsConstant[timeStep]['time'];
       double t=GlobalData.timeStepsConstant[timeStep]['coof'];
       double resultTimeParse=(timeTable/t+i)-i;
-      print('isTimeValidate $thisTime < $resultTimeParse timeConst $i');
       return thisTime<resultTimeParse;
 
   }
