@@ -116,7 +116,6 @@ abstract class TableStateBase with Store{
   //modelDataTable!.endDayMin=1290;
    GlobalData.endDayMin=modelDataTable!.endDayMin;
    GlobalData.startDayMin=modelDataTable!.startDayMin;
-   print('Work day ${GlobalData.startDayMin} - ${GlobalData.endDayMin}');
    isLoading=false;
   }
 
