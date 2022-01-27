@@ -46,6 +46,7 @@ class _PageProfileState extends State<PageProfile> {
   String? _avatar;
   String? _name;
   String? _phone;
+  int _langId=0;
 
 
   @override
@@ -66,6 +67,9 @@ class _PageProfileState extends State<PageProfile> {
              }
              if(!_isPhone){
                _phone='${data.data!.phone}';
+             }
+             if(_langId==0){
+               _langId=data.data!.lang_id;
              }
             return Column(
                children: [
@@ -193,7 +197,7 @@ class _PageProfileState extends State<PageProfile> {
                                          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                          child: Row(
                                            children: [
-                                             Text('Имя пользователя',
+                                             Text('ФИО',
                                                  style: TextStyle(
                                                      color: AppColors.textColorItem,
                                                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -255,7 +259,6 @@ class _PageProfileState extends State<PageProfile> {
                                                          setState(() {
                                                            _isPhone=true;
                                                            _phone=numberPhone;
-                                                           print('Phone $_phone');
                                                          });
                                                        },
                                                        )));
@@ -391,7 +394,7 @@ class _PageProfileState extends State<PageProfile> {
                                          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                          child: Row(
                                            children: [
-                                             Text('Язык',
+                                             Text('${_getNameLanguage(_langId)}',
                                                  style: TextStyle(
                                                      color: AppColors.textColorItem,
                                                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -401,7 +404,13 @@ class _PageProfileState extends State<PageProfile> {
                                                  alignment: Alignment.centerRight,
                                                  child: GestureDetector(
                                                    onTap: (){
-                                                     Navigator.push(context, SlideTransitionLift(PageLanguadge()));
+                                                     Navigator.push(context, SlideTransitionLift(PageLanguadge(
+                                                         langId: _langId,
+                                                     onLangId: (id){
+                                                           setState(() {
+                                                               _langId=id!;
+                                                           });
+                                                     },)));
                                                    },
                                                    child: Icon(
                                                      Icons.arrow_forward_ios,
@@ -437,6 +446,16 @@ class _PageProfileState extends State<PageProfile> {
     super.initState();
   }
 
+
+   _getNameLanguage(int id){
+      if(id==1){
+        return 'Русский';
+      }else if(id==2){
+        return 'Язык 2';
+      }else if(id==3){
+        return 'Язык 3';
+      }
+   }
 
     //загрузка фото из камеры
   _imgFromCamera() async {

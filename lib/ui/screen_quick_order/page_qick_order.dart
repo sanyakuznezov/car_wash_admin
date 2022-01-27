@@ -437,7 +437,13 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
       numCarController!.text='A000AA';
       regionCarController!.text='000';
     }
+
+    @override
+  void dispose() {
+   super.dispose();
+
   }
+}
 
 
   class _ItemListWork extends StatefulWidget{
@@ -538,8 +544,10 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: (){
+                              print('List service ${_listService.length}');
                               Navigator.push(context, SlideTransitionLift(PageListServices(
-                                carType: _typeCarInt,listAlreadySelected: _listService,
+                                carType: _typeCarInt,
+                                listAlreadySelected: _listService,
                                 onListServices: (list){
                                   setState(() {
                                     _idComplexList.clear();
@@ -559,6 +567,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                     _order.update('ServicesList', (value) => _idServiceList);
                                     _getPrice(context: context, carType: _typeCarInt, servicesIds: _idServiceList, complexesIds: _idComplexList);
                                   });
+
                                   _onEdit(_listService.length);
                                 },)));
                             },
@@ -657,7 +666,17 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
       }
     }
 
+
     @override
+  void dispose() {
+      super.dispose();
+      if(_listService.isNotEmpty){
+        _listService.clear();
+
+      }
+  }
+
+  @override
     void initState() {
       super.initState();
 

@@ -41,7 +41,9 @@ class _PageListServicesState extends State<PageListServices> {
   int _serviceType=2;
   bool _isLoading=true;
   bool _isSelected=false;
-   TextEditingController _searchController=TextEditingController();
+  TextEditingController _searchController=TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,428 +59,436 @@ class _PageListServicesState extends State<PageListServices> {
       });
 
     }
-    return Scaffold(
-        floatingActionButton: _isSelected?FloatingActionButton(
-          onPressed: () {
-            // Add your onPressed code here!
-            Navigator.pop(context);
-            widget.onListServices(_selList);
-          },
-          child: const Icon(Icons.check_outlined,color:Colors.indigo),
-          backgroundColor: Colors.white,
-        ):null,
-        backgroundColor: AppColors.colorBackgrondProfile,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0,
-                actions: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-
-                              },
-                              child: Icon(
-                                Icons.arrow_back_ios,
-                                color: AppColors.colorIndigo,
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              'Список работ',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: SizeUtil.getSize(
-                                      2.8, GlobalData.sizeScreen!)),
-                            ),
-                          ),
-                          Align(alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap:(){
-                             setState(() {
-                               if(!_searhVisible){
-                                 _searhVisible=true;
-                               }else{
-                                 _searhVisible=false;
-                                 _searchList.clear();
-                               }
-                             });
-                              },
-                              child: !_isLoading?Icon(Icons.search,color: AppColors.colorIndigo):Container(),
-                            ),
-                          )
-
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Container(
-                color: Colors.white,
-                child: Padding(
-                  padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
-                      1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
-                      1.5, GlobalData.sizeScreen!), 0),
-                  child: _searhVisible?Container(
-                    margin: EdgeInsets.all(SizeUtil.getSize(
-                        1.3,
-                        GlobalData.sizeScreen!)),
-                    decoration: BoxDecoration(
-                        color: AppColors.colorBackgrondProfile,
-                        borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                            1.0,
-                            GlobalData.sizeScreen!))
-                    ),
-                    child: TextField(
-                      style: TextStyle(
-                          color: AppColors.textColorPhone,
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeUtil.getSize(1.8,
-                              GlobalData.sizeScreen!)),
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                          hintText: 'Поиск услуги',
-                          hintStyle: TextStyle(
-                              color: AppColors.textColorHint
-                          ),
-                          contentPadding: EdgeInsets.all(SizeUtil.getSize(
-                              1.5, GlobalData.sizeScreen!)),
-                          border: InputBorder.none),
-                      onChanged: (text) {
-                        if (_searchController.text.isEmpty) {
-                          setState(() {
-                            _isSearching = false;
-                          });
-                        } else {
-                          setState(() {
-                            _isSearching = true;
-                          });
-                        }
-                        search(text);
-                      },
-                    ),
-                  ):Container(),
-                ),
-              ),
-
-              !_searhVisible?!_isSwithSearch?Container(
-                padding: EdgeInsets.all(SizeUtil.getSize(
-                    2.8, GlobalData.sizeScreen!)),
-                color: AppColors.color120,
-                child: Wrap(
-                  children: [
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Align(
-                              child: Text('Фильтры',style: TextStyle(color: AppColors.colorText22,
-                                  fontSize: SizeUtil.getSize(
-                                      2.2, GlobalData.sizeScreen!))),
-                              alignment: Alignment.centerLeft,),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                    onTap: (){
-                                      setState(() {
-                                        _isSwithSearch=true;
-                                      });
-                                    },
-                                    child: Icon(Icons.remove,color: AppColors.colorIndigo)),),
-                            )
-                          ],
-                        ),
-                        Align(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!),0,0),
-                            child: Text('Тип',style: TextStyle(color: AppColors.textColorHint,
-                                fontSize: SizeUtil.getSize(
-                                    2.0, GlobalData.sizeScreen!))),
-                          ),
-                          alignment: Alignment.centerLeft,),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  _selType=0;
-                                  _isDetailing=false;
-                                  _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.all(SizeUtil.getSize(
-                                    0.5, GlobalData.sizeScreen!)),
-                                padding: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
-                                alignment: Alignment.center,
-                                width: SizeUtil.getSize(
-                                    15.0, GlobalData.sizeScreen!),
-                                decoration: BoxDecoration(
-                                    color: _selType==0?AppColors.colorIndigo:Colors.white,
-                                    border: _selType==1?Border.all(width: 1,color: AppColors.textColorPhone):null,
-                                    borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                                        1.5, GlobalData.sizeScreen!))
-                                ),
-                                child: Text(
-                                  'Мойка',
-                                  style: TextStyle(
-                                      color:_selType==0?Colors.white:AppColors.textColorPhone
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  _selType=1;
-                                  _isDetailing=true;
-                                  _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.all(SizeUtil.getSize(
-                                    0.5, GlobalData.sizeScreen!)),
-                                padding: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
-                                alignment: Alignment.center,
-                                width: SizeUtil.getSize(
-                                    15.5, GlobalData.sizeScreen!),
-                                decoration: BoxDecoration(
-                                    color: _selType==1?AppColors.colorIndigo:Colors.white,
-                                    border: _selType==0?Border.all(width: 1,color: AppColors.textColorPhone):null,
-                                    borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                                        1.5, GlobalData.sizeScreen!))
-                                ),
-                                child: Text(
-                                  'Дитейлинг',
-                                  style: TextStyle(
-                                      color:_selType==1?Colors.white:AppColors.textColorPhone
-                                  ),
-                                ),
-                              ),
-                            )
-
-                          ],
-                        ),
-                        Align(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.0, GlobalData.sizeScreen!),0,0),
-                            child: Text('Вид',style: TextStyle(color: AppColors.textColorHint,
-                                fontSize: SizeUtil.getSize(
-                                    2.0, GlobalData.sizeScreen!))),
-                          ),
-                          alignment: Alignment.centerLeft,),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  _selVid=0;
-                                  _serviceType=2;
-                                  _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.all(SizeUtil.getSize(
-                                    0.5, GlobalData.sizeScreen!)),
-                                padding: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
-                                alignment: Alignment.center,
-                                width: SizeUtil.getSize(
-                                    15.0, GlobalData.sizeScreen!),
-                                decoration: BoxDecoration(
-                                    color: _selVid==0?AppColors.colorIndigo:Colors.white,
-                                    border: _selVid==1?Border.all(width: 1,color: AppColors.textColorPhone):null,
-                                    borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                                        1.5, GlobalData.sizeScreen!))
-                                ),
-                                child: Text(
-                                  'Комплекс',
-                                  style: TextStyle(
-                                      color:_selVid==0?Colors.white:AppColors.textColorPhone
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  _selVid=1;
-                                  _serviceType=1;
-                                  _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
-                                padding: EdgeInsets.all(SizeUtil.getSize(
-                                    1.5, GlobalData.sizeScreen!)),
-                                alignment: Alignment.center,
-                                width: SizeUtil.getSize(
-                                    15.0, GlobalData.sizeScreen!),
-                                decoration: BoxDecoration(
-                                    color: _selVid==1?AppColors.colorIndigo:Colors.white,
-                                    border: _selVid==0?Border.all(width: 1,color: AppColors.textColorPhone):null,
-                                    borderRadius: BorderRadius.circular(SizeUtil.getSize(
-                                        1.5, GlobalData.sizeScreen!))
-                                ),
-                                child: Text(
-                                  'Услуга',
-                                  style: TextStyle(
-                                      color:_selVid==1?Colors.white:AppColors.textColorPhone
-                                  ),
-                                ),
-                              ),
-                            )
-
-                          ],
-                        )
-
-                      ],
-                    ),
-
-
-                  ],
-                )):Container(
-            color: Colors.white,
+    return WillPopScope (
+      onWillPop: () async {
+        widget.onListServices(_selList);
+        return true;
+      },
+      child: Scaffold(
+          floatingActionButton: _isSelected?FloatingActionButton(
+            onPressed: () {
+              // Add your onPressed code here!
+              Navigator.pop(context);
+              widget.onListServices(_selList);
+            },
+            child: const Icon(Icons.check_outlined,color:Colors.indigo),
+            backgroundColor: Colors.white,
+          ):null,
+          backgroundColor: AppColors.colorBackgrondProfile,
+          body: SingleChildScrollView(
             child: Column(
               children: [
-                Stack(
-                    children:[
-                      Padding(
-                        padding:EdgeInsets.all(SizeUtil.getSize(
-                            1.5, GlobalData.sizeScreen!)),
-                        child:
-                        Text('${getType(widget.carType)}; ${getTypeSer(_selType)}; ${getTypeVid(_selVid)}',
+                AppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  actions: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  widget.onListServices(_selList);
+                                },
+                                child: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: AppColors.colorIndigo,
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                'Список работ',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: SizeUtil.getSize(
+                                        2.8, GlobalData.sizeScreen!)),
+                              ),
+                            ),
+                            Align(alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap:(){
+                               setState(() {
+                                 if(!_searhVisible){
+                                   _searhVisible=true;
+                                 }else{
+                                   _searhVisible=false;
+                                   _searchList.clear();
+                                 }
+                               });
+                                },
+                                child: !_isLoading?Icon(Icons.search,color: AppColors.colorIndigo):Container(),
+                              ),
+                            )
+
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Container(
+                  color: Colors.white,
+                  child: Padding(
+                    padding:EdgeInsets.fromLTRB(SizeUtil.getSize(
+                        1.5, GlobalData.sizeScreen!), 0, SizeUtil.getSize(
+                        1.5, GlobalData.sizeScreen!), 0),
+                    child: _searhVisible?Container(
+                      margin: EdgeInsets.all(SizeUtil.getSize(
+                          1.3,
+                          GlobalData.sizeScreen!)),
+                      decoration: BoxDecoration(
+                          color: AppColors.colorBackgrondProfile,
+                          borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                              1.0,
+                              GlobalData.sizeScreen!))
+                      ),
+                      child: TextField(
                         style: TextStyle(
                             color: AppColors.textColorPhone,
                             fontWeight: FontWeight.bold,
                             fontSize: SizeUtil.getSize(1.8,
                                 GlobalData.sizeScreen!)),
-                        ),),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                            onTap: (){
-                              setState(() {
-                                _isSwithSearch=false;
-                              });
-                            },
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                            hintText: 'Поиск услуги',
+                            hintStyle: TextStyle(
+                                color: AppColors.textColorHint
+                            ),
+                            contentPadding: EdgeInsets.all(SizeUtil.getSize(
+                                1.5, GlobalData.sizeScreen!)),
+                            border: InputBorder.none),
+                        onChanged: (text) {
+                          if (_searchController.text.isEmpty) {
+                            setState(() {
+                              _isSearching = false;
+                            });
+                          } else {
+                            setState(() {
+                              _isSearching = true;
+                            });
+                          }
+                          search(text);
+                        },
+                      ),
+                    ):Container(),
+                  ),
+                ),
+
+                !_searhVisible?!_isSwithSearch?Container(
+                  padding: EdgeInsets.all(SizeUtil.getSize(
+                      2.8, GlobalData.sizeScreen!)),
+                  color: AppColors.color120,
+                  child: Wrap(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Align(
+                                child: Text('Фильтры',style: TextStyle(color: AppColors.colorText22,
+                                    fontSize: SizeUtil.getSize(
+                                        2.2, GlobalData.sizeScreen!))),
+                                alignment: Alignment.centerLeft,),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                      onTap: (){
+                                        setState(() {
+                                          _isSwithSearch=true;
+                                        });
+                                      },
+                                      child: Icon(Icons.remove,color: AppColors.colorIndigo)),),
+                              )
+                            ],
+                          ),
+                          Align(
                             child: Padding(
-                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(
-                                  1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                                  1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                                  2.0, GlobalData.sizeScreen!),SizeUtil.getSize(
-                                  1.0, GlobalData.sizeScreen!)),
-                              child: Icon(Icons.add,color: AppColors.colorIndigo),
-                            )),)
-                    ]
-                ),
-              ],
-            ),
-          ):Container(),
-              _isLoading?Center(child: Padding(
-                padding: EdgeInsets.all(SizeUtil.getSize(
-                    3.0, GlobalData.sizeScreen!)),
-                child: CircularProgressIndicator(
-                  color: AppColors.colorIndigo, strokeWidth: 2,),
-              )):_searchList.length != 0?
-              Container(
-                color: Colors.white,
-                margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
-                    3.0, GlobalData.sizeScreen!), 0, 0),
-                child: Column(
-                  children: List.generate(_searchList.length, (index) {
-                    return _ItemList(modelService:_searchList[index],listAlready: _selListAlready,
-                        onSelect: (value,remove) {
-                          if(!remove){
-                            _selListAlready.add(value!);
-                            _selList.add(value);
-                          }else{
-                            _selList.remove(value);
-                            for(int i=0;_selListAlready.length>i;i++){
-                              if(_selListAlready[i].id==value!.id){
-                                _selListAlready.removeAt(i);
-                                break;
+                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!),0,0),
+                              child: Text('Тип',style: TextStyle(color: AppColors.textColorHint,
+                                  fontSize: SizeUtil.getSize(
+                                      2.0, GlobalData.sizeScreen!))),
+                            ),
+                            alignment: Alignment.centerLeft,),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    _selType=0;
+                                    _isDetailing=false;
+                                    _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(SizeUtil.getSize(
+                                      0.5, GlobalData.sizeScreen!)),
+                                  padding: EdgeInsets.all(SizeUtil.getSize(
+                                      1.5, GlobalData.sizeScreen!)),
+                                  alignment: Alignment.center,
+                                  width: SizeUtil.getSize(
+                                      15.0, GlobalData.sizeScreen!),
+                                  decoration: BoxDecoration(
+                                      color: _selType==0?AppColors.colorIndigo:Colors.white,
+                                      border: _selType==1?Border.all(width: 1,color: AppColors.textColorPhone):null,
+                                      borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                                          1.5, GlobalData.sizeScreen!))
+                                  ),
+                                  child: Text(
+                                    'Мойка',
+                                    style: TextStyle(
+                                        color:_selType==0?Colors.white:AppColors.textColorPhone
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    _selType=1;
+                                    _isDetailing=true;
+                                    _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(SizeUtil.getSize(
+                                      0.5, GlobalData.sizeScreen!)),
+                                  padding: EdgeInsets.all(SizeUtil.getSize(
+                                      1.5, GlobalData.sizeScreen!)),
+                                  alignment: Alignment.center,
+                                  width: SizeUtil.getSize(
+                                      15.5, GlobalData.sizeScreen!),
+                                  decoration: BoxDecoration(
+                                      color: _selType==1?AppColors.colorIndigo:Colors.white,
+                                      border: _selType==0?Border.all(width: 1,color: AppColors.textColorPhone):null,
+                                      borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                                          1.5, GlobalData.sizeScreen!))
+                                  ),
+                                  child: Text(
+                                    'Дитейлинг',
+                                    style: TextStyle(
+                                        color:_selType==1?Colors.white:AppColors.textColorPhone
+                                    ),
+                                  ),
+                                ),
+                              )
+
+                            ],
+                          ),
+                          Align(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.0, GlobalData.sizeScreen!),0,0),
+                              child: Text('Вид',style: TextStyle(color: AppColors.textColorHint,
+                                  fontSize: SizeUtil.getSize(
+                                      2.0, GlobalData.sizeScreen!))),
+                            ),
+                            alignment: Alignment.centerLeft,),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    _selVid=0;
+                                    _serviceType=2;
+                                    _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(SizeUtil.getSize(
+                                      0.5, GlobalData.sizeScreen!)),
+                                  padding: EdgeInsets.all(SizeUtil.getSize(
+                                      1.5, GlobalData.sizeScreen!)),
+                                  alignment: Alignment.center,
+                                  width: SizeUtil.getSize(
+                                      15.0, GlobalData.sizeScreen!),
+                                  decoration: BoxDecoration(
+                                      color: _selVid==0?AppColors.colorIndigo:Colors.white,
+                                      border: _selVid==1?Border.all(width: 1,color: AppColors.textColorPhone):null,
+                                      borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                                          1.5, GlobalData.sizeScreen!))
+                                  ),
+                                  child: Text(
+                                    'Комплекс',
+                                    style: TextStyle(
+                                        color:_selVid==0?Colors.white:AppColors.textColorPhone
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    _selVid=1;
+                                    _serviceType=1;
+                                    _getService(context: context, carType:widget.carType , serviceType:_serviceType, isDetailing:_isDetailing, query:'');
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(SizeUtil.getSize(
+                                      1.5, GlobalData.sizeScreen!)),
+                                  padding: EdgeInsets.all(SizeUtil.getSize(
+                                      1.5, GlobalData.sizeScreen!)),
+                                  alignment: Alignment.center,
+                                  width: SizeUtil.getSize(
+                                      15.0, GlobalData.sizeScreen!),
+                                  decoration: BoxDecoration(
+                                      color: _selVid==1?AppColors.colorIndigo:Colors.white,
+                                      border: _selVid==0?Border.all(width: 1,color: AppColors.textColorPhone):null,
+                                      borderRadius: BorderRadius.circular(SizeUtil.getSize(
+                                          1.5, GlobalData.sizeScreen!))
+                                  ),
+                                  child: Text(
+                                    'Услуга',
+                                    style: TextStyle(
+                                        color:_selVid==1?Colors.white:AppColors.textColorPhone
+                                    ),
+                                  ),
+                                ),
+                              )
+
+                            ],
+                          )
+
+                        ],
+                      ),
+
+
+                    ],
+                  )):Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Stack(
+                      children:[
+                        Padding(
+                          padding:EdgeInsets.all(SizeUtil.getSize(
+                              1.5, GlobalData.sizeScreen!)),
+                          child:
+                          Text('${getType(widget.carType)}; ${getTypeSer(_selType)}; ${getTypeVid(_selVid)}',
+                          style: TextStyle(
+                              color: AppColors.textColorPhone,
+                              fontWeight: FontWeight.bold,
+                              fontSize: SizeUtil.getSize(1.8,
+                                  GlobalData.sizeScreen!)),
+                          ),),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  _isSwithSearch=false;
+                                });
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(SizeUtil.getSize(
+                                    1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                    1.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                    2.0, GlobalData.sizeScreen!),SizeUtil.getSize(
+                                    1.0, GlobalData.sizeScreen!)),
+                                child: Icon(Icons.add,color: AppColors.colorIndigo),
+                              )),)
+                      ]
+                  ),
+                ],
+              ),
+            ):Container(),
+                _isLoading?Center(child: Padding(
+                  padding: EdgeInsets.all(SizeUtil.getSize(
+                      3.0, GlobalData.sizeScreen!)),
+                  child: CircularProgressIndicator(
+                    color: AppColors.colorIndigo, strokeWidth: 2,),
+                )):_searchList.length != 0?
+                Container(
+                  color: Colors.white,
+                  margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+                      3.0, GlobalData.sizeScreen!), 0, 0),
+                  child: Column(
+                    children: List.generate(_searchList.length, (index) {
+                      return _ItemList(modelService:_searchList[index],listAlready: _selListAlready,
+                          onSelect: (value,remove) {
+                            if(!remove){
+                              _selListAlready.add(value!);
+                              _selList.add(value);
+                            }else{
+                              _selList.remove(value);
+                              for(int i=0;_selListAlready.length>i;i++){
+                                if(_selListAlready[i].id==value!.id){
+                                  _selListAlready.removeAt(i);
+                                  break;
+                                }
+                              }
+                              for(int i=0;_selList.length>i;i++){
+                                if(_selList[i].id==value!.id){
+                                  _selList.removeAt(i);
+                                  break;
+                                }
                               }
                             }
-                            for(int i=0;_selList.length>i;i++){
-                              if(_selList[i].id==value!.id){
-                                _selList.removeAt(i);
-                                break;
-                              }
-                            }
-                          }
-                          setState(() {
-                            _isSelected=true;
-                            // if(_selList.length>0){
-                            //   _isSelected=true;
-                            // }else{
-                            //   _isSelected=false;
-                            // }
+                            setState(() {
+                              _isSelected=true;
+                              // if(_selList.length>0){
+                              //   _isSelected=true;
+                              // }else{
+                              //   _isSelected=false;
+                              // }
+                            });
                           });
+                    }),
+                  ),
+                ):Container(
+                  color: Colors.white,
+                  margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
+                      3.0, GlobalData.sizeScreen!), 0, 0),
+                  child: Column(
+                    children: List.generate(_mainList.length, (index) {
+                      return _ItemList(modelService:_mainList[index],listAlready: _selListAlready,
+                          onSelect: (value,remove) {
+                        if(!remove){
+                         _selListAlready.add(value!);
+                          _selList.add(value);
+                        }else{
+                          for(int i=0;_selListAlready.length>i;i++){
+                            if(_selListAlready[i].id==value!.id){
+                               _selListAlready.removeAt(i);
+                              break;
+                            }
+                          }
+                          for(int i=0;_selList.length>i;i++){
+                            if(_selList[i].id==value!.id){
+                              _selList.removeAt(i);
+                              break;
+                            }
+                          }
+                        }
+                        setState(() {
+                          _isSelected=true;
+                          // if(_selList.length>0){
+                          //   _isSelected=true;
+                          // }else{
+                          //   _isSelected=false;
+                          // }
                         });
-                  }),
-                ),
-              ):Container(
-                color: Colors.white,
-                margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(
-                    3.0, GlobalData.sizeScreen!), 0, 0),
-                child: Column(
-                  children: List.generate(_mainList.length, (index) {
-                    return _ItemList(modelService:_mainList[index],listAlready: _selListAlready,
-                        onSelect: (value,remove) {
-                      if(!remove){
-                       _selListAlready.add(value!);
-                        _selList.add(value);
-                      }else{
-                        for(int i=0;_selListAlready.length>i;i++){
-                          if(_selListAlready[i].id==value!.id){
-                             _selListAlready.removeAt(i);
-                            break;
-                          }
-                        }
-                        for(int i=0;_selList.length>i;i++){
-                          if(_selList[i].id==value!.id){
-                            _selList.removeAt(i);
-                            break;
-                          }
-                        }
-                      }
-                      setState(() {
-                        _isSelected=true;
-                        // if(_selList.length>0){
-                        //   _isSelected=true;
-                        // }else{
-                        //   _isSelected=false;
-                        // }
                       });
-                    });
-                  }),
-                ),
-              )
+                    }),
+                  ),
+                )
 
 
-            ]
-          ),
-        ) );
+              ]
+            ),
+          ) ),
+    );
+
+
   }
   
   getType(int id){

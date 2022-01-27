@@ -56,209 +56,217 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.colorBackgrondProfile,
-      body: Column(
-        children: [
-          AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            actions: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: (){
-                            Navigator.pop(context);
-                            if(_isSave){
-                              widget.onNewNumber('$phone');
-                            }
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: AppColors.colorIndigo,
+    return WillPopScope(
+      onWillPop: () async{
+        if(_isSave){
+          widget.onNewNumber('+7 $phone');
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.colorBackgrondProfile,
+        body: Column(
+          children: [
+            AppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              actions: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: (){
+                              Navigator.pop(context);
+                              if(_isSave){
+                                widget.onNewNumber('+7 $phone');
+                              }
+                            },
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: AppColors.colorIndigo,
+                            ),
                           ),
                         ),
-                      ),
-                      Center(
-                        child: Text('Номер телефона',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
-                              fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
-                      ),
+                        Center(
+                          child: Text('Номер телефона',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
+                                fontSize: SizeUtil.getSize(2.8,GlobalData.sizeScreen!)),),
+                        ),
 
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child:StreamBuilder(
-                          stream: _output.stream,
-                          builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-                            if(snapshot.hasData){
-                              if(snapshot.data==1){
-                                return GestureDetector(
-                                  onTap:(){
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child:StreamBuilder(
+                            stream: _output.stream,
+                            builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+                              if(snapshot.hasData){
+                                if(snapshot.data==1){
+                                  return GestureDetector(
+                                    onTap:(){
 
-                                    if (_isEdit) {
-                                      _editPhone(phone,lastname,
-                                          name,
-                                          firstname,
-                                          email);
-                                    }
-                                  },
-                                  child: Text(
-                                    'Сохр.',
-                                    style: TextStyle(
-                                      color:
-                                      AppColors.colorIndigo,
-                                      fontSize: SizeUtil.getSize(
-                                          2.3,
+                                      if (_isEdit) {
+                                        _editPhone('+7 $phone',lastname,
+                                            name,
+                                            firstname,
+                                            email);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Сохр.',
+                                      style: TextStyle(
+                                        color:
+                                        AppColors.colorIndigo,
+                                        fontSize: SizeUtil.getSize(
+                                            2.3,
+                                            GlobalData.sizeScreen!),
+                                      ),
+                                    ),
+                                  );
+                                }else if(snapshot.data==2){
+                                  return SizedBox(
+                                    height: SizeUtil.getSize(
+                                        2.0,
+                                        GlobalData.sizeScreen!),
+                                    width: SizeUtil.getSize(
+                                        2.0,
+                                        GlobalData.sizeScreen!),
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.colorIndigo,
+                                      strokeWidth: SizeUtil.getSize(
+                                          0.3,
                                           GlobalData.sizeScreen!),
                                     ),
-                                  ),
-                                );
-                              }else if(snapshot.data==2){
-                                return SizedBox(
-                                  height: SizeUtil.getSize(
-                                      2.0,
-                                      GlobalData.sizeScreen!),
-                                  width: SizeUtil.getSize(
-                                      2.0,
-                                      GlobalData.sizeScreen!),
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.colorIndigo,
-                                    strokeWidth: SizeUtil.getSize(
-                                        0.3,
-                                        GlobalData.sizeScreen!),
-                                  ),
-                                );
+                                  );
 
-                              }else if(snapshot.data==0){
-                                return Container();
+                                }else if(snapshot.data==0){
+                                  return Container();
+                                }
                               }
-                            }
 
-                            return Container();
-                          },
+                              return Container();
+                            },
+                          )
+                          ,
                         )
-                        ,
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-
-          Container(
-            margin: EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
-            child: Column(
-              children: [
-                Align(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(SizeUtil.getSize(4.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
-                    child: Text('Телефон',
-                        style: TextStyle(
-                            color: AppColors.textColorTitle,
-                            fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                        )),
-                  ),
-                  alignment: Alignment.centerLeft,
-                ),
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Номер телефона',
-                                style: TextStyle(
-                                    color: AppColors.textColorItem,
-                                    fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
-                                )),
-                            Padding(
-                              padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                              child: Container(
-                                width: SizeUtil.getSize(16.2, GlobalData.sizeScreen!),
-                                height: SizeUtil.getSize(5.0, GlobalData.sizeScreen!),
-                                child: Observer(
-                                    builder: (_) {
-                                      if (_stateEditDataUser!.isLoad) {
-                                        return Center(
-                                            child: SizedBox(
-                                              height: SizeUtil.getSize(
-                                                  3.5, GlobalData.sizeScreen!),
-                                              width: SizeUtil.getSize(
-                                                  3.5, GlobalData.sizeScreen!),
-                                              child: CircularProgressIndicator(
-                                          color: AppColors.colorIndigo,
-                                          strokeWidth: SizeUtil.getSize(
-                                                0.5, GlobalData.sizeScreen!),
-                                        ),
-                                            ));
-                                      } else {
-                                         lastname=_stateEditDataUser!.userData!.lastname;
-                                         name=_stateEditDataUser!.userData!.firstname;
-                                         email=_stateEditDataUser!.userData!.email;
-                                         firstname=_stateEditDataUser!.userData!.patronymic;
-                                         if (_isControllerAdd) {
-                                           phone=_stateEditDataUser!.userData!.phone;
-                                          telController.text =phone;
-                                          _isControllerAdd = false;
-                                        }
-
-                                        return TextFormField(
-                                          validator: (value) {
-                                            _validatePhoneNumber(value!);
-                                          },
-                                          onChanged: (text) {
-                                            if (text.isNotEmpty) {
-                                              phone=text;
-                                              _isEdit = true;
-                                              _input.sink.add(1);
-                                            }
-                                          },
-                                          textAlign: TextAlign.start,
-                                          focusNode: myFocusNodeTel,
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                            _inputFormatter
-                                          ],
-                                          textInputAction: TextInputAction.next,
-                                          keyboardType: TextInputType.phone,
-                                          style: TextStyle(
-                                              color: AppColors.textColorPhone,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: SizeUtil.getSize(
-                                                  1.8, GlobalData.sizeScreen!)),
-                                          controller: telController,
-                                          decoration: InputDecoration(
-                                              hintText: '....',
-                                              prefixText: '+7 ',
-                                              border: InputBorder.none),
-                                        );
-                                      }
-                                    }),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 )
               ],
             ),
-          )
 
-        ],
+            Container(
+              margin: EdgeInsets.fromLTRB(0,SizeUtil.getSize(3.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(0.8,GlobalData.sizeScreen!)),
+              child: Column(
+                children: [
+                  Align(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(SizeUtil.getSize(4.0,GlobalData.sizeScreen!),SizeUtil.getSize(2.0,GlobalData.sizeScreen!),0,SizeUtil.getSize(2.0,GlobalData.sizeScreen!)),
+                      child: Text('Телефон',
+                          style: TextStyle(
+                              color: AppColors.textColorTitle,
+                              fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
+                          )),
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Номер телефона',
+                                  style: TextStyle(
+                                      color: AppColors.textColorItem,
+                                      fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                  )),
+                              Padding(
+                                padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
+                                child: Container(
+                                  width: SizeUtil.getSize(16.2, GlobalData.sizeScreen!),
+                                  height: SizeUtil.getSize(5.0, GlobalData.sizeScreen!),
+                                  child: Observer(
+                                      builder: (_) {
+                                        if (_stateEditDataUser!.isLoad) {
+                                          return Center(
+                                              child: SizedBox(
+                                                height: SizeUtil.getSize(
+                                                    3.5, GlobalData.sizeScreen!),
+                                                width: SizeUtil.getSize(
+                                                    3.5, GlobalData.sizeScreen!),
+                                                child: CircularProgressIndicator(
+                                            color: AppColors.colorIndigo,
+                                            strokeWidth: SizeUtil.getSize(
+                                                  0.5, GlobalData.sizeScreen!),
+                                          ),
+                                              ));
+                                        } else {
+                                           lastname=_stateEditDataUser!.userData!.lastname;
+                                           name=_stateEditDataUser!.userData!.firstname;
+                                           email=_stateEditDataUser!.userData!.email;
+                                           firstname=_stateEditDataUser!.userData!.patronymic;
+                                           if (_isControllerAdd) {
+                                             phone=_stateEditDataUser!.userData!.phone.substring(3,_stateEditDataUser!.userData!.phone.length);
+                                            telController.text =phone;
+                                            _isControllerAdd = false;
+                                          }
+
+                                          return TextFormField(
+                                            validator: (value) {
+                                              _validatePhoneNumber(value!);
+                                            },
+                                            onChanged: (text) {
+                                              if (text.isNotEmpty) {
+                                                phone=text;
+                                                _isEdit = true;
+                                                _input.sink.add(1);
+                                              }
+                                            },
+                                            textAlign: TextAlign.start,
+                                            focusNode: myFocusNodeTel,
+                                            inputFormatters: <TextInputFormatter>[
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                              _inputFormatter
+                                            ],
+                                            textInputAction: TextInputAction.next,
+                                            keyboardType: TextInputType.phone,
+                                            style: TextStyle(
+                                                color: AppColors.textColorPhone,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: SizeUtil.getSize(
+                                                    1.8, GlobalData.sizeScreen!)),
+                                            controller: telController,
+                                            decoration: InputDecoration(
+                                                hintText: '....',
+                                                prefixText: '+7 ',
+                                                border: InputBorder.none),
+                                          );
+                                        }
+                                      }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+
+          ],
+        ),
       ),
     );
   }
