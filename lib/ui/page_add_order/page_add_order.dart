@@ -2166,15 +2166,17 @@ class _ItemCarState extends State<ItemCar> {
                              mainAxisAlignment: MainAxisAlignment.end,
                              children: [
                                Container(
-                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
                                  child: _inputNumCar()
                                ),
                                Container(
-                                 height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                 height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
                                  width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
                                  child: TextField(
-                                   maxLength: 3,
+                                   inputFormatters: [
+                                     LengthLimitingTextInputFormatter(3),
+                                   ],
                                    textAlign: TextAlign.center,
                                    style: TextStyle(
                                        fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
@@ -2190,8 +2192,8 @@ class _ItemCarState extends State<ItemCar> {
                                    },
                                    keyboardType: TextInputType.number,
                                    decoration: InputDecoration(
-                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
-    ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+    //                                  contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),0
+    // ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                        border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                    ),
@@ -2468,10 +2470,12 @@ class _ItemCarState extends State<ItemCar> {
 
      _inputNumCar(){
        return TextField(
-         maxLength: 6,
          controller: numCarController,
          textCapitalization: TextCapitalization.characters,
          textAlign: TextAlign.center,
+         inputFormatters: [
+           LengthLimitingTextInputFormatter(6),
+         ],
          style: TextStyle(
              fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
          ),
@@ -2484,8 +2488,8 @@ class _ItemCarState extends State<ItemCar> {
            }
          },
          decoration: InputDecoration(
-           contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
-               ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+           // contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+           //     ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
            border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
          ),

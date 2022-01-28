@@ -221,7 +221,7 @@ class PageAuth extends StatefulWidget{
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Новый поьзователь?',
+                Text('Новый пользователь?',
                     style: TextStyle(
                       color: Colors.black,
                     )),

@@ -41,6 +41,15 @@ abstract class TableStateBase with Store{
     _timer=Timer.periodic(Duration(minutes: 10), (timer) {
       if(!GlobalData.edit_mode){
         getSettings(context: context, date: date);
+        Fluttertoast.showToast(
+            msg: "Обновление данных...",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
       }
     });
 

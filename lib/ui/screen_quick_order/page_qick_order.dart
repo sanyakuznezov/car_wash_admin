@@ -16,6 +16,7 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/svg.dart';
@@ -355,14 +356,16 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Padding(
-                                      padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), SizeUtil.getSize(3.0,GlobalData.sizeScreen!)),
+                                      padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                       child: SvgPicture.asset('assets/frame.svg'),
                                     ),
                                     Container(
-                                      height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                      height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
                                       width: SizeUtil.getSize(13,GlobalData.sizeScreen!),
                                       child: TextField(
-                                        maxLength: 6,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(6),
+                                        ],
                                         controller: numCarController,
                                         textCapitalization: TextCapitalization.characters,
                                         textAlign: TextAlign.center,
@@ -377,18 +380,20 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                           }
                                         },
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
-                                           ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                          // contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+                                          //  ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
                                         ),
                                       ),
                                     ),
                                     Container(
-                                      height: SizeUtil.getSize(6.0,GlobalData.sizeScreen!),
+                                      height: SizeUtil.getSize(4.0,GlobalData.sizeScreen!),
                                       width: SizeUtil.getSize(8,GlobalData.sizeScreen!),
                                       child: TextField(
-                                        maxLength: 3,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
@@ -403,8 +408,8 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                                         },
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
-      ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+      //                                     contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
+      // ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                         ),
@@ -544,7 +549,6 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: (){
-                              print('List service ${_listService.length}');
                               Navigator.push(context, SlideTransitionLift(PageListServices(
                                 carType: _typeCarInt,
                                 listAlreadySelected: _listService,

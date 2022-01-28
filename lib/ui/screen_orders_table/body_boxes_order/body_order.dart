@@ -166,7 +166,6 @@ class StateBodyCard extends State<BodyCard>{
                     children: [
                       Container(
                           alignment: Alignment.center,
-                         // margin: EdgeInsets.fromLTRB(0, 0, 0, 3),
                           width:GlobalData.numBoxes!>1?130:260,
                           height: widget.bodyHeight,
                           decoration: BoxDecoration(
@@ -191,37 +190,192 @@ class StateBodyCard extends State<BodyCard>{
                                   child:
                                   Padding(
                                   padding: EdgeInsets.all(5),
-                                  child: Column(
+                                  child:
+                                      // информация о заказе в теле карточки
+                                  Column(
                                     children: [
-                                      Text(
-                                        widget.dataOrder['orderBody'].carNumber,
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.grey),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            widget.dataOrder['orderBody'].carNumber,
+                                            style: TextStyle(
+                                                fontSize: 12, color: Colors.grey),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(3.0),
+                                            child: Container(
+                                              height: 12,
+                                              width: 1,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          Text(
+                                           '${widget.dataOrder['orderBody'].carRegion}',
+                                            style: TextStyle(
+                                                fontSize: 12, color: Colors.grey),
+                                          ),
+                                        ],
                                       ),
-                                      Icon(
+                                      widget.dataOrder['orderBody'].status==11?Icon(
                                         Icons.sentiment_satisfied_alt,
-                                        color: Colors.grey,
-                                        size: 24.0,
-                                      ),
+                                        color: Colors.green,
+                                        size: 17.0,
+                                      ):Container(),
 
                                       widget.bodyHeight>=156?
-                                      Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                          child:
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          widget.dataOrder['orderBody'].textArray.length>0?
+                                          Row(
                                             children: [
-                                              Text('- ${widget.dataOrder['orderBody'].carType}',
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 16, color: Colors.grey),
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey
+                                                ),
                                               ),
-                                              Text('- ${ widget.dataOrder['orderBody'].brandTitle}',
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 16, color: Colors.grey),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[0]}',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 10, color: Colors.grey),
+                                                ),
                                               ),
                                             ],
-                                          )):Container()
+                                          ):Container(),
+                                          widget.dataOrder['orderBody'].textArray.length>2?
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[1]}',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 11, color: Colors.grey),
+                                                ),
+                                              ),
+                                            ],
+                                          ):Container(),
+                                          widget.dataOrder['orderBody'].textArray.length>3?
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[2]}',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 11, color: Colors.grey),
+                                                ),
+                                              ),
+                                            ],
+                                          ):Container(),
+                                          widget.dataOrder['orderBody'].textArray.length>4?
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[3]}',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 11, color: Colors.grey),
+                                                ),
+                                              ),
+                                            ],
+                                          ):Container(),
+                                          widget.dataOrder['orderBody'].textArray.length>5?
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[4]}',
+                                                  style: TextStyle(
+                                                      fontSize: 11, color: Colors.grey),
+                                                ),
+                                              ),
+                                            ],
+                                          ):Container(),
+                                          widget.dataOrder['orderBody'].textArray.length>=6?
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                                height: 3,
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 98,
+                                                child: Text('${ widget.dataOrder['orderBody'].textArray[5]}',
+                                                  style: TextStyle(
+                                                      fontSize: 11, color: Colors.grey),
+                                                ),
+                                              ),
+                                            ],
+                                          ):Container(),
+
+                                          Padding(padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('ЦЕНА',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                      fontSize: 10, color: Colors.grey),
+                                                ),
+                                                Text('${ widget.dataOrder['orderBody'].totalPrice} P.',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 10, color: Colors.grey),
+                                                ),
+                                              ],
+                                            ),)
+                                        ],
+                                      ):Container()
                                     ],
                                   ))):Container()
                             ],
