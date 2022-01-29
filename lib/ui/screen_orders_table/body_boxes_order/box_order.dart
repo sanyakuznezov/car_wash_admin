@@ -109,12 +109,12 @@ class BoxOrder extends StatefulWidget{
 
    }
 
-  parseHour(String time){
-    String timeSplit=time.split(' ')[1];
-    int hour=int.parse(timeSplit.split(':')[0]);
-    int minute=int.parse(timeSplit.split(':')[1]);
-    return hour*60+minute;
-  }
+  // parseHour(String time){
+  //   String timeSplit=time.split(' ')[1];
+  //   int hour=int.parse(timeSplit.split(':')[0]);
+  //   int minute=int.parse(timeSplit.split(':')[1]);
+  //   return hour*60+minute;
+  // }
 
  }
 

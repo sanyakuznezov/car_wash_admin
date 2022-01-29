@@ -197,6 +197,7 @@ class StateBodyCard extends State<BodyCard>{
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
+
                                           Text(
                                             widget.dataOrder['orderBody'].carNumber,
                                             style: TextStyle(
@@ -215,15 +216,20 @@ class StateBodyCard extends State<BodyCard>{
                                             style: TextStyle(
                                                 fontSize: 12, color: Colors.grey),
                                           ),
+                                          widget.dataOrder['orderBody'].status==11?Padding(
+                                            padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                                            child: Icon(
+                                              Icons.sentiment_satisfied_alt,
+                                              color: Colors.green,
+                                              size: 17.0,
+                                            ),
+                                          ):Container(),
+
                                         ],
                                       ),
-                                      widget.dataOrder['orderBody'].status==11?Icon(
-                                        Icons.sentiment_satisfied_alt,
-                                        color: Colors.green,
-                                        size: 17.0,
-                                      ):Container(),
 
-                                      widget.bodyHeight>=156?
+
+
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -293,7 +299,7 @@ class StateBodyCard extends State<BodyCard>{
                                               ),
                                             ],
                                           ):Container(),
-                                          widget.dataOrder['orderBody'].textArray.length>4?
+                                          widget.dataOrder['orderBody'].textArray.length>4&&widget.bodyHeight>=90?
                                           Row(
                                             children: [
                                               Container(
@@ -315,7 +321,7 @@ class StateBodyCard extends State<BodyCard>{
                                               ),
                                             ],
                                           ):Container(),
-                                          widget.dataOrder['orderBody'].textArray.length>5?
+                                          widget.dataOrder['orderBody'].textArray.length>5&&widget.bodyHeight>=110?
                                           Row(
                                             children: [
                                               Container(
@@ -336,7 +342,7 @@ class StateBodyCard extends State<BodyCard>{
                                               ),
                                             ],
                                           ):Container(),
-                                          widget.dataOrder['orderBody'].textArray.length>=6?
+                                          widget.dataOrder['orderBody'].textArray.length>=6&&widget.bodyHeight>=140?
                                           Row(
                                             children: [
                                               Container(
@@ -358,7 +364,7 @@ class StateBodyCard extends State<BodyCard>{
                                             ],
                                           ):Container(),
 
-                                          Padding(padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                          _isVisiblePrice(widget.bodyHeight,widget.dataOrder['orderBody'].textArray.length)?Padding(padding:const EdgeInsets.fromLTRB(0,10, 0, 0),
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
@@ -373,9 +379,9 @@ class StateBodyCard extends State<BodyCard>{
                                                       fontSize: 10, color: Colors.grey),
                                                 ),
                                               ],
-                                            ),)
+                                            ),):Container()
                                         ],
-                                      ):Container()
+                                      )
                                     ],
                                   ))):Container()
                             ],
@@ -394,7 +400,24 @@ class StateBodyCard extends State<BodyCard>{
 
   }
 
+   bool _isVisiblePrice(double wight,int length){
 
+    bool visible=false;
+    if(wight>=170&&length==6){
+      visible=true;
+    }
+    if(wight>=160&&length==5){
+      visible=true;
+    }
+    if(wight>=110&&length==4){
+      visible=true;
+    }
+    if(wight>=90&&length<=3){
+      visible=true;
+    }
+
+    return visible;
+   }
 
   
   Color? colorBody(int status){

@@ -47,15 +47,15 @@ class LayerController extends StatefulWidget{
         onVerticalDragUpdate: (d) {
           if(widget.timeStep!=3){
             if (d.primaryDelta! > 0) {
-              widget.bodyHeaght+=getIncrement(widget.timeStep);
+              widget.bodyHeaght+=_getIncrement(widget.timeStep);
             } else if (d.primaryDelta! < 0) {
-              widget.bodyHeaght-=getIncrement(widget.timeStep);
+              widget.bodyHeaght-=_getIncrement(widget.timeStep);
             }
-            if(TimeParser.parseTimeStartFeedBack(widget.bodyHeaght+1,widget.timeStep)<=getTime(widget.timeStep)){
+            if(TimeParser.parseTimeStartFeedBack(widget.bodyHeaght+1,widget.timeStep)<=_getTime(widget.timeStep)){
               isStretch=false;
               if(isVisibleToast){
                 Fluttertoast.showToast(
-                    msg: "Заказ ${getTime(widget.timeStep)} минут",
+                    msg: "Заказ ${_getTime(widget.timeStep)} минут",
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.CENTER,
                     timeInSecForIosWeb: 1,
@@ -84,11 +84,11 @@ class LayerController extends StatefulWidget{
         onVerticalDragEnd: (v){
           if(widget.timeStep==3){
             if (v.primaryVelocity! > 0) {
-              widget.bodyHeaght+=getIncrement(widget.timeStep);
+              widget.bodyHeaght+=_getIncrement(widget.timeStep);
             } else if (v.primaryVelocity! < 0) {
-              widget.bodyHeaght-=getIncrement(widget.timeStep);
+              widget.bodyHeaght-=_getIncrement(widget.timeStep);
             }
-            if(TimeParser.parseTimeStartFeedBack(widget.bodyHeaght,widget.timeStep)<=getTime(widget.timeStep)){
+            if(TimeParser.parseTimeStartFeedBack(widget.bodyHeaght,widget.timeStep)<=_getTime(widget.timeStep)){
               isStretch=false;
               if(isVisibleToast){
                 Fluttertoast.showToast(
@@ -177,9 +177,17 @@ class LayerController extends StatefulWidget{
                                            style: TextStyle(
                                                fontSize: 12,  color: Colors.white),
                                          ),
+                                         widget.dataOrder['orderBody'].status==11?Padding(
+                                           padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                                           child: Icon(
+                                             Icons.sentiment_satisfied_alt,
+                                             color: Colors.white,
+                                             size: 17.0,
+                                           ),
+                                         ):Container(),
                                        ],
                                      ),
-                                     widget.bodyHeaght>=156?
+
                                      Column(
                                        crossAxisAlignment: CrossAxisAlignment.start,
                                        children: [
@@ -246,7 +254,7 @@ class LayerController extends StatefulWidget{
                                              ),
                                            ],
                                          ):Container(),
-                                         widget.dataOrder['orderBody'].textArray.length>4?
+                                         widget.dataOrder['orderBody'].textArray.length>4&&widget.bodyHeaght>=90?
                                          Row(
                                            children: [
                                              Container(
@@ -267,7 +275,7 @@ class LayerController extends StatefulWidget{
                                              ),
                                            ],
                                          ):Container(),
-                                         widget.dataOrder['orderBody'].textArray.length>5?
+                                         widget.dataOrder['orderBody'].textArray.length>5&&widget.bodyHeaght>=110?
                                          Row(
                                            children: [
                                              Container(
@@ -288,7 +296,7 @@ class LayerController extends StatefulWidget{
                                              ),
                                            ],
                                          ):Container(),
-                                         widget.dataOrder['orderBody'].textArray.length>=6?
+                                         widget.dataOrder['orderBody'].textArray.length>=6&&widget.bodyHeaght>=140?
                                          Row(
                                            children: [
                                              Container(
@@ -310,7 +318,7 @@ class LayerController extends StatefulWidget{
                                            ],
                                          ):Container(),
 
-                                         Padding(padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                         _isVisiblePrice(widget.bodyHeaght,widget.dataOrder['orderBody'].textArray.length)?Padding(padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
                                            child: Column(
                                              crossAxisAlignment: CrossAxisAlignment.start,
                                              children: [
@@ -325,9 +333,9 @@ class LayerController extends StatefulWidget{
                                                      fontSize: 10, color: Colors.white),
                                                ),
                                              ],
-                                           ),)
+                                           ),):Container()
                                        ],
-                                     ):Container()
+                                     )
                                    ],
                                  ):Container())),
                       ),
@@ -363,7 +371,26 @@ class LayerController extends StatefulWidget{
                   feedback: FeedBackWidget(widget.lenghtOrders,widget.bodyHeaght,widget.color,widget.dataOrder)),
         ));
   }
-          getTime(int timeStep){
+
+          bool _isVisiblePrice(double wight,int length){
+            print('Drag $wight lenght $length');
+            bool visible=false;
+            if(wight>=170&&length==6){
+              visible=true;
+            }
+            if(wight>=160&&length==5){
+              visible=true;
+            }
+            if(wight>=110&&length==4){
+              visible=true;
+            }
+            if(wight>=90&&length<=3){
+              visible=true;
+            }
+
+            return visible;
+          }
+          _getTime(int timeStep){
             if(timeStep==0){
               return 60;
             }else if(timeStep==1){
@@ -375,7 +402,7 @@ class LayerController extends StatefulWidget{
             }
           }
 
-          getIncrement(int timeStep){
+          _getIncrement(int timeStep){
               if(timeStep==0){
               return 0.5;
             }else if(timeStep==1){
@@ -445,48 +472,194 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                             color: widget.color,
                             borderRadius: BorderRadius.circular(10)
                         ),
-
+                        // информаия о заказе
                         child:Padding(
-                            padding: EdgeInsets.fromLTRB(15,5,5,5),
-                            child: Column(
+                            padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                            child:widget.bodyHeaght>60?
+                            // информация о заказе в теле карточки
+                            Column(
                               children: [
-                                Text(widget.dataOrder['orderBody'].carNumber,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.white),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      widget.dataOrder['orderBody'].carNumber,
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Container(
+                                        height: 12,
+                                        width: 1,
+                                        color:  Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${widget.dataOrder['orderBody'].carRegion}',
+                                      style: TextStyle(
+                                          fontSize: 12,  color: Colors.white),
+                                    ),
+                                    widget.dataOrder['orderBody'].status==11?Padding(
+                                      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                                      child: Icon(
+                                        Icons.sentiment_satisfied_alt,
+                                        color: Colors.white,
+                                        size: 17.0,
+                                      ),
+                                    ):Container(),
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.sentiment_satisfied_alt,
-                                  color: Colors.white,
-                                  size: 24.0,
-                                ),
-
-                                widget.bodyHeaght>=156?
-                                Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                    child:
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    widget.dataOrder['orderBody'].textArray.length>0?
+                                    Row(
                                       children: [
                                         Container(
-                                          width: 120.0,
-                                          child: Text('- ${widget.dataOrder['orderBody'].carType}',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 16, color: Colors.white),
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
                                           ),
                                         ),
                                         Container(
-                                          width: 120.0,
-                                          child: Text('- ${widget.dataOrder['orderBody'].brandTitle}',
-                                            overflow: TextOverflow.ellipsis,
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[0]}',
                                             style: TextStyle(
-                                                fontSize: 16, color: Colors.white),
+                                                fontSize: 10, color: Colors.white),
                                           ),
                                         ),
                                       ],
-                                    )):Container()
+                                    ):Container(),
+                                    widget.dataOrder['orderBody'].textArray.length>2?
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[1]}',
+                                            style: TextStyle(
+                                                fontSize: 11, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ):Container(),
+                                    widget.dataOrder['orderBody'].textArray.length>3?
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[2]}',
+                                            style: TextStyle(
+                                                fontSize: 11, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ):Container(),
+                                    widget.dataOrder['orderBody'].textArray.length>4&&widget.bodyHeaght>=90?
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[3]}',
+                                            style: TextStyle(
+                                                fontSize: 11, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ):Container(),
+                                    widget.dataOrder['orderBody'].textArray.length>5&&widget.bodyHeaght>=110?
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[4]}',
+                                            style: TextStyle(
+                                                fontSize: 11, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ):Container(),
+                                    widget.dataOrder['orderBody'].textArray.length>=6&&widget.bodyHeaght>=140?
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                          height: 3,
+                                          width: 3,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 98,
+                                          child: Text('${ widget.dataOrder['orderBody'].textArray[5]}',
+                                            style: TextStyle(
+                                                fontSize: 11, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ):Container(),
+
+                                    _isVisiblePrice(widget.bodyHeaght,widget.dataOrder['orderBody'].textArray.length)?Padding(padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('ЦЕНА',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 10, color: Colors.white),
+                                          ),
+                                          Text('${ widget.dataOrder['orderBody'].totalPrice} P.',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 10, color: Colors.white),
+                                          ),
+                                        ],
+                                      ),):Container()
+                                  ],
+                                )
                               ],
-                            )))),
+                            ):Container()))),
                 Align(
                   alignment: Alignment.topRight,
                   child:  Container(
@@ -519,6 +692,24 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
       );
     }
 
+  bool _isVisiblePrice(double wight,int length){
+    bool visible=false;
+    if(wight>=170&&length==6){
+      visible=true;
+    }
+    if(wight>=160&&length==5){
+      visible=true;
+    }
+    if(wight>=110&&length==4){
+      visible=true;
+    }
+    if(wight>=90&&length<=3){
+      visible=true;
+    }
+
+    return visible;
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -538,6 +729,9 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
 
     }
   }
+
+
+
 }
 
 

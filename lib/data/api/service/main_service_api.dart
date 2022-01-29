@@ -1224,6 +1224,7 @@ class MainServiseApi {
         backgroundColor: Colors.red,
         content: Text('Отсутствует подключение к сети...'),));
     } else {
+      print('time start api $startAt end $endAt id order $idOrder');
       BlocVerifyUser blocVerifyUser = BlocVerifyUser();
       Map data = await blocVerifyUser.checkDataValidUser();
       final value = {
