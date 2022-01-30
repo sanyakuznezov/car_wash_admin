@@ -13,7 +13,6 @@ import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../app_colors.dart';
 import '../../global_data.dart';
@@ -139,6 +138,7 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
 }
 
 
+  // ignore: must_be_immutable
   class PageServices extends StatefulWidget{
 
    var onLoad=(bool? load,int carType)=>load,carType;
@@ -538,6 +538,7 @@ class _ScreenInfoState extends State<ScreenInfo> with SingleTickerProviderStateM
 
 
 
+// ignore: must_be_immutable
 class PageSale extends StatefulWidget{
 
 
@@ -665,20 +666,7 @@ class _PageSaleState extends State<PageSale> {
     );
 
   }
-  _getType(int id){
-    if(id==1){
-      return 'Седан';
-    }else if(id==2){
-      return 'Кроссовер';
-    }else if(id==3){
-      return 'Внедорожник';
-    }else if(id==4){
-      return 'Микроавтобус';
-    }else if(id==5){
-      return 'Иное';
-    }
 
-  }
 
   Future<List<ModelSale>?> _getSaleInfo({required BuildContext context,required int carType}) async{
     _isLoading_1=true;
@@ -706,8 +694,8 @@ class _PageSaleState extends State<PageSale> {
    class _ItemList extends StatefulWidget{
 
 
-     ModelService modelService;
-     List<ModelService> listServices;
+    final ModelService modelService;
+    final List<ModelService> listServices;
 
 
 
@@ -751,6 +739,7 @@ class _PageSaleState extends State<PageSale> {
              }
            });
          },
+         //todo add time order
          child: Container(
            color: Colors.white,
            padding: EdgeInsets.fromLTRB(0, SizeUtil.getSize(1.0,
@@ -763,22 +752,67 @@ class _PageSaleState extends State<PageSale> {
                      padding:  EdgeInsets.fromLTRB(SizeUtil.getSize(
                          5.0,
                          GlobalData.sizeScreen!), 0, 0, 0),
-                     child: Text(widget.modelService.name,
-                       style:TextStyle(
-                           fontSize: SizeUtil.getSize(
-                               2.0, GlobalData.sizeScreen!),
-                           color: Colors.black
-                       ),),
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Row(
+                           children: [
+                             Padding(
+                               padding: const EdgeInsets.all(8.0),
+                               child: Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
+                                   2.2, GlobalData.sizeScreen!)),
+                             ),
+                             Text(widget.modelService.name,
+                               style:TextStyle(
+                                   fontSize: SizeUtil.getSize(
+                                       2.0, GlobalData.sizeScreen!),
+                                   color: Colors.black
+                               ),),
+                           ],
+                         ),
+                         // Row(
+                         //   children: [
+                         //     Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
+                         //         1.5, GlobalData.sizeScreen!)),
+                         //     Text('${widget.modelService.time} мин.',
+                         //       style:TextStyle(
+                         //         fontWeight: FontWeight.bold,
+                         //         fontSize: SizeUtil.getSize(
+                         //             1.5, GlobalData.sizeScreen!),
+                         //         color: AppColors.textColorHint
+                         //     ),),
+                         //   ],
+                         // )
+                       ],
+                     ),
                    ),
                    Expanded(
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.end,
                          children: [
-                           Text('${widget.modelService.price} RUB',
-                               style: TextStyle(
-                                   color: AppColors.colorText22,
-                                   fontSize:
-                                   SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
+                           // Padding(
+                           //   padding: const EdgeInsets.all(8.0),
+                           //   child: Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
+                           //       2.0, GlobalData.sizeScreen!)),
+                           // ),
+                           Column(
+                             crossAxisAlignment: CrossAxisAlignment.end,
+                             children: [
+                               Text('${widget.modelService.price} RUB',
+                                   style: TextStyle(
+                                       color: AppColors.colorText22,
+                                       fontSize:
+                                       SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
+                        // Text(
+                        //   '${widget.modelService.time} мин.',
+                        //   style: TextStyle(
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize:
+                        //           SizeUtil.getSize(1.5, GlobalData.sizeScreen!),
+                        //       color: Colors.grey[400]),
+                        // ),
+                      ],
+                           ),
                            widget.modelService.type=='complex'
                                ? Container(
                                height: SizeUtil.getSize(3.0, GlobalData.sizeScreen!),
@@ -842,7 +876,7 @@ class _PageSaleState extends State<PageSale> {
 
    class _ItemSale extends StatefulWidget{
 
-     ModelSale modelSale;
+    final ModelSale modelSale;
 
      @override
      State<_ItemSale> createState() => _ItemSaleState();

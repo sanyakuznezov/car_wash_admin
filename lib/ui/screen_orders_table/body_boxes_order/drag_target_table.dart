@@ -360,7 +360,6 @@ class StateDragTargetTable extends State<DragTargetTable> {
             });
           }
           if(_offsetsOrder.isNotEmpty){
-            getYTest(_y);
             isCollision=_isColision(_offsetsOrder,TimeParser.parseTimeStartFeedBack(_y+_scrollY+_timeSchedule!,widget.timeStep),TimeParser.parseTimeEndFeedBack( _y+_scrollY+_timeSchedule!,GlobalData.bodyHeightFeedBackWidget.toInt(),widget.timeStep));
             GlobalData.isCollision=isCollision;
           }else{
@@ -422,15 +421,13 @@ class StateDragTargetTable extends State<DragTargetTable> {
     return s+p;
   }
 
-  getYTest(double y){
-    print('${TimeParser.parseReverseTimeStart(_y.toInt()+ _scrollY.toInt()+_timeSchedule!.toInt(), widget.timeStep).split(' ')[1]}');
-  }
+
 
   //проверяем пересечение с границами соседних заказов а так же линии времени
   //b1-время начала перетаскиваемоо заказа  b2- время окончания перетаскиваемого заказа
   _isColision(List<Map> orders,int b1,int b2){
+    print('B1 $b1');
       for(int i=0;orders.length>i;i++){
-        print('Colission start order ${orders[i]['start']}-$b1 end order ${orders[i]['end']}-$b2');
         if(orders[i]['start']<b1&&orders[i]['end']>b1||orders[i]['start']<b2&&orders[i]['end']>b2){
           return true;
         }

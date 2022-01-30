@@ -220,7 +220,7 @@ class StateBodyCard extends State<BodyCard>{
                                             padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                                             child: Icon(
                                               Icons.sentiment_satisfied_alt,
-                                              color: Colors.green,
+                                              color: widget.dataOrder['orderBody'].reputation>=3?Colors.green:widget.dataOrder['orderBody'].reputation<=-3?Colors.red:Colors.grey,
                                               size: 17.0,
                                             ),
                                           ):Container(),
@@ -248,7 +248,6 @@ class StateBodyCard extends State<BodyCard>{
                                               Container(
                                                 width: 98,
                                                 child: Text('${ widget.dataOrder['orderBody'].textArray[0]}',
-                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 10, color: Colors.grey),
                                                 ),
@@ -270,7 +269,6 @@ class StateBodyCard extends State<BodyCard>{
                                               Container(
                                                 width: 98,
                                                 child: Text('${ widget.dataOrder['orderBody'].textArray[1]}',
-                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 11, color: Colors.grey),
                                                 ),
@@ -292,7 +290,6 @@ class StateBodyCard extends State<BodyCard>{
                                               Container(
                                                 width: 98,
                                                 child: Text('${ widget.dataOrder['orderBody'].textArray[2]}',
-                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 11, color: Colors.grey),
                                                 ),
@@ -314,7 +311,6 @@ class StateBodyCard extends State<BodyCard>{
                                               Container(
                                                 width: 98,
                                                 child: Text('${ widget.dataOrder['orderBody'].textArray[3]}',
-                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 11, color: Colors.grey),
                                                 ),
@@ -374,7 +370,6 @@ class StateBodyCard extends State<BodyCard>{
                                                       fontSize: 10, color: Colors.grey),
                                                 ),
                                                 Text('${ widget.dataOrder['orderBody'].totalPrice} P.',
-                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 10, color: Colors.grey),
                                                 ),

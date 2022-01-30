@@ -373,7 +373,6 @@ class LayerController extends StatefulWidget{
   }
 
           bool _isVisiblePrice(double wight,int length){
-            print('Drag $wight lenght $length');
             bool visible=false;
             if(wight>=170&&length==6){
               visible=true;

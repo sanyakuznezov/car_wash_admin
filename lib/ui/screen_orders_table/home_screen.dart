@@ -103,7 +103,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 onTap: () {
                                   _currentIndex = index;
                                  // HapticFeedback.lightImpact();
-                                  Navigator.push(context,SlideTransitionRight(_widgetOptions.elementAt(_currentIndex)));
+                                  if(!GlobalData.edit_mode){
+                                    Navigator.push(context,SlideTransitionRight(_widgetOptions.elementAt(_currentIndex)));
+                                  }
                                 },
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,

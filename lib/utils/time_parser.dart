@@ -216,12 +216,12 @@ class TimeParser{
 
 
   static parseTimeStartFeedBack(double y,int timeStep){
-    var result=y/GlobalData.timeStepsConstant[timeStep]['coof'];
+    var result=y/GlobalData.constantForCollision[timeStep]['coof_start'];
     return result.toInt();
   }
 
   static parseTimeEndFeedBack(double y,int bodyHeaght,int timeStep){
-    double k=GlobalData.timeStepsConstant[timeStep]['coof'];
+    double k=GlobalData.constantForCollision[timeStep]['coof_end'];
     var r=y/k;
     var result=r+bodyHeaght/k;
     return result.toInt();

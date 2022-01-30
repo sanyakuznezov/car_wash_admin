@@ -557,12 +557,14 @@
      {'coof':2.66, 'time':30,'shift':52},
      {'coof':5.33,'time':15,'shift':27},
      {'coof':16.0, 'time':5,'shift':12.2}];
+
 //расчет кооф. времени при перетаскивнии заказов
+   //todo edit configuration for all step time
    static List<Map> constantForCollision=[
-     {'coof':1.31111, 'time':60,'shift':102},
-     {'coof':2.62222, 'time':30,'shift':52},
-     {'coof':5.3,'time':15,'shift':27},
-     {'coof':16.0, 'time':5,'shift':12.2}];
+     {'coof':1.328, 'coof_start':1.328,'coof_end':1.3322,'time':60,'shift':102},
+     {'coof':2.62222,'coof_start':2.62222,'coof_end':2.62222, 'time':30,'shift':52},
+     {'coof':5.3,'coof_start':5.3,'coof_end':5.3,'time':15,'shift':27},
+     {'coof':16.0, 'coof_start':16.0,'coof_end':16.0,'time':5,'shift':12.2}];
 
    //расчет кооф. для размещения заказов при определенном графике
    static List<Map> constantForYPosition=[
