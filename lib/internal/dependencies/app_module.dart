@@ -11,7 +11,7 @@ import 'package:car_wash_admin/global_data.dart';
 class AppModule{
     static BlocTableOrder? _blocTableOrder;
 
-    static BlocTableOrder blocTableInstance(){
+    static BlocTableOrder blocTableInstance() {
       HttpOverrides.global = MyHttpOverrides();
       GlobalData.date=DateTime.now().toString().split(' ')[0];
       _blocTableOrder=BlocTableOrder();

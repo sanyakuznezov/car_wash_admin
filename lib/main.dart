@@ -1,23 +1,31 @@
 
 
 
-import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
-import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
 import 'package:car_wash_admin/ui/screen_auth/splash_screen.dart';
-import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
-import 'package:car_wash_admin/utils/size_util.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'internal/dependencies/repository_module.dart';
-import 'ui/screen_orders_table/table/multiplication_table.dart';
-import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 
-   main()  {
-  AppModule.blocTableInstance();
-  runApp(MyApp());
+   main() async {
+     WidgetsFlutterBinding.ensureInitialized();
+     await Firebase.initializeApp(
+       // Replace with actual values
+       options: FirebaseOptions(
+         apiKey: "AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4",
+         appId: "1:237543568636:android:99e5b99d12336f6a2a5379",
+         messagingSenderId: "237543568636",
+         projectId: "stepcarmobile-25a0a",
+       ),
+     );
+     final token = await FirebaseMessaging.instance.getToken();
+     print('Tocken $token');
+
+     AppModule.blocTableInstance();
+     runApp(MyApp());
 }
 
 
