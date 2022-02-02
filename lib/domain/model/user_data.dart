@@ -25,8 +25,10 @@ import 'package:floor/floor.dart';
    String personals_post;
 
 
+
    UserData(
-      { this.id,
+      {
+        this.id,
         this.valid,
         this.guid,
        this.token,

@@ -26,6 +26,8 @@ import 'package:car_wash_admin/domain/model/model_worker.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -49,6 +51,11 @@ class ApiUtil{
     Future<bool> validUser({required BuildContext context}) async{
       final result= await _mainServiseApi.validUser(context: context);
       return UserDataMapper.fromValidApi(result!);
+
+    }
+
+    Future<void> updateFirebaseToken(UserData userdata)async{
+      await _mainServiseApi.updateFirebaseToken(userData:userdata );
 
     }
 

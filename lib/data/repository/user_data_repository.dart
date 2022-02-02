@@ -33,6 +33,7 @@ class UserDataRepository extends UserRepository{
     final userData=await _apiUtil.authorizationUser(email: email, pass: pass);
     await userDao.insertDataUser(userData);
     final data=await userDao.getDataUser();
+    await _apiUtil.updateFirebaseToken(data!);
     return data;
   }
 
@@ -42,8 +43,8 @@ class UserDataRepository extends UserRepository{
      final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
      final userDao = database.userataDao;
      final data=await userDao.getDataUser();
-
-   return {'valid':valid,'data_user':data};
+     await _apiUtil.updateFirebaseToken(data!);
+      return {'valid':valid,'data_user':data};
   }
 
   @override

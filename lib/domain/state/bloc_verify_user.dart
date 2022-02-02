@@ -38,9 +38,15 @@ class BlocVerifyUser{
    }
 
 
+   Future<bool> saveTokenFcm(String token) async{
+     SharedPreferences prefs=await SharedPreferences.getInstance();
+     return prefs.setString('tokenFcm',token);
+   }
 
-
-
+   Future<String?> getTokenFcm() async{
+     SharedPreferences prefs=await SharedPreferences.getInstance();
+     return prefs.getString('tokenFcm');
+   }
 
    Future<Map> checkDataValidUser() async {
      SharedPreferences prefs=await SharedPreferences.getInstance();

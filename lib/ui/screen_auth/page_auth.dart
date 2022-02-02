@@ -305,7 +305,7 @@ class PageAuth extends StatefulWidget{
 
     @override
   void dispose() {
-
+   super.dispose();
   }
 
 

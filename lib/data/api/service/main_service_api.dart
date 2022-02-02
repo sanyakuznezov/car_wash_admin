@@ -16,9 +16,13 @@ import 'package:car_wash_admin/data/api/model/model_worker_api.dart';
 import 'package:car_wash_admin/data/api/model/response_upload_avatar_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api.dart';
 import 'package:car_wash_admin/data/api/model/user_data_api_valid.dart';
+import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
+import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/utils/state_network.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -48,6 +52,44 @@ class MainServiseApi {
     });
     return ApiUserData.fromApi(response.data);
   }
+
+   //todo add isolate
+   Future<void> updateFirebaseToken({required UserData userData}) async{
+    await Firebase.initializeApp(
+       // get token firebase fcm
+       options: FirebaseOptions(
+         apiKey: "AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4",
+         appId: "1:237543568636:android:99e5b99d12336f6a2a5379",
+         messagingSenderId: "237543568636",
+         projectId: "stepcarmobile-25a0a",
+       ),
+     );
+     final token = await FirebaseMessaging.instance.getToken();
+    BlocVerifyUser blocVerifyUser = BlocVerifyUser();
+    await blocVerifyUser.saveTokenFcm(token!);
+    print('Token${userData.token} ');
+    final value = {
+      'pId': userData.personals_id,
+      'token': userData.token,
+      'firstname': userData.firstname,
+      'lastname': userData.lastname,
+      'patronymic': userData.patronymic,
+      'email': userData.email,
+      'phone':userData.phone,
+      'firebaseToken':token
+    };
+    await _dio.post(
+        'personal/edit-profile',
+        data: value,
+        options: Options(
+          sendTimeout: 5000,
+          receiveTimeout: 10000,
+          contentType: 'application/x-www-form-urlencoded',
+        )
+    ).catchError((error) {
+      print('Error ${error.toString()}');
+    });
+   }
 
   //прверка валиднсти токена
   Future<ApiUserDataValid?> validUser({required BuildContext context}) async {
@@ -106,6 +148,7 @@ class MainServiseApi {
   Future<bool> uploadDataUser({required String phone,required String firstname, required String patronymic, required String lastname, required String email}) async {
     BlocVerifyUser blocVerifyUser = BlocVerifyUser();
     Map data = await blocVerifyUser.checkDataValidUser();
+    String? token=await blocVerifyUser.getTokenFcm();
     final value = {
       'pId': data['pid'],
       'token': data['token'],
@@ -113,7 +156,8 @@ class MainServiseApi {
       'lastname': lastname,
       'patronymic': patronymic,
       'email': email,
-      'phone':phone
+      'phone':phone,
+      'firebaseToken':token
     };
     await _dio.post(
         'personal/edit-profile',

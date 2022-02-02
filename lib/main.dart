@@ -12,18 +12,6 @@ import 'package:firebase_core/firebase_core.dart';
 
    main() async {
      WidgetsFlutterBinding.ensureInitialized();
-     await Firebase.initializeApp(
-       // Replace with actual values
-       options: FirebaseOptions(
-         apiKey: "AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4",
-         appId: "1:237543568636:android:99e5b99d12336f6a2a5379",
-         messagingSenderId: "237543568636",
-         projectId: "stepcarmobile-25a0a",
-       ),
-     );
-     final token = await FirebaseMessaging.instance.getToken();
-     print('Tocken $token');
-
      AppModule.blocTableInstance();
      runApp(MyApp());
 }
