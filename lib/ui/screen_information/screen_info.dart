@@ -757,11 +757,6 @@ class _PageSaleState extends State<PageSale> {
                        children: [
                          Row(
                            children: [
-                             Padding(
-                               padding: const EdgeInsets.all(8.0),
-                               child: Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
-                                   2.2, GlobalData.sizeScreen!)),
-                             ),
                              Text(widget.modelService.name,
                                style:TextStyle(
                                    fontSize: SizeUtil.getSize(
@@ -770,19 +765,6 @@ class _PageSaleState extends State<PageSale> {
                                ),),
                            ],
                          ),
-                         // Row(
-                         //   children: [
-                         //     Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
-                         //         1.5, GlobalData.sizeScreen!)),
-                         //     Text('${widget.modelService.time} мин.',
-                         //       style:TextStyle(
-                         //         fontWeight: FontWeight.bold,
-                         //         fontSize: SizeUtil.getSize(
-                         //             1.5, GlobalData.sizeScreen!),
-                         //         color: AppColors.textColorHint
-                         //     ),),
-                         //   ],
-                         // )
                        ],
                      ),
                    ),
@@ -790,11 +772,6 @@ class _PageSaleState extends State<PageSale> {
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.end,
                          children: [
-                           // Padding(
-                           //   padding: const EdgeInsets.all(8.0),
-                           //   child: Icon(Icons.timelapse_sharp,color: AppColors.textColorHint,size: SizeUtil.getSize(
-                           //       2.0, GlobalData.sizeScreen!)),
-                           // ),
                            Column(
                              crossAxisAlignment: CrossAxisAlignment.end,
                              children: [
@@ -803,14 +780,14 @@ class _PageSaleState extends State<PageSale> {
                                        color: AppColors.colorText22,
                                        fontSize:
                                        SizeUtil.getSize(2.0, GlobalData.sizeScreen!))),
-                        // Text(
-                        //   '${widget.modelService.time} мин.',
-                        //   style: TextStyle(
-                        //       fontWeight: FontWeight.bold,
-                        //       fontSize:
-                        //           SizeUtil.getSize(1.5, GlobalData.sizeScreen!),
-                        //       color: Colors.grey[400]),
-                        // ),
+                        Text(
+                          '${widget.modelService.time} мин.',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  SizeUtil.getSize(1.5, GlobalData.sizeScreen!),
+                              color: Colors.grey[400]),
+                        ),
                       ],
                            ),
                            widget.modelService.type=='complex'

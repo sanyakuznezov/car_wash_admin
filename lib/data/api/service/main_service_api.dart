@@ -53,7 +53,7 @@ class MainServiseApi {
     return ApiUserData.fromApi(response.data);
   }
 
-   //todo add isolate
+
    Future<void> updateFirebaseToken({required UserData userData}) async{
     await Firebase.initializeApp(
        // get token firebase fcm
