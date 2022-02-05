@@ -1,10 +1,8 @@
 
 
 
-    import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
-import 'package:car_wash_admin/ui/global_widgets/dialogs.dart';
 import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
 import 'package:car_wash_admin/ui/screen_orders_table/home_screen.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
@@ -15,10 +13,9 @@ import '../../global_data.dart';
 
 class SplashScreen extends StatelessWidget{
 
-  BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
+ final BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         backgroundColor: Colors.white,
         body: FutureBuilder<bool>(
@@ -32,6 +29,7 @@ class SplashScreen extends StatelessWidget{
                   future: RepositoryModule.userRepository().validUser(context: context),
                   builder: (context,value){
                     if (value.data==null) {
+                      print('RepositoryModule null');
                       return Center(
                           child: SvgPicture.asset(
                             "assets/banner.svg",

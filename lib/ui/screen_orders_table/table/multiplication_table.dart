@@ -280,7 +280,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
               }),
 
 
-          //Верхняя панель упарвления
+          //Верхняя панель упрaвления
           StreamBuilder<dynamic>(
             stream: AppModule.blocTable.editState,
             builder: (context, snapshot) {

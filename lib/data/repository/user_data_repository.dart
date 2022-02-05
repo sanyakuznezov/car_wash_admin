@@ -44,6 +44,7 @@ class UserDataRepository extends UserRepository{
      final userDao = database.userataDao;
      final data=await userDao.getDataUser();
      await _apiUtil.updateFirebaseToken(data!);
+     print('validUser $context data $data');
       return {'valid':valid,'data_user':data};
   }
 

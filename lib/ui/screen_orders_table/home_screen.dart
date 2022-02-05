@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void dispose() {
     super.dispose();
-    AppModule.blocTable.disponse();
+   // AppModule.blocTable.disponse();
     _controller.dispose();
   }
 
@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     double screenWidth=MediaQuery.of(context).size.width;
     return Scaffold(
-       // backgroundColor: Colors.transparent,
         body: Stack(
           children: [
             MultiplicationTable(),

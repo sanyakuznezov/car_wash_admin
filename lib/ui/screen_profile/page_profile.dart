@@ -11,6 +11,7 @@ import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
 import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
+import 'package:car_wash_admin/ui/screen_auth/splash_screen.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_languadge.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_name_edit.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_notifi.dart';
@@ -25,6 +26,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../global_data.dart';
+import '../../main.dart';
 
 class PageProfile extends StatefulWidget{
 
@@ -673,10 +675,14 @@ class _PageProfileState extends State<PageProfile> {
             title: Text('Выйти из профиля?'),
             actions: <Widget>[
               TextButton(
-                  onPressed: () {
-                    _blocVerifyUser.singOutUser();
-                    // Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (BuildContext context)=>PageAuth()),(Route<dynamic> route) => false);
+                  onPressed: ()async {
+                  final out= await _blocVerifyUser.singOutUser();
+                    if(out){
+                      Navigator.pushAndRemoveUntil(context,MaterialPageRoute(
+                        builder: (BuildContext context) => MyApp(),
+                      ),(Route<dynamic> route) => false);
 
+                    }
                   },
                   child: Text('Выйти')),
               TextButton(
