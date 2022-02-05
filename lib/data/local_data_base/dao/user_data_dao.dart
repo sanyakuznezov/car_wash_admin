@@ -23,4 +23,6 @@ import 'package:floor/floor.dart';
   @insert
   Future<void> insertDataUser(UserData userData);
 
+  @Query('DELETE FROM UserData')
+  Future<void> clear();
 }

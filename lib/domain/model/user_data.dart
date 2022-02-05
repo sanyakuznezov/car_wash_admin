@@ -4,7 +4,7 @@ import 'package:floor/floor.dart';
 @entity
  class UserData{
   @primaryKey
-  final int? id;
+   int? id;
    String? guid;
    String? token;
    bool? valid;

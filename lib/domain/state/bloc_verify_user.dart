@@ -1,7 +1,8 @@
 
 
 
- import 'package:shared_preferences/shared_preferences.dart';
+ import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BlocVerifyUser{
 
@@ -33,6 +34,9 @@ class BlocVerifyUser{
    }
 
    Future<bool> singOutUser() async{
+     final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
+     final userDao = database.userataDao;
+     await userDao.clear();
      SharedPreferences prefs=await SharedPreferences.getInstance();
      return prefs.setBool('is_auth',false);
    }

@@ -8,7 +8,9 @@ import 'package:car_wash_admin/data/local_data_base/app_data_base.dart';
 import 'package:car_wash_admin/domain/model/response_upload_avatar.dart';
 import 'package:car_wash_admin/domain/model/user_data.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
+import 'package:car_wash_admin/domain/state/bloc_verify_user.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
+import 'package:car_wash_admin/ui/screen_auth/page_auth.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_languadge.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_name_edit.dart';
 import 'package:car_wash_admin/ui/screen_profile/page_notifi.dart';
@@ -48,6 +50,7 @@ class _PageProfileState extends State<PageProfile> {
   String? _name;
   String? _phone;
   int _langId=0;
+ late BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
 
 
   @override
@@ -234,40 +237,30 @@ class _PageProfileState extends State<PageProfile> {
                                            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                            child: Row(
                                              children: [
-                                               Text('Номер телефона',
+                                               Text(_phone!.isNotEmpty?'$_phone':'Номер телефона',
                                                    style: TextStyle(
                                                        color: AppColors.textColorItem,
                                                        fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
                                                    )),
                                                Expanded(
-                                                 child: Padding(
-                                                   padding:EdgeInsets.fromLTRB(0, 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
-                                                   child: Text('$_phone',
-                                                       textAlign: TextAlign.end,
-                                                       style: TextStyle(
-                                                           color: AppColors.textColorPhone,
-                                                           fontWeight: FontWeight.bold,
-                                                           fontSize: SizeUtil.getSize(2.0,GlobalData.sizeScreen!)
-                                                       )),
-                                                 ),
-                                               ),
-                                               Align(
-                                                 alignment: Alignment.centerRight,
-                                                 child: GestureDetector(
-                                                   onTap: (){
-                                                     Navigator.push(context, SlideTransitionLift(
-                                                         PageNumberEdit(data.data!,
-                                                         onNewNumber: (numberPhone){
-                                                           setState(() {
-                                                             _isPhone=true;
-                                                             _phone=numberPhone;
-                                                           });
-                                                         },
-                                                         )));
-                                                   },
-                                                   child: Icon(
-                                                     Icons.arrow_forward_ios,
-                                                     color: AppColors.colorIndigo,
+                                                 child: Align(
+                                                   alignment: Alignment.centerRight,
+                                                   child: GestureDetector(
+                                                     onTap: (){
+                                                       Navigator.push(context, SlideTransitionLift(
+                                                           PageNumberEdit(data.data!,
+                                                           onNewNumber: (numberPhone){
+                                                             setState(() {
+                                                               _isPhone=true;
+                                                               _phone=numberPhone;
+                                                             });
+                                                           },
+                                                           )));
+                                                     },
+                                                     child: Icon(
+                                                       Icons.arrow_forward_ios,
+                                                       color: AppColors.colorIndigo,
+                                                     ),
                                                    ),
                                                  ),
                                                ),
@@ -349,7 +342,7 @@ class _PageProfileState extends State<PageProfile> {
                                            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                            child: Row(
                                              children: [
-                                               Text('Уведомления',
+                                               Text('Настроить',
                                                    style: TextStyle(
                                                        color: AppColors.textColorItem,
                                                        fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -438,7 +431,7 @@ class _PageProfileState extends State<PageProfile> {
                                            padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                            child: Row(
                                              children: [
-                                               Text('Поитика конфиденциальности',
+                                               Text('Политика конфиденциальности',
                                                    style: TextStyle(
                                                        color: AppColors.textColorItem,
                                                        fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
@@ -493,7 +486,30 @@ class _PageProfileState extends State<PageProfile> {
                                              ],
                                            ),
                                          ),
+                                         Container(height: 1,
+                                             color: AppColors.colorLine),
+                                         Container(
+                                           color: Colors.white,
+                                           child: Padding(
+                                             padding:EdgeInsets.fromLTRB(SizeUtil.getSize(3.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.5,GlobalData.sizeScreen!)),
+                                             child: Row(
+                                               children: [
+                                                 GestureDetector(
+                                                   onTap: (){
+                                                    _showDialogSingOut();
 
+                                                   },
+                                                   child: Text('Выйти',
+                                                       style: TextStyle(
+                                                           color:  AppColors.textColorTitle,
+                                                           fontSize: SizeUtil.getSize(1.8,GlobalData.sizeScreen!)
+                                                       )),
+                                                 ),
+
+                                               ],
+                                             ),
+                                           )
+                                         )
 
                                        ],
                                      ),
@@ -647,5 +663,30 @@ class _PageProfileState extends State<PageProfile> {
           );
         }
     );
+  }
+
+  void _showDialogSingOut() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Выйти из профиля?'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    _blocVerifyUser.singOutUser();
+                    // Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (BuildContext context)=>PageAuth()),(Route<dynamic> route) => false);
+
+                  },
+                  child: Text('Выйти')),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Отмена'),
+              )
+            ],
+          );
+        });
   }
 }

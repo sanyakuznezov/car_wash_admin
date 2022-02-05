@@ -23,7 +23,7 @@ import '../../global_data.dart';
 
 class PageAuth extends StatefulWidget{
 
-  bool? valid;
+ final bool? valid;
 
   @override
   StatePageAuth createState() {

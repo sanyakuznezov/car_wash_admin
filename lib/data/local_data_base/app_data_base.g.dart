@@ -179,6 +179,11 @@ class _$UserDataDao extends UserDataDao {
   }
 
   @override
+  Future<void> clear() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM UserData');
+  }
+
+  @override
   Future<void> insertDataUser(UserData userData) async {
     await _userDataInsertionAdapter.insert(userData, OnConflictStrategy.abort);
   }
