@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io' show Platform;
 
 class MainServiseApi {
 
@@ -48,26 +49,33 @@ class MainServiseApi {
           contentType: 'application/x-www-form-urlencoded',
         )
     ).catchError((error) {
-      print('Error ${error.toString()}');
+      print('Error auth  ${error.toString()}');
     });
     return ApiUserData.fromApi(response.data);
   }
 
 
    Future<void> updateFirebaseToken({required UserData userData}) async{
-    await Firebase.initializeApp(
+     String? _apiKey;
+     if(Platform.isAndroid){
+       _apiKey='AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4';
+     }else if(Platform.isIOS){
+       _apiKey='AIzaSyB08ZTCQGL5bCTFv7Duu-SY5uTkYnPaLcU';
+     }
+     await Firebase.initializeApp(
        // get token firebase fcm
        options: FirebaseOptions(
-         apiKey: "AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4",
+         apiKey: _apiKey!,
          appId: "1:237543568636:android:99e5b99d12336f6a2a5379",
          messagingSenderId: "237543568636",
          projectId: "stepcarmobile-25a0a",
        ),
      );
+
      final token = await FirebaseMessaging.instance.getToken();
     BlocVerifyUser blocVerifyUser = BlocVerifyUser();
     await blocVerifyUser.saveTokenFcm(token!);
-    print('Token${userData.token} ');
+    print('Token ${userData.token} ');
     final value = {
       'pId': userData.personals_id,
       'token': userData.token,
