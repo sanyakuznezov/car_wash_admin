@@ -1677,10 +1677,10 @@ class _ItemClientState extends State<ItemClient> {
                               onSaved: (value){
 
                               },
-                                maxLength: 15,
                               textAlign: TextAlign.start,
                                 focusNode: myFocusNodeTel,
                                 inputFormatters: <TextInputFormatter>[
+                                  LengthLimitingTextInputFormatter(15),
                                   FilteringTextInputFormatter.digitsOnly,
                                   _inputFormatter
                             ],
