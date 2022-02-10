@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "237543568636",
+    "project_id": "stepcarmobile-25a0a",
+    "storage_bucket": "stepcarmobile-25a0a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237543568636:android:99e5b99d12336f6a2a5379",
+        "android_client_info": {
+          "package_name": "com.example.car_wash_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "237543568636-icj5jit891cdjg151n685m1920b0n148.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237543568636-icj5jit891cdjg151n685m1920b0n148.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "237543568636-v2jmps8dhpf021242r8es584bra87ong.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.carWashAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

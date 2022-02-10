@@ -33,7 +33,6 @@ class UserDataRepository extends UserRepository{
     await userDao.insertDataUser(userData);
     final data=await userDao.getDataUser();
     await _apiUtil.updateFirebaseToken(data!);
-    print('Read in database ${data!.email}');
     return data;
   }
 
