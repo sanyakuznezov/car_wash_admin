@@ -26,9 +26,12 @@ class PagePrivatePolicy extends StatefulWidget{
 }
 
 class _PagePrivatePolicyState extends State<PagePrivatePolicy> {
+  int _progressLoad=0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: AppColors.colorBackgrondProfile,
       appBar: AppBar(
           elevation: 0,
           actions: [
@@ -67,8 +70,19 @@ class _PagePrivatePolicyState extends State<PagePrivatePolicy> {
 
           ],
           backgroundColor: Colors.white),
-          body: WebView(
-            initialUrl: widget.current==1?PagePrivatePolicy.URL_PRIVATE_POLICY:PagePrivatePolicy.URL_INFO_APP,
+          body: Stack(
+            children: [
+              WebView(
+                onProgress: (l){
+                  print('on progress $l');
+                  setState(() {
+                    _progressLoad=l;
+                  });
+                },
+                initialUrl: widget.current==1?PagePrivatePolicy.URL_PRIVATE_POLICY:PagePrivatePolicy.URL_INFO_APP,
+              ),
+              _progressLoad<100?Center(child: CircularProgressIndicator(color: AppColors.colorIndigo,)):Container()
+            ],
           )
     );
 
