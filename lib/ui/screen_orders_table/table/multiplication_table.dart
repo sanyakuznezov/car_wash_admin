@@ -334,7 +334,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                     offset: Offset(0,10),
                                   )]
                             ),
-                            height: SizeUtil.getSize(3.9,GlobalData.sizeScreen!),
+                            height: SizeUtil.getSize(4.4,GlobalData.sizeScreen!),
                             padding: EdgeInsets.fromLTRB(7, 0, 4, 0),
                             child:ValueListenableBuilder<String>(
                               valueListenable: _notifierDropdownButton,
@@ -389,7 +389,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
                                     offset: Offset(0,10),
                                   )]
                             ),
-                            height: SizeUtil.getSize(3.9,GlobalData.sizeScreen!),
+                            height: SizeUtil.getSize(4.4,GlobalData.sizeScreen!),
 
                             child: TextButton(
                                   onPressed: () {

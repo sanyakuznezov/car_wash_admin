@@ -27,7 +27,6 @@ class UserDataRepository extends UserRepository{
 
   @override
   Future<UserData?>authorizationUser({required String email, required String pass})  async {
-    // TODO: implement authorizationUser
     final database = await $FloorAppDataBase.databaseBuilder('app_database.db').build();
     final userDao = database.userataDao;
     final userData=await _apiUtil.authorizationUser(email: email, pass: pass);
