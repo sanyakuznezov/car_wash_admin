@@ -561,8 +561,8 @@
 //расчет кооф. времени при перетаскивнии заказов
    //todo edit configuration for all step time
    static List<Map> constantForCollision=[
-     {'coof':1.328, 'coof_start':1.327,'coof_end':1.33444,'time':60,'shift':102},
-     {'coof':2.62222,'coof_start':2.66,'coof_end':2.66, 'time':30,'shift':52},
+     {'coof':1.328, 'coof_start':1.327,'coof_end':1.332,'time':60,'shift':102},
+     {'coof':2.62222,'coof_start':2.65,'coof_end':2.662, 'time':30,'shift':52},
      {'coof':5.3,'coof_start':5.314,'coof_end':5.3267,'time':15,'shift':27},
      {'coof':16.0, 'coof_start':15.89,'coof_end':16.07,'time':5,'shift':12.2}];
 

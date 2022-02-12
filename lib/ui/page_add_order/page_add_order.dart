@@ -1669,7 +1669,7 @@ class _ItemClientState extends State<ItemClient> {
                         child: Padding(
                           padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                           child: SizedBox(
-                            height: _editStatusMain!=GlobalData.VIEW_MODE?SizeUtil.getSize(6.0, GlobalData.sizeScreen!):SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
+                            height: _editStatusMain!=GlobalData.VIEW_MODE?SizeUtil.getSize(4.0, GlobalData.sizeScreen!):SizeUtil.getSize(4.0, GlobalData.sizeScreen!),
                             child: _editStatusMain!=GlobalData.VIEW_MODE?TextFormField(
                               validator: (value){
                                 _validatePhoneNumber(value!);
@@ -1696,8 +1696,8 @@ class _ItemClientState extends State<ItemClient> {
                                 filled: true,
                                   hintText: '....',
                                   prefixText: '+7 ',
-                                  contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(0.5, GlobalData.sizeScreen!),SizeUtil.getSize(1.5, GlobalData.sizeScreen!)
-                                  ,SizeUtil.getSize(1.5, GlobalData.sizeScreen!)),
+                                  contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(1.5, GlobalData.sizeScreen!),SizeUtil.getSize(0.0, GlobalData.sizeScreen!),SizeUtil.getSize(0.0, GlobalData.sizeScreen!)
+                                  ,SizeUtil.getSize(1.7, GlobalData.sizeScreen!)),
                                   border: InputBorder.none),
                               onChanged: (text) {
                                    if(text.isNotEmpty){
