@@ -327,7 +327,7 @@ class TimeParser{
       return thisTime<resultTimeParse;
 
   }
-  //TODO не правильно учитывается ша времени
+
   //проверяет время окончания рабочего относительно выбранного промежутка
   static bool isTimeValidateEndTimeDay(double timeTable,int endTimeDay,int timeStep){
     double t=GlobalData.constantForTimeTapTable[timeStep]['coof'];
