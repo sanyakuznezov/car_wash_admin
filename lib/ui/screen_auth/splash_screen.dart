@@ -29,7 +29,6 @@ class SplashScreen extends StatelessWidget{
                   future: RepositoryModule.userRepository().validUser(context: context),
                   builder: (context,value){
                     if (value.data==null) {
-                      print('RepositoryModule null');
                       return Center(
                           child: SvgPicture.asset(
                             "assets/banner.svg",
