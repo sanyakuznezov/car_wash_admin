@@ -192,8 +192,8 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
                               Padding(
                                 padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.0,GlobalData.sizeScreen!), 0, SizeUtil.getSize(1.0,GlobalData.sizeScreen!), 0),
                                 child: Container(
-                                  width: SizeUtil.getSize(16.2, GlobalData.sizeScreen!),
-                                  height: SizeUtil.getSize(5.0, GlobalData.sizeScreen!),
+                                  width: SizeUtil.getSize(18.8, GlobalData.sizeScreen!),
+                                  height: SizeUtil.getSize(6.0, GlobalData.sizeScreen!),
                                   child: Observer(
                                       builder: (_) {
                                         if (_stateEditDataUser!.isLoad) {
@@ -231,7 +231,7 @@ class StatePageNumberEdit extends State<PageNumberEdit>{
                                                 _input.sink.add(1);
                                               }
                                             },
-                                            textAlign: TextAlign.start,
+                                            textAlign: TextAlign.center,
                                             focusNode: myFocusNodeTel,
                                             inputFormatters: <TextInputFormatter>[
                                               FilteringTextInputFormatter

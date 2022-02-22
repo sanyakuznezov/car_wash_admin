@@ -561,7 +561,7 @@ class _PageSaleState extends State<PageSale> {
     return Column(
       children: [
         Container(
-          height: SizeUtil.getSize(7.3,GlobalData.sizeScreen!),
+          height: SizeUtil.getSize(7.6,GlobalData.sizeScreen!),
           margin: EdgeInsets.fromLTRB(0, SizeUtil.getSize(3.0, GlobalData.sizeScreen!), 0, 0),
           color: Colors.white,
           child: Padding(

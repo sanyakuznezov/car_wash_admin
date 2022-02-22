@@ -9,8 +9,8 @@ import 'package:car_wash_admin/domain/model/model_calculate_price.dart';
 import 'package:car_wash_admin/domain/model/model_service.dart';
 import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/internal/dependencies/repository_module.dart';
-import 'package:car_wash_admin/ui/page_add_order/page_add_order.dart';
-import 'package:car_wash_admin/ui/page_add_order/page_list_services.dart';
+import 'package:car_wash_admin/ui/screen_add_order/page_add_order.dart';
+import 'package:car_wash_admin/ui/screen_add_order/page_list_services.dart';
 import 'package:car_wash_admin/ui/screen_quick_order/page_quick_order_next.dart';
 import 'package:car_wash_admin/utils/size_util.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
@@ -259,7 +259,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                       height: 1,
                       color: AppColors.colorLine),
                   Container(
-                    height: SizeUtil.getSize(6.2,GlobalData.sizeScreen!),
+                    height: SizeUtil.getSize(6.5,GlobalData.sizeScreen!),
                     child: Padding(
                       padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                       child: Row(

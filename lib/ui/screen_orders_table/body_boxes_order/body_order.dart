@@ -6,7 +6,7 @@ import 'package:car_wash_admin/domain/state/bloc_page_route.dart';
 import 'package:car_wash_admin/global_data.dart';
 import 'package:car_wash_admin/internal/dependencies/app_module.dart';
 import 'package:car_wash_admin/ui/global_widgets/container_botton_sheet.dart';
-import 'package:car_wash_admin/ui/page_add_order/page_add_order.dart';
+import 'package:car_wash_admin/ui/screen_add_order/page_add_order.dart';
 import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:car_wash_admin/utils/time_position.dart';
 import 'package:flutter/cupertino.dart';

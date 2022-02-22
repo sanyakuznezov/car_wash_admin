@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     alignment: Alignment.bottomRight,
                     child: Container(
                       alignment: Alignment.center,
-                      width: SizeUtil.getSize(15.0,GlobalData.sizeScreen!),
+                      width: SizeUtil.getSize(14.0,GlobalData.sizeScreen!),
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 child: Padding(
-                                  padding: EdgeInsets.all(SizeUtil.getSize(1.3,GlobalData.sizeScreen!)),
+                                  padding: EdgeInsets.all(SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                   child: Center(
                                     child: Icon(listOfIcons[index],
                                       size: screenWidth*.08,
