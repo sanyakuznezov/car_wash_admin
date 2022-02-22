@@ -277,7 +277,6 @@ class PageAddOrder extends StatefulWidget{
                     _order.update('clientComment', (value) => _stateOrder!.modelOrderShow!.clientComment);
                     _order.update('ComplexesList', (value) => _stateOrder!.modelOrderShow!.complexes);
                     _order.update('ServicesList', (value) => _stateOrder!.modelOrderShow!.services);
-                    print('totalPrice ${_order['totalPrice']}');
                     _idOrder=_stateOrder!.modelOrderShow!.id;
                     if(_stateOrder!.modelOrderShow!.clientFullname.split(' ').length==3){
                       _surName=_stateOrder!.modelOrderShow!.clientFullname.split(' ')[1];
@@ -462,7 +461,6 @@ class PageAddOrder extends StatefulWidget{
   @override
   void dispose() {
     super.dispose();
-    print('Dispose');
     _notifier.dispose();
     _fabNotifi!.dispose();
     _idServiceList.clear();
