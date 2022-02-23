@@ -58,10 +58,12 @@ import '../../global_data.dart';
 
 class PageQuickOrder extends StatefulWidget{
 
-
+  var onSuccesAdd=(bool? add)=>add;
 
   @override
   State<PageQuickOrder> createState() => _PageQuickOrderState();
+
+  PageQuickOrder({required this.onSuccesAdd});
 }
 
 class _PageQuickOrderState extends State<PageQuickOrder> {
@@ -132,8 +134,11 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                          Navigator.push(context,SlideTransitionRight(PageQuickOrderNext(
                              onSuccesAdd: (add){
                                if(add!){
-                                 Navigator.pop(context);
+                                 widget.onSuccesAdd(true);
+                               }else{
+                                 widget.onSuccesAdd(false);
                                }
+                               Navigator.pop(context);
                              },
                              totalPriceFinalOfListService:_totalPriceFinalOfListService,
                              order:_order,

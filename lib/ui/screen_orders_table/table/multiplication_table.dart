@@ -142,6 +142,7 @@ class _MultiplicationTableState extends State<MultiplicationTable>  with SingleT
 
   @override
   Widget build(BuildContext context) {
+    print('Build table');
     return Container(
       color: Colors.white,
       child: Stack(

@@ -31,17 +31,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   double? top;
   var _currentIndex = 0;
   late AnimationController _controller;
+  ValueNotifier<bool> _notifier=ValueNotifier(false);
+  late List<Widget> _widgetOptions;
 
-  static List<Widget> _widgetOptions =<Widget>[
-    ScreenInfo(),
-    PageQuickOrder(),
-  ];
 
 
 
   @override
   void initState() {
     super.initState();
+    _widgetOptions =<Widget>[
+      ScreenInfo(),
+      PageQuickOrder(onSuccesAdd: (bool? add) {
+        _notifier.value=add!;
+      },),
+    ];
     _controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
     AppModule.blocTable.streamSink.add(0);
@@ -63,7 +67,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return Scaffold(
         body: Stack(
           children: [
-            MultiplicationTable(),
+            ValueListenableBuilder<bool>(
+              valueListenable: _notifier,
+              builder: (context,value,child) {
+                return MultiplicationTable();
+              }
+            ),
             StreamBuilder<dynamic>(
               stream: AppModule.blocTable.editState,
               builder: (context, snapshot) {
