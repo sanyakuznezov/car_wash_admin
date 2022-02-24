@@ -68,7 +68,7 @@ class ContainerAddOrder extends StatefulWidget{
                 child:  Text('ОТМЕНА',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                  fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                   color: Colors.black,
                 ),),
 
@@ -82,7 +82,7 @@ class ContainerAddOrder extends StatefulWidget{
                 child:  Text('ПОДТВЕРДИТЬ',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                      fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                       color: Colors.blue,
 
                     ),),

@@ -121,7 +121,7 @@ class ContainerBottomSheet extends StatefulWidget{
                 child:  Text('ОТМЕНА',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                  fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                   color: Colors.black,
                 ),),
 
@@ -155,7 +155,7 @@ class ContainerBottomSheet extends StatefulWidget{
                 child:  Text(widget.statusCode==2?'ПРОДОЛЖИТЬ':'ПОДТВЕРДИТЬ',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: SizeUtil.getSize(3,GlobalData.sizeScreen!),
+                      fontSize: SizeUtil.getSize(2.5,GlobalData.sizeScreen!),
                       color: Colors.blue,
 
                     ),),

@@ -32,6 +32,7 @@ import 'package:mobx/mobx.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../global_data.dart';
+import '../../internal/dependencies/app_module.dart';
 
 
 
@@ -122,6 +123,7 @@ class PageAddOrder extends StatefulWidget{
         Timer.periodic(Duration(seconds: 1), (timer) {
           Navigator.pop(context);
           timer.cancel();
+          AppModule.notifiForReload.value=_isSucces;
         });
       }
     }
@@ -2191,8 +2193,7 @@ class _ItemCarState extends State<ItemCar> {
                                    },
                                    keyboardType: TextInputType.number,
                                    decoration: InputDecoration(
-    //                                  contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),0
-    // ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+                                     contentPadding: EdgeInsets.all(SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                                        border: OutlineInputBorder(borderRadius: BorderRadius.only(topRight:Radius.circular(10),bottomRight: Radius.circular(10))),
 
                                    ),
@@ -2487,8 +2488,7 @@ class _ItemCarState extends State<ItemCar> {
            }
          },
          decoration: InputDecoration(
-           // contentPadding: EdgeInsets.fromLTRB(SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)
-           //     ,SizeUtil.getSize(0.5,GlobalData.sizeScreen!),SizeUtil.getSize(0.5,GlobalData.sizeScreen!)),
+           contentPadding: EdgeInsets.all(SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
            border: OutlineInputBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(10),bottomLeft: Radius.circular(10))),
 
          ),

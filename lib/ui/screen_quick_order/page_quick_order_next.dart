@@ -19,14 +19,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../app_colors.dart';
 import '../../global_data.dart';
 
-  late ValueNotifier<int> _notifierTime;
+
    String _hour='';
    String _min='';
 class PageQuickOrderNext extends StatefulWidget{
   final List<ModelServiceFromCalculate> list;
  final Map<String,dynamic> order;
  final int totalPriceFinalOfListService;
- bool isClose=false;
+ final bool isClose=false;
  var onSuccesAdd=(bool? add)=>add;
 
 
@@ -76,7 +76,8 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
                       ),
                     ),
                   ),
-                  Expanded(
+                  Align(
+                    alignment: Alignment.center,
                     child: Text('Время',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,
@@ -187,7 +188,6 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
   @override
   void initState() {
     super.initState();
-    _notifierTime=ValueNotifier<int>(0);
     _hour='';
     _min='';
   }

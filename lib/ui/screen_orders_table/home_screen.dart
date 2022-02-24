@@ -31,7 +31,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   double? top;
   var _currentIndex = 0;
   late AnimationController _controller;
-  ValueNotifier<bool> _notifier=ValueNotifier(false);
   late List<Widget> _widgetOptions;
 
 
@@ -43,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _widgetOptions =<Widget>[
       ScreenInfo(),
       PageQuickOrder(onSuccesAdd: (bool? add) {
-        _notifier.value=add!;
+        print('onSuccesAdd');
+        AppModule.notifiForReload.value=add!;
       },),
     ];
     _controller = AnimationController(
@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void dispose() {
     super.dispose();
    // AppModule.blocTable.disponse();
+   // AppModule.notifiForReload.disponse();
     _controller.dispose();
   }
 
@@ -68,8 +69,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         body: Stack(
           children: [
             ValueListenableBuilder<bool>(
-              valueListenable: _notifier,
+              valueListenable: AppModule.notifiForReload,
               builder: (context,value,child) {
+                print('Rebuild table;');
                 return MultiplicationTable();
               }
             ),
