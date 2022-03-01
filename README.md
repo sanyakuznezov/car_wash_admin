@@ -13,4 +13,4 @@
 
  Клучевой особенностью приложения является уникальная таблица для публикации, просмотра и редактирования заказов.  
  
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![Alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
