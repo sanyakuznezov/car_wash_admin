@@ -1,6 +1,6 @@
 # CrmStep
 
-Уникальная srm система для администрирования заказов автомойки
+Уникальная crm система для администрирования заказов автомойки
 
 ## Основной стек проекта
 
@@ -11,7 +11,7 @@
 - Clean architecture
 
 
- Клучевой особенностью приложения является уникальная таблица для публикации, просмотра и редактирования заказов.  
+ Клучевой особенностью приложения является уникальная таблица для публикации, просмотра и редактирования заказов. Таблица синхронизирована с сервером и любые измененния в ней передаются через  api на сервер
  # Таблица записи
  
 ![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-38-01.jpg?alt=media&token=781e5509-56d2-4300-9ee6-cb3a6ce72654)
@@ -40,9 +40,6 @@
  
 ![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-28.jpg?alt=media&token=6ab80ae0-c223-4258-80cf-46284744b329)
 
-
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-31.jpg?alt=media&token=24eb6fdf-ccd6-42dd-8016-4f4bbb5af9c2)
 
  
 ![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-31.jpg?alt=media&token=24eb6fdf-ccd6-42dd-8016-4f4bbb5af9c2)
