@@ -13,4 +13,4 @@
 
  Клучевой особенностью приложения является уникальная таблица для публикации, просмотра и редактирования заказов.  
  
-![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
+![Alt Text](gs://stepcarmobile-25a0a.appspot.com/files_readme/ezgif.com-gif-maker.gif)
