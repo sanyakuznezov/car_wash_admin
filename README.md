@@ -1,45 +1,34 @@
-# CrmStep
+# car_wash_admin
 
-Уникальная crm система для администрирования заказов автомойки
+проект для администрирования заказов автомойки
 
-## Основной стек проекта
+## Getting Started
 
-- Firebase CloudMassaging Android|IOS
-- State management: MobX
-- Rest Api: Dio
-- Local data base: Floor
-- Clean architecture
+This project is a starting point for a Flutter application.
 
+A few resources to get you started if this is your first Flutter project:
 
- Клучевой особенностью приложения является уникальная таблица для публикации, просмотра и редактирования заказов. Таблица синхронизирована с сервером и любые измененния в ней передаются через  api на сервер
- # Таблица записи
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-38-01.jpg?alt=media&token=781e5509-56d2-4300-9ee6-cb3a6ce72654)
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
- # Примеры экранов приложения
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-24.jpg?alt=media&token=521a136b-befd-4721-babe-096ae161847b)
-
- 
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-29.jpg?alt=media&token=472ade00-3146-47f0-93b4-3da92e5b9308)
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
 
 
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-36.jpg?alt=media&token=067ab63d-e91d-49ef-8c10-f775efd5c949)
+Индексаия цвета заказов:
+10-новый заказ мойки  
+11-новый заказ клиента
+20-в работе
+30-архив
+40-заблокирован
 
+Цвета:
 
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-21.jpg?alt=media&token=583c06a2-0bfc-4556-bfe5-fc124f54f837)
+Новый заказ (создан мойкой) - #3699ff
+Новый заказ (создан клиентом) - #36ff40
+В работе - #FFD602
+В архиве - #7E8DA8
+Заблокирован - #262626
 
-
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-24.jpg?alt=media&token=c4561194-1f60-45e0-b1c3-de3c1f9d87e3)
-
-
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-28.jpg?alt=media&token=6ab80ae0-c223-4258-80cf-46284744b329)
-
-
- 
-![image description](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-51-31.jpg?alt=media&token=24eb6fdf-ccd6-42dd-8016-4f4bbb5af9c2)
+Начальная координата шкалы времени - 108 px
