@@ -42,7 +42,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _widgetOptions =<Widget>[
       ScreenInfo(),
       PageQuickOrder(onSuccesAdd: (bool? add) {
-        print('onSuccesAdd');
         AppModule.notifiForReload.value=add!;
       },),
     ];
