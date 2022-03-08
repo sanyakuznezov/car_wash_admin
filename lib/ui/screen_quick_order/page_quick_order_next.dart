@@ -76,8 +76,7 @@ class _PageQuickOrderNextState extends State<PageQuickOrderNext> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.center,
+                  Center(
                     child: Text('Время',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,

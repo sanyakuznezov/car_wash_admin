@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/state/table_state.dart';
@@ -43,7 +44,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   bool read=false;
   late Timer _timer;
   String? _time;
-  final double c1=100;
   double? startY;
   double paddingLeft=50.0;
   late AnimationController _controller;
@@ -56,6 +56,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   int indexForBox=-1;
   Map<String,double> offsetsY=Map();
 
+  getC1 ()=> Platform.isIOS?130:110;
 
 
 
@@ -240,7 +241,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
                         if(time.data!=null){
-                          startY=c1+TimeParser.shiftTimeForTimeLine(
+                          startY=getC1()+TimeParser.shiftTimeForTimeLine(
                               time: TimeParser.parseHourForTimeLine(time.data!,widget.modelDataTable.startDayMin),
                               timeStep: snapshot.data);
                           return Container(
@@ -290,7 +291,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               child: Stack(
                                 children: [
                                   Positioned(
-                                      top: c1+TimeParser.shiftTimeForTimeLine(
+                                      top: getC1()+TimeParser.shiftTimeForTimeLine(
                                           time: TimeParser.parseHourForTimeLineEndDay(widget.modelDataTable.endDayMin,widget.modelDataTable.startDayMin),
                                           timeStep: snapshot.data),
                                       child: Column(
