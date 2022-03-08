@@ -48,7 +48,7 @@ class PageAuth extends StatefulWidget{
     int _stateSingIn=0;
     ButtonState stateOnlyText = ButtonState.idle;
    late BlocVerifyUser _blocVerifyUser=BlocVerifyUser();
-
+    bool _isObscure = true;
 
 
 
@@ -119,9 +119,18 @@ class PageAuth extends StatefulWidget{
                   keyboardType: TextInputType.visiblePassword,
                   textInputAction: TextInputAction.next,
                   controller: textControllerPassword,
-                  obscureText: true,
+                  obscureText: _isObscure,
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
+                    suffixIcon: IconButton(
+                        icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        }),
                     labelText: 'Пароль',
                       errorText: _isEditingPassword
                           ? _validatePassword(textControllerPassword!.text)
@@ -207,7 +216,7 @@ class PageAuth extends StatefulWidget{
                         _launchURL('https://app.crmstep.ru/auth/reset');
                       },
                       child: Text(
-                        'Я забыл пароль',
+                        'Забыли пароль',
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                         ),
