@@ -5,6 +5,8 @@
  import 'package:car_wash_admin/global_data.dart';
 import 'package:flutter/material.dart';
 
+import '../../../utils/size_util.dart';
+
 
 
 class BoxTime extends StatelessWidget{
