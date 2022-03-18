@@ -16,4 +16,4 @@
 
 # Примеры экранов
 
-![](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-24.jpg?alt=media&token=521a136b-befd-4721-babe-096ae161847b)
+![](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-29.png?alt=media&token=298cb237-0ff3-451d-8f1d-94cdc22829c8)
