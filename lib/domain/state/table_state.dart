@@ -121,8 +121,8 @@ abstract class TableStateBase with Store{
    modelDataTable=result;
    GlobalData.maxRecordRange=modelDataTable!.maxRecordRange;
    GlobalData.numBoxes=modelDataTable!.posts;
-   // modelDataTable!.startDayMin=360;
-  //modelDataTable!.endDayMin=1290;
+   //modelDataTable!.startDayMin=600;
+ // modelDataTable!.endDayMin=1440;
    GlobalData.endDayMin=modelDataTable!.endDayMin;
    GlobalData.startDayMin=modelDataTable!.startDayMin;
    isLoading=false;

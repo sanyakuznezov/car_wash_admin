@@ -267,7 +267,7 @@ class _PageQuickOrderState extends State<PageQuickOrder> {
                       height: 1,
                       color: AppColors.colorLine),
                   Container(
-                    height: SizeUtil.getSize(6.5,GlobalData.sizeScreen!),
+                    height: SizeUtil.getSize(7.1,GlobalData.sizeScreen!),
                     child: Padding(
                       padding:EdgeInsets.fromLTRB(SizeUtil.getSize(7.5,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!),SizeUtil.getSize(1.0,GlobalData.sizeScreen!)),
                       child: Row(

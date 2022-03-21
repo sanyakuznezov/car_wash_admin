@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:car_wash_admin/domain/model/model_data_table.dart';
 import 'package:car_wash_admin/domain/state/table_state.dart';
@@ -9,7 +10,7 @@ import 'package:car_wash_admin/utils/time_parser.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
-
+//import 'package:device_info/device_info.dart';
 import '../body_boxes_order/box_order.dart';
 import '../body_boxes_order/drag_target_table.dart';
 import 'box_time.dart';
@@ -43,7 +44,6 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   bool read=false;
   late Timer _timer;
   String? _time;
-  final double c1=100;
   double? startY;
   double paddingLeft=50.0;
   late AnimationController _controller;
@@ -56,6 +56,9 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
   int indexForBox=-1;
   Map<String,double> offsetsY=Map();
 
+  getC1 (){
+    return Platform.isIOS?135:110;
+  }
 
 
 
@@ -240,11 +243,12 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                       stream:  AppModule.blocTable.streamTimer,
                       builder: (context,time){
                         if(time.data!=null){
-                          startY=c1+TimeParser.shiftTimeForTimeLine(
+                          print('Screen size ${GlobalData.sizeScreen}');
+                          startY=getC1()+TimeParser.shiftTimeForTimeLine(
                               time: TimeParser.parseHourForTimeLine(time.data!,widget.modelDataTable.startDayMin),
                               timeStep: snapshot.data);
                           return Container(
-                              margin: EdgeInsets.fromLTRB(0, 9, 0, 0),
+                             // margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                               child: SingleChildScrollView(
                                   controller: _timeLineColumnsController,
                                   scrollDirection: Axis.vertical,
@@ -290,7 +294,7 @@ class _TableBodyState extends State<TableBody>  with SingleTickerProviderStateMi
                               child: Stack(
                                 children: [
                                   Positioned(
-                                      top: c1+TimeParser.shiftTimeForTimeLine(
+                                      top: getC1()+TimeParser.shiftTimeForTimeLine(
                                           time: TimeParser.parseHourForTimeLineEndDay(widget.modelDataTable.endDayMin,widget.modelDataTable.startDayMin),
                                           timeStep: snapshot.data),
                                       child: Column(

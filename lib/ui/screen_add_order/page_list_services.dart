@@ -266,7 +266,7 @@ class _PageListServicesState extends State<PageListServices> {
                                       1.5, GlobalData.sizeScreen!)),
                                   alignment: Alignment.center,
                                   width: SizeUtil.getSize(
-                                      15.5, GlobalData.sizeScreen!),
+                                      17.0, GlobalData.sizeScreen!),
                                   decoration: BoxDecoration(
                                       color: _selType==1?AppColors.colorIndigo:Colors.white,
                                       border: _selType==0?Border.all(width: 1,color: AppColors.textColorPhone):null,

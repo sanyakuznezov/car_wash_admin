@@ -123,16 +123,14 @@ class PageAuth extends StatefulWidget{
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: (){
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-
-                      },
-                    ),
+                        icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        }),
                     labelText: 'Пароль',
                       errorText: _isEditingPassword
                           ? _validatePassword(textControllerPassword!.text)

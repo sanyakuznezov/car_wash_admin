@@ -146,13 +146,13 @@ class TimeParser{
     int minute = int.parse(timeSplit.split(':')[1]);
     return hour * 60 + minute;
   }
-  //TODO переименвать
+
   static parseStringTimeToInt(String time) {
     int hour = int.parse(time.split(':')[0]);
     int minute = int.parse(time.split(':')[1]);
     return hour * 60 + minute;
   }
-   //ToDO test time для линии времени ля разных шагов времени не точно работает
+   //ToDO test time для линии времени dля разных шагов времени не точно работает
   static parseHourForTimeLine(String time,int timeStart) {
     int hour = int.parse(time.split(':')[0]);
     int minute = int.parse(time.split(':')[1]);
