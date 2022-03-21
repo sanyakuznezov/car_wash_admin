@@ -70,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ValueListenableBuilder<bool>(
               valueListenable: AppModule.notifiForReload,
               builder: (context,value,child) {
-                print('Rebuild table;');
                 return MultiplicationTable();
               }
             ),
