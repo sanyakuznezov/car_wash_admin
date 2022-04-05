@@ -12,7 +12,7 @@
 
 Основой приложения является таблица записи клиентов атомойки. Она синхронизирована с сервером и позволяет оперативно производить администрирование сервиса в ручном режиме. 
 
-![](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
+![](https://firebasestorage.googleapis.com/v0/b/stepcarmobile-25a0a.appspot.com/o/files_readme%2Fphoto_2022-03-01_16-49-24.png?alt=media&token=3ddc0166-ea24-44f0-9c4c-882b9a2f9492)
 
 # Примеры экранов
 
