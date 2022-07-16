@@ -849,7 +849,7 @@ class _ItemCommentState extends State<ItemComment> {
                                       keyboardType: TextInputType.multiline,
                                       textInputAction: TextInputAction.newline,
                                       maxLines: 10,
-                                      maxLengthEnforced: true,
+                                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                       decoration: InputDecoration(
                                           hintText: _editStatusMain==GlobalData.EDIT_MODE||_editStatusMain==GlobalData.VIEW_MODE?widget.modelOrderShow!.adminComment:'.....',
                                           contentPadding: EdgeInsets.all(
