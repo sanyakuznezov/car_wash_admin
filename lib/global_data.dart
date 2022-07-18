@@ -18,7 +18,7 @@
    static int? idOrder;
    static int? maxRecordRange;
    static bool? isCollision=false;
-   static const String URL_BASE_IMAGE='https://app.crmstep.ru';
+   static const String URL_BASE_IMAGE='';
    static String? date;
    static const int EDIT_MODE=0;
    static const int VIEW_MODE=1;

@@ -31,7 +31,7 @@ import 'dart:io' show Platform;
 
 class MainServiseApi {
 
-  static const _BASE_URL = 'https://app.crmstep.ru/api/v1/';
+  static const _BASE_URL = '';
 
   final Dio _dio = Dio(
     BaseOptions(baseUrl: _BASE_URL),
@@ -58,17 +58,17 @@ class MainServiseApi {
    Future<void> updateFirebaseToken({required UserData userData}) async{
      String? _apiKey;
      if(Platform.isAndroid){
-       _apiKey='AIzaSyCyL7B8f3Y3xRabshWH54iWA0o2HpPqx_4';
+       _apiKey='';
      }else if(Platform.isIOS){
-       _apiKey='AIzaSyB08ZTCQGL5bCTFv7Duu-SY5uTkYnPaLcU';
+       _apiKey='';
      }
      await Firebase.initializeApp(
        // get token firebase fcm
        options: FirebaseOptions(
          apiKey: _apiKey!,
-         appId: "1:237543568636:android:99e5b99d12336f6a2a5379",
-         messagingSenderId: "237543568636",
-         projectId: "stepcarmobile-25a0a",
+         appId: "",
+         messagingSenderId: "",
+         projectId: "",
        ),
      );
 
